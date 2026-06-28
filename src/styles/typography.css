@@ -1,108 +1,150 @@
 /*
 ========================================================
 RANGBASTRA.LUXURY
-CLOUTORA LUXURY FRAMEWORK v1.0
+CLOUTORA LUXURY FRAMEWORK v3.0
 
-TYPOGRAPHY TOKEN SYSTEM
+TYPOGRAPHY SYSTEM
 ========================================================
 */
 
-:root {
-  /*
-  ========================================================
-  FONT FAMILIES
-  ========================================================
-  */
+:root{
 
-  --font-display:
-    "Cormorant Garamond",
-    serif;
+/*========================================================
+FONT FAMILIES
+========================================================*/
 
-  --font-body:
-    "Montserrat",
-    sans-serif;
+--font-display:
+"Cormorant Garamond",
+serif;
 
-  --font-signature:
-    "Segoe Script",
-    cursive;
+--font-body:
+"Montserrat",
+sans-serif;
 
-  /*
-  ========================================================
-  FONT WEIGHTS
-  ========================================================
-  */
+--font-signature:
+"Segoe Script",
+cursive;
 
-  --font-light: 300;
+/*========================================================
+FONT WEIGHTS
+========================================================*/
 
-  --font-regular: 400;
+--weight-light:300;
 
-  --font-medium: 500;
+--weight-regular:400;
 
-  --font-semibold: 600;
+--weight-medium:500;
 
-  --font-bold: 700;
+--weight-semibold:600;
 
-  /*
-  ========================================================
-  FONT SIZES
-  ========================================================
-  */
+--weight-bold:700;
 
-  --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.875rem);
+/*========================================================
+DISPLAY
+========================================================*/
 
-  --text-sm: clamp(0.875rem, 0.84rem + 0.2vw, 1rem);
+--display-2xl:
+clamp(5rem,7vw,8rem);
 
-  --text-base: clamp(1rem, 0.97rem + 0.2vw, 1.125rem);
+--display-xl:
+clamp(4rem,6vw,6.5rem);
 
-  --text-lg: clamp(1.125rem, 1.08rem + 0.3vw, 1.25rem);
+--display-lg:
+clamp(3.25rem,5vw,5rem);
 
-  --text-xl: clamp(1.25rem, 1.18rem + 0.45vw, 1.5rem);
+/*========================================================
+HEADLINES
+========================================================*/
 
-  --text-2xl: clamp(1.5rem, 1.35rem + 0.8vw, 2rem);
+--headline-xl:
+clamp(2.75rem,4vw,4rem);
 
-  --text-3xl: clamp(2rem, 1.7rem + 1vw, 3rem);
+--headline-lg:
+clamp(2.25rem,3vw,3.25rem);
 
-  --text-4xl: clamp(2.75rem, 2.2rem + 2vw, 4.5rem);
+--headline-md:
+clamp(1.875rem,2.4vw,2.5rem);
 
-  --text-5xl: clamp(3.5rem, 2.8rem + 3vw, 6rem);
+/*========================================================
+TITLES
+========================================================*/
 
-  --text-6xl: clamp(5rem, 4rem + 5vw, 8rem);
+--title-xl:
+clamp(1.625rem,2vw,2rem);
 
-  --text-7xl: clamp(6rem, 5rem + 6vw, 10rem); 
+--title-lg:
+clamp(1.375rem,1.8vw,1.75rem);
 
-  /*
-  ========================================================
-  LINE HEIGHT
-  ========================================================
-  */
+--title-md:
+clamp(1.125rem,1.4vw,1.375rem);
 
-  --leading-tight: 1.1;
+/*========================================================
+BODY
+========================================================*/
 
-  --leading-snug: 1.3;
+--body-xl:
+clamp(1.25rem,1.4vw,1.5rem);
 
-  --leading-normal: 1.6;
+--body-lg:
+clamp(1.125rem,1.2vw,1.25rem);
 
-  --leading-relaxed: 1.8;
+--body-md:
+clamp(1rem,.9vw,1.125rem);
 
-  /*
-  ========================================================
-  LETTER SPACING
-  ========================================================
-  */
+--body-sm:
+clamp(.875rem,.8vw,1rem);
 
-  --tracking-tight: -0.03em;
+/*========================================================
+LABELS
+========================================================*/
 
-  --tracking-normal: 0;
+--label-lg:
+clamp(.95rem,.8vw,1rem);
 
-  --tracking-wide: 0.08em;
+--label-md:
+clamp(.875rem,.7vw,.95rem);
 
-  --tracking-extra: 0.16em;
+--caption:
+clamp(.75rem,.6vw,.875rem);
 
-  /*
-  ========================================================
-  MAX WIDTH
-  ========================================================
-  */
+/*========================================================
+LINE HEIGHT
+========================================================*/
 
-  --measure: 68ch;
+--leading-display:1.05;
+
+--leading-heading:1.15;
+
+--leading-title:1.3;
+
+--leading-body:1.75;
+
+--leading-caption:1.5;
+
+/*========================================================
+LETTER SPACING
+========================================================*/
+
+--tracking-display:-0.04em;
+
+--tracking-heading:-0.025em;
+
+--tracking-title:-0.015em;
+
+--tracking-body:0;
+
+--tracking-label:.08em;
+
+/*========================================================
+READING
+========================================================*/
+
+--measure-xs:45ch;
+
+--measure-sm:55ch;
+
+--measure-md:65ch;
+
+--measure-lg:72ch;
+
 }
