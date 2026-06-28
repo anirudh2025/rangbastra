@@ -1,18 +1,55 @@
 /*
 ========================================================
 RANGBASTRA.LUXURY
-CLOUTORA LUXURY FRAMEWORK v2.0
+CLOUTORA LUXURY FRAMEWORK v3.0
 
 GLOBAL STYLES
 ========================================================
 */
 
-@import "./colors.css";
-@import "./typography.css";
-@import "./spacing.css";
-@import "./radius.css";
-@import "./shadows.css";
-@import "./animations.css";
+/*========================================================
+FOUNDATION
+========================================================*/
+
+@import "./foundation/colors.css";
+@import "./foundation/typography.css";
+@import "./foundation/spacing.css";
+@import "./foundation/radius.css";
+@import "./foundation/shadows.css";
+@import "./foundation/constants.css";
+@import "./foundation/layers.css";
+@import "./foundation/z-index.css";
+@import "./foundation/interaction.css";
+@import "./foundation/accessibility.css";
+
+/*========================================================
+MOTION
+========================================================*/
+
+@import "./motion/animations.css";
+@import "./motion/tokens.css";
+@import "./motion/reveal.css";
+@import "./motion/hover.css";
+@import "./motion/scroll.css";
+@import "./motion/loading.css";
+@import "./motion/page.css";
+
+/*========================================================
+TOKENS
+========================================================*/
+
+@import "./tokens/button.css";
+@import "./tokens/card.css";
+@import "./tokens/container.css";
+@import "./tokens/hero.css";
+@import "./tokens/navbar.css";
+@import "./tokens/section.css";
+
+/*========================================================
+UTILITIES
+========================================================*/
+
+@import "./utilities.css";
 
 /*========================================================
 RESET
@@ -21,9 +58,13 @@ RESET
 *,
 *::before,
 *::after{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+
+margin:0;
+
+padding:0;
+
+box-sizing:border-box;
+
 }
 
 /*========================================================
@@ -32,11 +73,17 @@ ROOT
 
 html{
 
-    scroll-behavior:smooth;
+scroll-behavior:smooth;
 
-    color-scheme:dark;
+color-scheme:dark;
 
-    background:var(--background);
+background:var(--surface-canvas);
+
+text-size-adjust:100%;
+
+-webkit-text-size-adjust:100%;
+
+scrollbar-gutter:stable;
 
 }
 
@@ -46,41 +93,43 @@ BODY
 
 body{
 
-    min-height:100vh;
+min-height:100svh;
 
-    background:
-        radial-gradient(
-            circle at top,
-            rgba(106,78,66,.06),
-            transparent 38%
-        ),
-        var(--background);
+overflow-x:hidden;
 
-    color:var(--text-primary);
+background:
 
-    font-family:var(--font-body);
+var(--gradient-radial),
 
-    font-size:var(--text-base);
+var(--surface-canvas);
 
-    line-height:var(--leading-normal);
+color:var(--text-primary);
 
-    text-rendering:optimizeLegibility;
+font-family:var(--font-body);
 
-    -webkit-font-smoothing:antialiased;
+font-size:var(--body-md);
 
-    overflow-x:hidden;
+line-height:var(--leading-body);
+
+text-rendering:optimizeLegibility;
+
+-webkit-font-smoothing:antialiased;
+
+-moz-osx-font-smoothing:grayscale;
+
+font-synthesis:none;
 
 }
 
 /*========================================================
-APP
+LAYOUT
 ========================================================*/
 
 main{
 
-    position:relative;
+position:relative;
 
-    isolation:isolate;
+isolation:isolate;
 
 }
 
@@ -94,11 +143,19 @@ video,
 canvas,
 svg{
 
-    display:block;
+display:block;
 
-    max-width:100%;
+max-width:100%;
 
-    height:auto;
+height:auto;
+
+}
+
+img{
+
+user-select:none;
+
+-webkit-user-drag:none;
 
 }
 
@@ -108,15 +165,17 @@ LINKS
 
 a{
 
-    color:inherit;
+color:inherit;
 
-    text-decoration:none;
+text-decoration:none;
 
-    transition:
+transition:
 
-        color var(--duration-normal),
+color var(--motion-base),
 
-        opacity var(--duration-normal);
+opacity var(--motion-base),
+
+transform var(--motion-base);
 
 }
 
@@ -126,13 +185,15 @@ BUTTONS
 
 button{
 
-    font:inherit;
+font:inherit;
 
-    background:none;
+cursor:pointer;
 
-    border:none;
+border:none;
 
-    cursor:pointer;
+background:none;
+
+color:inherit;
 
 }
 
@@ -145,7 +206,7 @@ textarea,
 select,
 button{
 
-    font:inherit;
+font:inherit;
 
 }
 
@@ -153,32 +214,30 @@ button{
 TYPOGRAPHY
 ========================================================*/
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6{
+h1,h2,h3,h4,h5,h6{
 
-    font-weight:inherit;
+font-weight:inherit;
+
+line-height:inherit;
 
 }
 
 p{
 
-    color:var(--text-secondary);
+color:var(--text-secondary);
+
+max-width:var(--measure-lg);
 
 }
 
 /*========================================================
-SELECTION
+LISTS
 ========================================================*/
 
-::selection{
+ul,
+ol{
 
-    background:var(--selection-bg);
-
-    color:var(--selection-text);
+list-style:none;
 
 }
 
@@ -188,81 +247,83 @@ SCROLLBAR
 
 ::-webkit-scrollbar{
 
-    width:10px;
+width:10px;
 
 }
 
 ::-webkit-scrollbar-track{
 
-    background:var(--scrollbar-track);
+background:var(--scrollbar-track);
 
 }
 
 ::-webkit-scrollbar-thumb{
 
-    background:var(--scrollbar-thumb);
+background:var(--scrollbar-thumb);
 
-    border-radius:999px;
+border-radius:999px;
 
 }
 
 ::-webkit-scrollbar-thumb:hover{
 
-    background:var(--scrollbar-thumb-hover);
+background:var(--scrollbar-thumb-hover);
 
 }
+
 
 /*========================================================
-FOCUS
+MOBILE MENU
 ========================================================*/
 
-:focus-visible{
+html.menu-open{
 
-    outline:2px solid var(--focus-ring);
-
-    outline-offset:4px;
-
-}
-
-/* ============================================
-   MOBILE MENU PAGE EFFECT
-============================================ */
-
-body{
-
-    transition:
-
-        filter .45s var(--ease-luxury),
-
-        background .45s var(--ease-luxury);
+overflow:hidden;
 
 }
 
 body.menu-open{
 
-    background:#000;
+background:#000;
 
 }
 
 body.menu-open main{
 
-    filter:
+filter:
 
-        blur(6px)
+blur(6px)
 
-        brightness(.45);
+brightness(.45);
 
-    transition:
+pointer-events:none;
 
-        filter .55s var(--ease-luxury);
+user-select:none;
 
-    pointer-events:none;
+transition:
 
-    user-select:none;
+filter var(--motion-luxury)
+
+var(--ease-luxury);
 
 }
 
-html.menu-open{
-    overflow:hidden;
-    scrollbar-gutter:stable;
+/*========================================================
+REDUCED MOTION
+========================================================*/
+
+@media (prefers-reduced-motion:reduce){
+
+*{
+
+animation-duration:.01ms !important;
+
+animation-iteration-count:1 !important;
+
+transition-duration:.01ms !important;
+
+scroll-behavior:auto !important;
+
+}
+
 }

@@ -1,0 +1,63 @@
+/*
+========================================================
+REVEAL ANIMATIONS
+========================================================
+*/
+
+.reveal{
+
+    opacity:0;
+
+    transform:
+        translateY(var(--distance-md));
+
+    filter:
+        blur(var(--blur-start));
+
+    transition:
+
+        opacity var(--motion-luxury) var(--ease-luxury),
+
+        transform var(--motion-luxury) var(--ease-luxury),
+
+        filter var(--motion-luxury) var(--ease-luxury);
+
+}
+
+.reveal.is-visible{
+
+    opacity:1;
+
+    transform:none;
+
+    filter:none;
+
+}
+
+.reveal-left{
+
+    transform:
+        translateX(calc(var(--distance-md) * -1));
+
+}
+
+.reveal-right{
+
+    transform:
+        translateX(var(--distance-md));
+
+}
+
+.reveal-scale{
+
+    transform:
+        scale(.96);
+
+}
+
+.reveal-blur{
+
+    filter:
+        blur(24px);
+
+}

@@ -1,0 +1,69 @@
+/*
+========================================================
+HOVER SYSTEM
+========================================================
+*/
+
+.hover-lift{
+
+    transition:
+        var(--transition-base);
+
+}
+
+.hover-lift:hover{
+
+    transform:
+        translateY(-6px);
+
+}
+
+.hover-scale{
+
+    transition:
+        var(--transition-base);
+
+}
+
+.hover-scale:hover{
+
+    transform:
+        scale(var(--scale-hover));
+
+}
+
+.hover-image{
+
+    overflow:hidden;
+
+}
+
+.hover-image img{
+
+    transition:
+        transform
+        var(--motion-luxury)
+        var(--ease-luxury);
+
+}
+
+.hover-image:hover img{
+
+    transform:
+        scale(var(--scale-image));
+
+}
+
+.hover-glow{
+
+    transition:
+        var(--transition-base);
+
+}
+
+.hover-glow:hover{
+
+    box-shadow:
+        var(--glow-medium);
+
+}

@@ -1,0 +1,23 @@
+/*
+========================================================
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+SECTION TOKENS
+========================================================
+*/
+
+:root{
+
+--section-padding-block:var(--section-padding-block);
+
+--section-padding-inline:var(--section-padding-inline);
+
+--section-title-gap:var(--space-6);
+
+--section-content-gap:var(--space-8);
+
+--section-footer-gap:var(--space-10);
+
+--section-background:transparent;
+
+}

@@ -1,82 +1,448 @@
 /*
 ========================================================
-UTILITY CLASSES
+RANGBASTRA.LUXURY
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+UTILITY SYSTEM
 ========================================================
 */
 
-.container-fluid{
-    width:min(100%,var(--container-max));
+/*========================================================
+CONTAINERS
+========================================================*/
+
+.container{
+
+    width:min(100%,var(--container-2xl));
+
     margin-inline:auto;
-    padding-inline:var(--section-padding-x);
+
+    padding-inline:var(--section-padding-inline);
+
 }
 
-.section-padding{
-    padding-block:var(--section-padding-y);
+.container-wide{
+
+    width:min(100%,var(--container-wide));
+
+    margin-inline:auto;
+
+    padding-inline:var(--section-padding-inline);
+
 }
 
-.text-gradient{
-    background:var(--gradient-primary);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-clip:text;
+.container-reading{
+
+    width:min(100%,var(--container-reading));
+
+    margin-inline:auto;
+
 }
 
-.glass{
-    background:var(--glass-bg);
-    backdrop-filter:var(--glass-blur);
-    border:1px solid var(--glass-border);
+/*========================================================
+STACK
+========================================================*/
+
+.stack-xs>*+*{
+
+margin-top:var(--stack-xs);
+
 }
+
+.stack-sm>*+*{
+
+margin-top:var(--stack-sm);
+
+}
+
+.stack-md>*+*{
+
+margin-top:var(--stack-md);
+
+}
+
+.stack-lg>*+*{
+
+margin-top:var(--stack-lg);
+
+}
+
+.stack-xl>*+*{
+
+margin-top:var(--stack-xl);
+
+}
+
+/*========================================================
+FLEX
+========================================================*/
+
+.flex{
+
+display:flex;
+
+}
+
+.inline-flex{
+
+display:inline-flex;
+
+}
+
+.items-center{
+
+align-items:center;
+
+}
+
+.items-start{
+
+align-items:flex-start;
+
+}
+
+.items-end{
+
+align-items:flex-end;
+
+}
+
+.justify-center{
+
+justify-content:center;
+
+}
+
+.justify-between{
+
+justify-content:space-between;
+
+}
+
+.justify-end{
+
+justify-content:flex-end;
+
+}
+
+.flex-column{
+
+flex-direction:column;
+
+}
+
+.flex-wrap{
+
+flex-wrap:wrap;
+
+}
+
+/*========================================================
+GRID
+========================================================*/
+
+.grid{
+
+display:grid;
+
+}
+
+.grid-auto{
+
+display:grid;
+
+grid-template-columns:
+
+repeat(
+
+auto-fit,
+
+minmax(320px,1fr)
+
+);
+
+gap:var(--grid-gap-lg);
+
+}
+
+/*========================================================
+GAPS
+========================================================*/
+
+.gap-sm{
+
+gap:var(--grid-gap-sm);
+
+}
+
+.gap-md{
+
+gap:var(--grid-gap-md);
+
+}
+
+.gap-lg{
+
+gap:var(--grid-gap-lg);
+
+}
+
+.gap-xl{
+
+gap:var(--grid-gap-xl);
+
+}
+
+/*========================================================
+SECTION
+========================================================*/
+
+.section{
+
+padding-block:
+
+var(--section-padding-block);
+
+}
+
+/*========================================================
+SURFACES
+========================================================*/
 
 .surface{
-    background:var(--surface);
+
+background:
+
+var(--surface-base);
+
 }
 
-.surface-elevated{
-    background:var(--surface-elevated);
+.surface-raised{
+
+background:
+
+var(--surface-raised);
+
 }
 
-.shadow-luxury{
-    box-shadow:var(--shadow-lg);
+.surface-floating{
+
+background:
+
+var(--surface-floating);
+
 }
 
-.shadow-glow{
-    box-shadow:var(--shadow-glow);
+/*========================================================
+GLASS
+========================================================*/
+
+.glass{
+
+background:
+
+var(--glass-background);
+
+backdrop-filter:
+
+var(--glass-blur-md);
+
+-webkit-backdrop-filter:
+
+var(--glass-blur-md);
+
+border:
+
+1px solid
+
+var(--glass-border);
+
+box-shadow:
+
+var(--glass-shadow),
+
+var(--glass-highlight);
+
+}
+
+.glass-hover:hover{
+
+background:
+
+var(--glass-background-hover);
+
+}
+
+/*========================================================
+RADIUS
+========================================================*/
+
+.round-sm{
+
+border-radius:
+
+var(--radius-sm);
+
+}
+
+.round-md{
+
+border-radius:
+
+var(--radius-md);
+
+}
+
+.round-lg{
+
+border-radius:
+
+var(--radius-lg);
+
 }
 
 .round-card{
-    border-radius:var(--card-radius);
+
+border-radius:
+
+var(--card-radius);
+
 }
 
-.round-button{
-    border-radius:var(--button-radius);
+.round-pill{
+
+border-radius:
+
+var(--radius-pill);
+
 }
 
-.fade-transition{
-    transition:
-        all
-        var(--duration-normal)
-        var(--ease-standard);
+/*========================================================
+ELEVATION
+========================================================*/
+
+.shadow-card{
+
+box-shadow:
+
+var(--card-shadow);
+
 }
 
-.luxury-transition{
-    transition:
-        all
-        var(--duration-luxury)
-        var(--ease-luxury);
+.shadow-floating{
+
+box-shadow:
+
+var(--shadow-floating);
+
 }
+
+.shadow-premium{
+
+box-shadow:
+
+var(--shadow-premium);
+
+}
+
+/*========================================================
+TYPOGRAPHY
+========================================================*/
+
+.text-balance{
+
+text-wrap:balance;
+
+}
+
+.text-pretty{
+
+text-wrap:pretty;
+
+}
+
+.text-gradient{
+
+background:
+
+var(--gradient-gold);
+
+-webkit-background-clip:text;
+
+background-clip:text;
+
+color:transparent;
+
+}
+
+/*========================================================
+OVERFLOW
+========================================================*/
+
+.overflow-hidden{
+
+overflow:hidden;
+
+}
+
+/*========================================================
+MEDIA
+========================================================*/
+
+.object-cover{
+
+object-fit:cover;
+
+}
+
+.object-contain{
+
+object-fit:contain;
+
+}
+
+/*========================================================
+TRANSITIONS
+========================================================*/
+
+.transition{
+
+transition:
+
+var(--transition-base);
+
+}
+
+.transition-luxury{
+
+transition:
+
+var(--transition-luxury);
+
+}
+
+/*========================================================
+VISIBILITY
+========================================================*/
 
 .visually-hidden{
 
-    position:absolute;
+position:absolute;
 
-    width:1px;
+width:1px;
 
-    height:1px;
+height:1px;
 
-    overflow:hidden;
+padding:0;
 
-    clip:rect(0,0,0,0);
+margin:-1px;
 
-    white-space:nowrap;
+overflow:hidden;
+
+clip:rect(0,0,0,0);
+
+white-space:nowrap;
+
+border:0;
 
 }

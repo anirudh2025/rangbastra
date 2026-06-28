@@ -1,0 +1,32 @@
+/*
+========================================================
+RANGBASTRA.LUXURY
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+Z INDEX SYSTEM
+========================================================
+*/
+
+:root{
+
+--z-base:1;
+
+--z-content:10;
+
+--z-sticky:100;
+
+--z-navbar:500;
+
+--z-dropdown:700;
+
+--z-overlay:900;
+
+--z-modal:1000;
+
+--z-toast:1200;
+
+--z-loader:1400;
+
+--z-debug:9999;
+
+}

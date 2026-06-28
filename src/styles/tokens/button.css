@@ -1,0 +1,35 @@
+/*
+========================================================
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+BUTTON TOKENS
+========================================================
+*/
+
+:root{
+
+--button-height:56px;
+
+--button-padding-inline:2rem;
+
+--button-gap:.75rem;
+
+--button-radius:var(--radius-pill);
+
+--button-font-size:var(--label-md);
+
+--button-font-weight:var(--weight-medium);
+
+--button-primary-background:var(--accent);
+
+--button-primary-background-hover:var(--accent-hover);
+
+--button-primary-color:var(--text-on-accent);
+
+--button-primary-border:transparent;
+
+--button-primary-shadow:var(--button-shadow);
+
+--button-primary-shadow-hover:var(--button-shadow-hover);
+
+}

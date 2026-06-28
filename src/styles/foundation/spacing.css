@@ -1,0 +1,179 @@
+/*
+========================================================
+RANGBASTRA.LUXURY
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+SPACING + LAYOUT SYSTEM
+========================================================
+*/
+
+:root{
+
+/*========================================================
+BASE SPACE SCALE
+8pt SYSTEM
+========================================================*/
+
+--space-0:0;
+
+--space-1:0.25rem;   /* 4 */
+
+--space-2:0.5rem;    /* 8 */
+
+--space-3:0.75rem;   /* 12 */
+
+--space-4:1rem;      /* 16 */
+
+--space-5:1.5rem;    /* 24 */
+
+--space-6:2rem;      /* 32 */
+
+--space-7:2.5rem;    /* 40 */
+
+--space-8:3rem;      /* 48 */
+
+--space-9:4rem;      /* 64 */
+
+--space-10:5rem;     /* 80 */
+
+--space-11:6rem;     /* 96 */
+
+--space-12:8rem;     /* 128 */
+
+--space-13:10rem;    /* 160 */
+
+--space-14:12rem;    /* 192 */
+
+
+/*========================================================
+FLUID SPACE
+========================================================*/
+
+--fluid-space-xs:
+clamp(1rem,2vw,1.5rem);
+
+--fluid-space-sm:
+clamp(1.5rem,2.5vw,2rem);
+
+--fluid-space-md:
+clamp(2rem,3vw,3rem);
+
+--fluid-space-lg:
+clamp(3rem,5vw,5rem);
+
+--fluid-space-xl:
+clamp(5rem,7vw,8rem);
+
+--fluid-space-2xl:
+clamp(7rem,10vw,12rem);
+
+
+/*========================================================
+SECTION SPACING
+========================================================*/
+
+--section-padding-inline:
+clamp(1.25rem,3vw,4rem);
+
+--section-padding-block:
+clamp(6rem,9vw,10rem);
+
+--section-gap:
+var(--fluid-space-xl);
+
+--section-gap-tight:
+var(--fluid-space-lg);
+
+
+/*========================================================
+CONTENT STACKS
+========================================================*/
+
+--stack-xs:
+var(--space-2);
+
+--stack-sm:
+var(--space-4);
+
+--stack-md:
+var(--space-6);
+
+--stack-lg:
+var(--space-8);
+
+--stack-xl:
+var(--space-10);
+
+
+/*========================================================
+COMPONENT SPACING
+========================================================*/
+
+--card-padding:
+clamp(1.5rem,2vw,2.5rem);
+
+--card-gap:
+var(--space-5);
+
+--button-padding-inline:
+2rem;
+
+--button-padding-block:
+1rem;
+
+--input-padding-inline:
+1.25rem;
+
+--input-padding-block:
+1rem;
+
+
+/*========================================================
+GRID
+========================================================*/
+
+--grid-gap-sm:
+1rem;
+
+--grid-gap-md:
+2rem;
+
+--grid-gap-lg:
+3rem;
+
+--grid-gap-xl:
+4rem;
+
+
+/*========================================================
+CONTAINERS
+========================================================*/
+
+--container-xs:480px;
+
+--container-sm:640px;
+
+--container-md:768px;
+
+--container-lg:1024px;
+
+--container-xl:1280px;
+
+--container-2xl:1440px;
+
+--container-reading:760px;
+
+--container-wide:1600px;
+
+
+/*========================================================
+LAYOUT
+========================================================*/
+
+--navbar-height:88px;
+
+--hero-min-height:100svh;
+
+--content-max-width:72ch;
+
+}

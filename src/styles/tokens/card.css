@@ -1,0 +1,31 @@
+/*
+========================================================
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+CARD TOKENS
+========================================================
+*/
+
+:root{
+
+--card-background:var(--surface-raised);
+
+--card-background-hover:var(--surface-floating);
+
+--card-border:var(--border-default);
+
+--card-border-hover:var(--border-strong);
+
+--card-radius:var(--radius-xl);
+
+--card-padding:var(--card-padding);
+
+--card-gap:var(--card-gap);
+
+--card-shadow:var(--card-shadow);
+
+--card-shadow-hover:var(--card-shadow-hover);
+
+--card-blur:var(--glass-blur-md);
+
+}

@@ -1,0 +1,19 @@
+/*
+========================================================
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+CONTAINER TOKENS
+========================================================
+*/
+
+:root{
+
+--container-default:var(--container-2xl);
+
+--container-reading:var(--container-reading);
+
+--container-wide:var(--container-wide);
+
+--container-padding-inline:var(--section-padding-inline);
+
+}

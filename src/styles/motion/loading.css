@@ -1,0 +1,37 @@
+/*
+========================================================
+LOADING STATES
+========================================================
+*/
+
+.loading{
+
+    opacity:.6;
+
+    pointer-events:none;
+
+}
+
+.loading-pulse{
+
+    animation:
+        luxuryPulse
+        1.8s infinite;
+
+}
+
+@keyframes luxuryPulse{
+
+0%,100%{
+
+opacity:.45;
+
+}
+
+50%{
+
+opacity:1;
+
+}
+
+}

@@ -1,0 +1,22 @@
+/*
+========================================================
+RANGBASTRA.LUXURY
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+LAYER SYSTEM
+========================================================
+*/
+
+:root{
+
+--layer-background:0;
+
+--layer-overlay:1;
+
+--layer-content:2;
+
+--layer-floating:3;
+
+--layer-effects:4;
+
+}

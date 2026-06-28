@@ -1,0 +1,37 @@
+/*
+========================================================
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+NAVBAR TOKENS
+========================================================
+*/
+
+:root{
+
+--navbar-height:88px;
+
+--navbar-padding-inline:1.5rem;
+
+--navbar-padding-block:.75rem;
+
+--navbar-gap:2rem;
+
+--navbar-background:rgba(5,5,5,.35);
+
+--navbar-background-scrolled:rgba(5,5,5,.60);
+
+--navbar-border:var(--glass-border);
+
+--navbar-blur:var(--glass-blur-lg);
+
+--navbar-radius:var(--radius-pill);
+
+--navbar-shadow:var(--navbar-shadow);
+
+--navbar-link-color:var(--text-secondary);
+
+--navbar-link-hover:var(--text-primary);
+
+--navbar-logo-height:40px;
+
+}

@@ -1,0 +1,125 @@
+/*
+========================================================
+RANGBASTRA.LUXURY
+CLOUTORA LUXURY FRAMEWORK v3.0
+
+ACCESSIBILITY SYSTEM
+========================================================
+*/
+
+/*========================================================
+FOCUS
+========================================================*/
+
+:focus-visible{
+
+outline:
+2px solid
+var(--focus-ring);
+
+outline-offset:4px;
+
+}
+
+
+/*========================================================
+VISUALLY HIDDEN
+========================================================*/
+
+.visually-hidden{
+
+position:absolute;
+
+width:1px;
+
+height:1px;
+
+padding:0;
+
+margin:-1px;
+
+overflow:hidden;
+
+clip:rect(0,0,0,0);
+
+clip-path:inset(50%);
+
+white-space:nowrap;
+
+border:0;
+
+}
+
+
+/*========================================================
+REDUCED MOTION
+========================================================*/
+
+@media (prefers-reduced-motion:reduce){
+
+*,
+*::before,
+*::after{
+
+animation-duration:.01ms !important;
+
+animation-delay:0ms !important;
+
+animation-iteration-count:1 !important;
+
+transition-duration:.01ms !important;
+
+scroll-behavior:auto !important;
+
+}
+
+}
+
+
+/*========================================================
+HIGH CONTRAST
+========================================================*/
+
+@media (prefers-contrast:more){
+
+:root{
+
+--glass-background:rgba(0,0,0,.88);
+
+--glass-border:rgba(255,255,255,.30);
+
+}
+
+}
+
+
+/*========================================================
+FORCED COLORS
+========================================================*/
+
+@media (forced-colors:active){
+
+*{
+
+forced-color-adjust:auto;
+
+}
+
+}
+
+
+/*========================================================
+SELECTION
+========================================================*/
+
+::selection{
+
+background:
+
+var(--selection-bg);
+
+color:
+
+var(--selection-text);
+
+}
