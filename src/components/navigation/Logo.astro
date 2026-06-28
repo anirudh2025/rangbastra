@@ -1,0 +1,75 @@
+---
+interface Props {
+  href?: string;
+}
+
+const { href = "/" } = Astro.props;
+
+const logo =
+  "https://res.cloudinary.com/dfxlm7z58/image/upload/f_auto,q_auto,w_260,c_limit/v1782477305/Rangbastra_Web_Logo_ra5swi";
+---
+
+<a
+  href={href}
+  class="logo"
+  aria-label="Rangbastra Home"
+>
+
+  <img
+    src={logo}
+    alt="Rangbastra"
+    loading="eager"
+    decoding="async"
+  />
+
+</a>
+
+<style>
+
+.logo{
+
+display:flex;
+
+align-items:center;
+
+text-decoration:none;
+
+transition:
+opacity var(--duration-normal) var(--ease-standard),
+transform var(--duration-normal) var(--ease-standard);
+
+}
+
+.logo:hover{
+
+opacity:.9;
+
+transform:translateY(-1px);
+
+}
+
+.logo img{
+
+display:block;
+
+width:120px;
+
+height:auto;
+
+user-select:none;
+
+-webkit-user-drag:none;
+
+}
+
+@media(max-width:768px){
+
+.logo img{
+
+width:80px;
+
+}
+
+}
+
+</style>

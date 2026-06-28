@@ -1,0 +1,47 @@
+---
+import { navigation } from "../../data/navigation";
+
+import NavLink from "./NavLink.astro";
+---
+
+<nav class="desktop-nav">
+
+{
+navigation.map((item)=>(
+
+<NavLink
+
+href={item.href}
+
+label={item.label}
+
+/>
+
+))
+}
+
+</nav>
+
+<style>
+
+.desktop-nav{
+
+display:flex;
+
+align-items:center;
+
+gap:2rem;
+
+}
+
+@media(max-width:1024px){
+
+.desktop-nav{
+
+display:none;
+
+}
+
+}
+
+</style>

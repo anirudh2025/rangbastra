@@ -1,0 +1,483 @@
+---
+import Icon from "../primitives/Icon.astro";
+
+interface Props{
+
+    step:number;
+
+    title:string;
+
+    description:string;
+
+    icon:string;
+
+    image:string;
+
+}
+
+const{
+
+    step,
+
+    title,
+
+    description,
+
+    icon,
+
+    image
+
+}=Astro.props;
+---
+
+<article class="journey-card">
+
+    <div class="milestone"></div>
+
+    <span class="step">
+
+        {String(step).padStart(2,"0")}
+
+    </span>
+
+    <div class="image-layer">
+
+        <img
+
+            src={image}
+
+            alt={title}
+
+            loading="lazy"
+
+            decoding="async"
+
+        />
+
+        <div class="image-overlay"></div>
+
+    </div>
+
+    <div class="content">
+
+        <div class="icon-wrapper">
+
+            <Icon
+
+                name={icon}
+
+                size={34}
+
+                color="var(--accent-light)"
+
+                class="journey-icon"
+
+            />
+
+        </div>
+
+        <div class="text-content">
+
+            <h3>
+
+                {title}
+
+            </h3>
+
+            <div class="divider"></div>
+
+            <p>
+
+                {description}
+
+            </p>
+
+        </div>
+
+    </div>
+
+</article>
+
+<style>
+
+.milestone{
+
+    position:absolute;
+
+    top:3rem;
+
+    left:-54px;
+
+    width:18px;
+
+    height:18px;
+
+    border-radius:50%;
+
+    background:var(--accent);
+
+    box-shadow:
+
+        0 0 0 8px rgba(106,78,66,.08),
+
+        var(--shadow-glow);
+
+    z-index:5;
+
+}
+
+.timeline-item.right .milestone{
+
+    left:auto;
+
+    right:-54px;
+
+}
+
+@media(max-width:900px){
+
+.timeline-item .milestone{
+
+    left:-33px;
+
+    right:auto;
+
+}
+
+}
+
+.journey-card{
+
+    --card-padding:clamp(2rem,3vw,3rem);
+
+    --card-radius:var(--radius-2xl);
+
+    --card-number-size:clamp(4rem,7vw,6.5rem);
+
+    position:relative;
+
+    overflow:hidden;
+
+    display:flex;
+
+    align-items:stretch;
+
+    min-height:420px;
+
+    border-radius:var(--card-radius);
+
+    border:1px solid var(--border);
+
+    background:var(--surface);
+
+    backdrop-filter:var(--glass-blur);
+
+    will-change:transform;
+
+    transition:
+
+        transform .55s cubic-bezier(.22,1,.36,1),
+
+        border-color .45s cubic-bezier(.22,1,.36,1),
+
+        box-shadow .45s cubic-bezier(.22,1,.36,1),
+
+        background .45s cubic-bezier(.22,1,.36,1);
+
+}
+
+.journey-card:hover{
+
+    transform:translate3d(0,-8px,0);
+
+    border-color:rgba(148,115,100,.35);
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            rgba(255,255,255,.05),
+
+            rgba(255,255,255,.03)
+
+        );
+
+    box-shadow:
+
+        0 22px 60px rgba(0,0,0,.32),
+
+        0 0 45px rgba(106,78,66,.12);
+
+}
+
+.step{
+
+    position:absolute;
+
+    top:1.5rem;
+
+    right:2rem;
+
+    z-index:6;
+
+    font-family:var(--font-display);
+
+    font-size:var(--card-number-size);
+
+    line-height:1;
+
+    color:rgba(255,255,255,.05);
+
+    transition:
+
+        color .45s ease,
+
+        text-shadow .45s ease;
+
+}
+
+.journey-card:hover .step{
+
+    color:rgba(255,255,255,.14);
+
+    text-shadow:
+
+        0 0 15px rgba(148,115,100,.18),
+
+        0 0 35px rgba(148,115,100,.12);
+
+}
+
+.image-layer{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:1;
+
+    opacity:0;
+
+    transition:
+
+        opacity .6s cubic-bezier(.22,1,.36,1);
+
+}
+
+.image-layer img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    transform:scale(1.08);
+
+    transition:
+
+        transform 1.2s cubic-bezier(.22,1,.36,1);
+
+}
+
+.image-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            rgba(15,15,16,.45),
+
+            rgba(15,15,16,.82)
+
+        );
+
+}
+
+.journey-card:hover .image-layer{
+
+    opacity:.28;
+
+}
+
+.journey-card:hover .image-layer img{
+
+    transform:scale(1);
+
+}
+
+.content{
+
+    position:relative;
+
+    z-index:4;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:flex-end;
+
+    gap:var(--space-5);
+
+    padding:var(--card-padding);
+
+    width:100%;
+
+}
+
+.icon-wrapper{
+
+    width:72px;
+
+    height:72px;
+
+    display:grid;
+
+    place-items:center;
+
+    border-radius:50%;
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            rgba(255,255,255,.08),
+
+            rgba(106,78,66,.18)
+
+        );
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow-soft);
+
+    transition:
+
+        transform .45s cubic-bezier(.22,1,.36,1),
+
+        box-shadow .45s cubic-bezier(.22,1,.36,1),
+
+        background .45s ease;
+
+}
+
+.journey-card:hover .icon-wrapper{
+
+    transform:scale(1.05);
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            rgba(255,255,255,.12),
+
+            rgba(106,78,66,.28)
+
+        );
+
+    box-shadow:
+
+        0 12px 32px rgba(0,0,0,.24),
+
+        0 0 24px rgba(106,78,66,.18);
+
+}
+
+.journey-icon{
+
+    transition:
+
+        transform .45s cubic-bezier(.22,1,.36,1),
+
+        filter .45s ease;
+
+}
+
+.journey-card:hover .journey-icon{
+
+    transform:scale(1.08);
+
+    filter:
+
+        drop-shadow(0 0 10px rgba(148,115,100,.25));
+
+}
+
+.text-content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:var(--space-4);
+
+}
+
+h3{
+
+    font-family:var(--font-display);
+
+    font-size:var(--text-2xl);
+
+    font-weight:var(--font-regular);
+
+    line-height:1.1;
+
+    color:var(--text-primary);
+
+}
+
+.divider{
+
+    width:64px;
+
+    height:1px;
+
+    background:
+
+        linear-gradient(
+
+            90deg,
+
+            var(--accent-light),
+
+            transparent
+
+        );
+
+    transition:
+
+        width .45s cubic-bezier(.22,1,.36,1);
+
+}
+
+.journey-card:hover .divider{
+
+    width:120px;
+
+}
+
+p{
+
+    color:var(--text-secondary);
+
+    font-size:var(--text-base);
+
+    line-height:var(--leading-relaxed);
+
+}
+
+</style>

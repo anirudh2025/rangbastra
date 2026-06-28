@@ -1,0 +1,18 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<section class:list={["section", className]}>
+  <slot />
+</section>
+
+<style>
+.section {
+  position: relative;
+  padding-block: var(--section-padding-y);
+}
+</style>

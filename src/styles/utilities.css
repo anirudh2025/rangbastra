@@ -1,0 +1,82 @@
+/*
+========================================================
+UTILITY CLASSES
+========================================================
+*/
+
+.container-fluid{
+    width:min(100%,var(--container-max));
+    margin-inline:auto;
+    padding-inline:var(--section-padding-x);
+}
+
+.section-padding{
+    padding-block:var(--section-padding-y);
+}
+
+.text-gradient{
+    background:var(--gradient-primary);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+}
+
+.glass{
+    background:var(--glass-bg);
+    backdrop-filter:var(--glass-blur);
+    border:1px solid var(--glass-border);
+}
+
+.surface{
+    background:var(--surface);
+}
+
+.surface-elevated{
+    background:var(--surface-elevated);
+}
+
+.shadow-luxury{
+    box-shadow:var(--shadow-lg);
+}
+
+.shadow-glow{
+    box-shadow:var(--shadow-glow);
+}
+
+.round-card{
+    border-radius:var(--card-radius);
+}
+
+.round-button{
+    border-radius:var(--button-radius);
+}
+
+.fade-transition{
+    transition:
+        all
+        var(--duration-normal)
+        var(--ease-standard);
+}
+
+.luxury-transition{
+    transition:
+        all
+        var(--duration-luxury)
+        var(--ease-luxury);
+}
+
+.visually-hidden{
+
+    position:absolute;
+
+    width:1px;
+
+    height:1px;
+
+    overflow:hidden;
+
+    clip:rect(0,0,0,0);
+
+    white-space:nowrap;
+
+}

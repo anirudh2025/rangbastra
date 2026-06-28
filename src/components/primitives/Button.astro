@@ -1,0 +1,127 @@
+---
+interface Props {
+    href?: string;
+    type?: "button" | "submit" | "reset";
+    class?: string;
+}
+
+const {
+    href,
+    type = "button",
+    class: className = ""
+} = Astro.props;
+---
+
+{
+    href ? (
+
+        <a
+            href={href}
+            class:list={["button", className]}
+        >
+            <slot />
+        </a>
+
+    ) : (
+
+        <button
+            type={type}
+            class:list={["button", className]}
+        >
+            <slot />
+        </button>
+
+    )
+}
+
+<style>
+
+.button{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:.6rem;
+
+    padding:
+        var(--button-padding-y)
+        var(--button-padding-x);
+
+    border:none;
+
+    border-radius:var(--button-radius);
+
+    background:var(--accent);
+
+    color:var(--ivory-50);
+
+    text-decoration:none;
+
+    font-family:inherit;
+
+    font-size:var(--text-sm);
+
+    font-weight:var(--font-semibold);
+
+    line-height:1;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+    transition:
+
+        background .35s var(--ease-luxury),
+
+        color .35s var(--ease-luxury),
+
+        transform .35s var(--ease-luxury),
+
+        box-shadow .35s var(--ease-luxury);
+
+}
+
+/* ======================================= */
+
+.button:hover{
+
+    background:var(--accent-light);
+
+    transform:translateY(-2px);
+
+}
+
+/* ======================================= */
+
+.button:active{
+
+    transform:translateY(0);
+
+}
+
+/* ======================================= */
+
+.button:focus-visible{
+
+    outline:2px solid var(--focus-ring);
+
+    outline-offset:4px;
+
+}
+
+/* ======================================= */
+
+.button:disabled{
+
+    opacity:.55;
+
+    cursor:not-allowed;
+
+    pointer-events:none;
+
+}
+
+</style>

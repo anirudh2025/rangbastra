@@ -1,0 +1,104 @@
+---
+import HeroContent from "./HeroContent.astro";
+
+const mobileHero =
+"https://res.cloudinary.com/dfxlm7z58/image/upload/v1782619685/Hero_Mobile_yt2m8f.webp";
+---
+
+<section
+    class="hero-mobile"
+    aria-labelledby="hero-heading"
+>
+
+    <picture class="hero-artwork">
+
+        <img
+            class="hero-image"
+            src={mobileHero}
+            alt="Luxury Couture by Rangbastra"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            draggable="false"
+            width="1080"
+            height="1920"
+        />
+
+    </picture>
+
+    <div class="hero-overlay">
+
+        <div class="hero-shell">
+
+            <HeroContent />
+
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+
+.hero-mobile{
+
+    display:none;
+
+}
+
+@media (max-width:1024px){
+
+.hero-mobile{
+
+    position:relative;
+
+    display:block;
+
+    overflow:hidden;
+
+    isolation:isolate;
+
+}
+
+.hero-artwork{
+
+    display:block;
+
+    width:100%;
+
+    line-height:0;
+
+}
+
+.hero-image{
+
+    display:block;
+
+    width:100%;
+
+    height:auto;
+
+}
+
+.hero-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:5;
+
+}
+
+.hero-shell{
+
+    width:min(100% - 2rem,26rem);
+
+    margin-inline:auto;
+
+    padding-top:clamp(8.5rem,12vh,8.5rem);
+
+}
+
+}
+</style>

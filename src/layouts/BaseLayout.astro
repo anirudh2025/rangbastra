@@ -1,0 +1,38 @@
+---
+import "../styles/globals.css";
+
+import SEOHead from "../components/layout/SEOHead.astro";
+import Navbar from "../components/navigation/Navbar.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Rangbastra | Luxury Couture",
+  description = "Luxury customized couture crafted with elegance and timeless artistry."
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <SEOHead
+      title={title}
+      description={description}
+    />
+  </head>
+
+  <body>
+
+    <Navbar />
+
+    <main>
+
+<slot />
+
+</main>
+
+  </body>
+</html>

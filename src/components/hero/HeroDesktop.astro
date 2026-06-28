@@ -1,0 +1,255 @@
+---
+import HeroContent from "./HeroContent.astro";
+---
+
+<section
+    class="hero-desktop"
+    aria-labelledby="hero-heading"
+>
+
+    <div class="hero-artwork">
+
+
+    <img
+        class="hero-image"
+        src="https://res.cloudinary.com/dfxlm7z58/image/upload/v1782614896/Hero_Desktop_klovjb.webp"
+        alt="Luxury Couture by Rangbastra"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        draggable="false"
+        width="4096"
+        height="2731"
+    />
+
+</div>
+
+    <div class="hero-overlay">
+
+        <div class="hero-shell">
+
+            <div class="hero-grid">
+
+                <HeroContent />
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+.hero-desktop{
+
+    /* ==========================
+       Layout Tokens
+    ========================== */
+
+    --hero-shell-width:min(100% - 120px,1520px);
+
+    --hero-content-width:clamp(42rem,48vw,52rem);
+
+    --hero-top:clamp(10.5rem,11vh,12.5rem);
+
+    --hero-left:clamp(.5rem,1vw,1.25rem);
+
+    position:relative;
+
+    width:100%;
+
+    overflow:hidden;
+
+    isolation:isolate;
+
+}
+
+/* ========================================= */
+/* Artwork */
+
+.hero-artwork{
+
+    display:block;
+
+    width:100%;
+
+    line-height:0;
+
+}
+
+.hero-image{
+
+    display:block;
+
+    width:100%;
+
+    height:auto;
+
+    user-select:none;
+
+    pointer-events:none;
+
+    -webkit-user-drag:none;
+
+}
+
+/* ========================================= */
+/* Overlay */
+
+.hero-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:5;
+
+}
+
+/* ========================================= */
+
+.hero-shell{
+
+    width:var(--hero-shell-width);
+
+    height:100%;
+
+    margin-inline:auto;
+
+}
+
+/* ========================================= */
+
+.hero-grid{
+
+    display:grid;
+
+    grid-template-columns:var(--hero-content-width);
+
+    align-content:start;
+
+    height:100%;
+
+    padding-top:
+    calc(
+
+    var(--hero-top)
+
+    +
+
+    clamp(8.5rem,11vh,18rem)
+
+    );
+
+}
+
+/* ========================================= */
+
+.hero-grid > *{
+
+    margin-left:var(--hero-left);
+
+}
+
+/* ========================================================= */
+/* 1536+ */
+
+@media (min-width:1536px){
+
+.hero-desktop{
+
+    --hero-content-width:52rem;
+
+    --hero-top:10.5rem;
+
+}
+
+}
+
+/* ========================================================= */
+/* Laptop */
+
+@media (max-width:1440px){
+
+.hero-desktop{
+
+    --hero-shell-width:min(100% - 80px,1320px);
+
+    --hero-content-width:41vw;
+
+    --hero-top:8.7rem;
+
+}
+
+}
+
+/* ========================================================= */
+/* 1366 */
+
+@media (max-width:1366px){
+
+.hero-desktop{
+
+    --hero-shell-width:min(100% - 64px,1240px);
+
+    --hero-content-width:40vw;
+
+    --hero-top:8.2rem;
+
+}
+
+}
+
+/* ========================================================= */
+/* Short Screens (IMPORTANT) */
+
+@media (max-height:900px){
+
+.hero-desktop{
+
+    --hero-top:7.5rem;
+
+}
+
+}
+
+/* ========================================================= */
+
+@media (max-height:820px){
+
+.hero-desktop{
+
+    --hero-top:6.8rem;
+
+}
+
+}
+
+/* ========================================================= */
+
+@media (max-height:760px){
+
+.hero-desktop{
+
+    --hero-top:6rem;
+
+    --hero-content-width:38vw;
+
+}
+
+}
+
+/* ========================================================= */
+/* Tablet */
+
+@media (max-width:1024px){
+
+.hero-desktop{
+
+    display:none;
+
+}
+
+}
+</style>

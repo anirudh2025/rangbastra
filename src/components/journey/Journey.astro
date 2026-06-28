@@ -1,0 +1,103 @@
+---
+import Section from "../primitives/Section.astro";
+import Container from "../primitives/Container.astro";
+
+import JourneyHeader from "./JourneyHeader.astro";
+import JourneyTimeline from "./JourneyTimeline.astro";
+---
+
+<Section class="journey-section">
+
+    <Container class="journey-container">
+
+        <JourneyHeader />
+
+        <JourneyTimeline />
+
+    </Container>
+
+</Section>
+
+<style>
+
+.journey-section{
+
+    /*
+    =====================================================
+    SECTION TOKENS
+    =====================================================
+    */
+
+    --journey-background:
+        linear-gradient(
+            180deg,
+            transparent,
+            rgba(106,78,66,.035),
+            rgba(106,78,66,.055),
+            rgba(106,78,66,.035),
+            transparent
+        );
+
+    --journey-gap:
+        clamp(
+            4rem,
+            6vw,
+            6rem
+        );
+
+    --journey-max-width:
+        1180px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:var(--journey-background);
+
+}
+
+.journey-container{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:var(--journey-gap);
+
+    width:100%;
+
+    max-width:var(--journey-max-width);
+
+    margin-inline:auto;
+
+    position:relative;
+
+    z-index:2;
+
+}
+
+.journey-section::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    pointer-events:none;
+
+    background:
+
+        radial-gradient(
+
+            circle at top,
+
+            rgba(255,255,255,.018),
+
+            transparent 70%
+
+        );
+
+}
+
+</style>

@@ -1,0 +1,109 @@
+---
+import { journey } from "../../data/journey";
+import JourneyCard from "./JourneyCard.astro";
+---
+
+<div class="timeline">
+
+    {
+
+        journey.map((item,index)=>(
+
+            <div
+
+                class:list={[
+
+                    "timeline-item",
+
+                    index % 2 === 0
+                        ? "left"
+                        : "right"
+
+                ]}
+
+            >
+
+                <JourneyCard
+
+                    step={item.id}
+
+                    title={item.title}
+
+                    description={item.description}
+
+                    icon={item.icon}
+
+                />
+
+            </div>
+
+        ))
+
+    }
+
+</div>
+
+<style>
+
+.timeline{
+
+    --timeline-gap:
+        clamp(
+            3.5rem,
+            6vw,
+            5rem
+        );
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:var(--timeline-gap);
+
+    margin-top:clamp(
+        4rem,
+        7vw,
+        7rem
+    );
+
+    position:relative;
+
+}
+
+.timeline-item{
+
+    width:min(100%,720px);
+
+}
+
+.timeline-item.left{
+
+    align-self:flex-start;
+
+}
+
+.timeline-item.right{
+
+    align-self:flex-end;
+
+}
+
+@media(max-width:900px){
+
+.timeline{
+
+gap:var(--space-7);
+
+}
+
+.timeline-item{
+
+width:100%;
+
+align-self:stretch!important;
+
+}
+
+}
+
+</style>

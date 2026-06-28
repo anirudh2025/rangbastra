@@ -1,0 +1,121 @@
+<button
+    id="mobileMenuButton"
+    class="mobile-button"
+    type="button"
+    aria-label="Open Menu"
+    aria-expanded="false"
+>
+
+    <span class="line"></span>
+    <span class="line"></span>
+    <span class="line"></span>
+
+</button>
+
+<style>
+
+.mobile-button{
+
+    display:none;
+
+    width:48px;
+
+    height:48px;
+
+    border:none;
+
+    background:transparent;
+
+    cursor:pointer;
+
+    position:relative;
+
+    justify-content:center;
+
+    align-items:center;
+
+    transition:
+
+        transform .45s var(--ease-luxury);
+
+}
+
+.mobile-button:hover{
+
+    transform:scale(1.06);
+
+}
+
+.line{
+
+    position:absolute;
+
+    width:22px;
+
+    height:2px;
+
+    border-radius:999px;
+
+    background:var(--text-primary);
+
+    transform-origin:center;
+
+    transition:
+
+        transform .45s cubic-bezier(.22,1,.36,1),
+
+        opacity .35s ease,
+
+        background .35s ease;
+
+}
+
+.line:nth-child(1){
+
+    transform:translateY(-7px);
+
+}
+
+.line:nth-child(2){
+
+    transform:translateY(0);
+
+}
+
+.line:nth-child(3){
+
+    transform:translateY(7px);
+
+}
+
+.mobile-button.active .line:nth-child(1){
+
+    transform:rotate(45deg);
+
+}
+
+.mobile-button.active .line:nth-child(2){
+
+    opacity:0;
+
+    transform:scaleX(.3);
+
+}
+
+.mobile-button.active .line:nth-child(3){
+
+    transform:rotate(-45deg);
+
+}
+
+@media(max-width:1024px){
+
+.mobile-button{
+
+display:flex;
+
+}
+
+}
+
+</style>

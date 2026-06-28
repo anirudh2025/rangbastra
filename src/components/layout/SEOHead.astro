@@ -1,0 +1,110 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Rangbastra | Luxury Couture",
+  description =
+    "Luxury customized couture crafted with elegance and timeless artistry."
+} = Astro.props;
+---
+
+<meta charset="UTF-8" />
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, viewport-fit=cover"
+/>
+
+<title>{title}</title>
+
+<meta
+  name="description"
+  content={description}
+/>
+
+<meta
+  name="theme-color"
+  content="#050505"
+/>
+
+<meta
+  name="color-scheme"
+  content="dark"
+/>
+
+<!-- ===========================
+     PERFORMANCE
+=========================== -->
+
+<link
+  rel="preconnect"
+  href="https://fonts.googleapis.com"
+/>
+
+<link
+  rel="preconnect"
+  href="https://fonts.gstatic.com"
+  crossorigin
+/>
+
+<link
+  rel="preconnect"
+  href="https://res.cloudinary.com"
+  crossorigin
+/>
+
+<!-- ===========================
+     GOOGLE FONTS
+=========================== -->
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+
+<!-- ===========================
+     SEO
+=========================== -->
+
+<meta
+  property="og:title"
+  content={title}
+/>
+
+<meta
+  property="og:description"
+  content={description}
+/>
+
+<meta
+  property="og:type"
+  content="website"
+/>
+
+<meta
+  property="og:site_name"
+  content="Rangbastra"
+/>
+
+<meta
+  property="og:locale"
+  content="en_IN"
+/>
+
+<meta
+  name="twitter:card"
+  content="summary_large_image"
+/>
+
+<meta
+  name="twitter:title"
+  content={title}
+/>
+
+<meta
+  name="twitter:description"
+  content={description}
+/>

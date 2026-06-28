@@ -1,0 +1,47 @@
+---
+import HeroDesktop from "../../components/hero/HeroDesktop.astro";
+import HeroMobile from "../../components/hero/HeroMobile.astro";
+---
+
+<header class="hero">
+
+    <div class="desktop-layout">
+        <HeroDesktop />
+    </div>
+
+    <div class="mobile-layout">
+        <HeroMobile />
+    </div>
+
+</header>
+
+<style>
+
+.hero{
+    position:relative;
+    width:100%;
+    overflow:clip;
+    isolation:isolate;
+}
+
+.desktop-layout{
+    display:block;
+}
+
+.mobile-layout{
+    display:none;
+}
+
+@media (max-width:1024px){
+
+    .desktop-layout{
+        display:none;
+    }
+
+    .mobile-layout{
+        display:block;
+    }
+
+}
+
+</style>

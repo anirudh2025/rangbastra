@@ -1,0 +1,88 @@
+---
+interface Props{
+    href:string;
+}
+
+const {href}=Astro.props;
+---
+
+<a
+    href={href}
+    class="cta-button"
+>
+    Book Consultation
+</a>
+
+<style>
+
+.cta-button{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:
+        var(--button-padding-y)
+        var(--button-padding-x);
+
+    border:none;
+
+    border-radius:var(--button-radius);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--black) 80%,
+            var(--cocoa-700) 100%
+        );
+
+    color:var(--ivory-50);
+
+    text-decoration:none;
+
+    font-size:var(--text-sm);
+
+    font-weight:var(--font-medium);
+
+    letter-spacing:.02em;
+
+    box-shadow:
+        var(--shadow-md);
+
+    transition:
+        transform var(--duration-normal) var(--ease-luxury),
+        box-shadow var(--duration-normal) var(--ease-luxury),
+        filter var(--duration-normal) var(--ease-luxury);
+
+}
+
+.cta-button:hover{
+
+    transform:
+        translateY(0px);
+
+    box-shadow:
+        var(--shadow-floating),
+        var(--shadow-glow);
+
+    filter:brightness(1.08);
+
+}
+
+.cta-button:active{
+
+    transform:translateY(0);
+
+}
+
+.cta-button:focus-visible{
+
+    outline:2px solid var(--focus-ring);
+
+    outline-offset:4px;
+
+}
+
+</style>
