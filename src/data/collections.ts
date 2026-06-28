@@ -13,31 +13,31 @@ export interface Collection {
 export const collections:Collection[]=[
 
 {
-title:"Bridal Couture",
+title:"Signature Edit",
 subtitle:"Signature Wedding Collection",
-image:"https://res.cloudinary.com/dfxlm7z58/image/upload/f_auto,q_auto,c_limit,w_1200/v1782474158/RB_Web_Gulnaar_02_bkidzo",
+image:"https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
+href:"/collections/signature"
+},
+
+{
+title:"Bridal Edit",
+subtitle:"Evening Luxury",
+image:"https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648330/Bridal_Edit_wajwba.webp",
 href:"/collections/bridal"
 },
 
 {
-title:"Reception",
-subtitle:"Evening Luxury",
-image:"https://res.cloudinary.com/dfxlm7z58/image/upload/f_auto,q_auto,c_limit,w_1200/v1782474158/RB_Web_Gulnaar_02_bkidzo",
-href:"/collections/reception"
-},
-
-{
-title:"Mehendi",
+title:"Couture Edit",
 subtitle:"Joyful Celebrations",
-image:"https://res.cloudinary.com/dfxlm7z58/image/upload/f_auto,q_auto,c_limit,w_1200/v1782474158/RB_Web_Gulnaar_02_bkidzo",
-href:"/collections/mehendi"
+image:"https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648334/Couture_Edit_u7kmac.webp",
+href:"/collections/couture"
 },
 
 {
-title:"Cocktail",
+title:"Festive Edit",
 subtitle:"Modern Glamour",
-image:"https://res.cloudinary.com/dfxlm7z58/image/upload/f_auto,q_auto,c_limit,w_1200/v1782474158/RB_Web_Gulnaar_02_bkidzo",    
-href:"/collections/cocktail"
+image:"https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648338/Festive_Edit_boj0wo.webp",    
+href:"/collections/festive"
 }
 
 ];
