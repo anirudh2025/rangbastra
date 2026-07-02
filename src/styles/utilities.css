@@ -245,11 +245,11 @@ var(--glass-background);
 
 backdrop-filter:
 
-var(--glass-blur-md);
+blur(var(--glass-blur-md));
 
 -webkit-backdrop-filter:
 
-var(--glass-blur-md);
+blur(var(--glass-blur-md));
 
 border:
 
