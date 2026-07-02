@@ -3,12 +3,14 @@ interface Props {
     href?: string;
     type?: "button" | "submit" | "reset";
     class?: string;
+    disabled?: boolean;
 }
 
 const {
     href,
     type = "button",
-    class: className = ""
+    class: className = "",
+    disabled = false
 } = Astro.props;
 ---
 
@@ -16,8 +18,13 @@ const {
     href ? (
 
         <a
-            href={href}
-            class:list={["button", className]}
+            href={disabled ? undefined : href}
+            aria-disabled={disabled}
+            class:list={[
+                "button",
+                className,
+                disabled && "button--disabled"
+            ]}
         >
             <slot />
         </a>
@@ -26,7 +33,11 @@ const {
 
         <button
             type={type}
-            class:list={["button", className]}
+            disabled={disabled}
+            class:list={[
+                "button",
+                className
+            ]}
         >
             <slot />
         </button>
@@ -38,6 +49,8 @@ const {
 
 .button{
 
+    position:relative;
+
     display:inline-flex;
 
     align-items:center;
@@ -45,6 +58,8 @@ const {
     justify-content:center;
 
     gap:.6rem;
+
+    overflow:hidden;
 
     padding:
         var(--button-padding-y)
@@ -73,18 +88,12 @@ const {
     cursor:pointer;
 
     transition:
-
         background .35s var(--ease-luxury),
-
         color .35s var(--ease-luxury),
-
         transform .35s var(--ease-luxury),
-
         box-shadow .35s var(--ease-luxury);
 
 }
-
-/* ======================================= */
 
 .button:hover{
 
@@ -94,15 +103,11 @@ const {
 
 }
 
-/* ======================================= */
-
 .button:active{
 
     transform:translateY(0);
 
 }
-
-/* ======================================= */
 
 .button:focus-visible{
 
@@ -112,9 +117,8 @@ const {
 
 }
 
-/* ======================================= */
-
-.button:disabled{
+.button:disabled,
+.button--disabled{
 
     opacity:.55;
 

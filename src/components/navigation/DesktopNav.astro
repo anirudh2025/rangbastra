@@ -1,47 +1,31 @@
 ---
-import { navigation } from "../../data/navigation";
-
 import NavLink from "./NavLink.astro";
+
+import type { NavigationItem } from "../../data/navigation";
+
+interface Props {
+  items: NavigationItem[];
+  currentPath?: string;
+}
+
+const {
+  items,
+  currentPath = Astro.url.pathname,
+} = Astro.props;
 ---
 
-<nav class="desktop-nav">
-
-{
-navigation.map((item)=>(
-
-<NavLink
-
-href={item.href}
-
-label={item.label}
-
-/>
-
-))
-}
-
-</nav>
-
-<style>
-
-.desktop-nav{
-
-display:flex;
-
-align-items:center;
-
-gap:2rem;
-
-}
-
-@media(max-width:1024px){
-
-.desktop-nav{
-
-display:none;
-
-}
-
-}
-
-</style>
+<ul
+  class="desktop-nav"
+  role="list"
+>
+  {
+    items.map((item) => (
+      <li class="desktop-nav__item">
+        <NavLink
+          item={item}
+          isActive={currentPath === item.href}
+        />
+      </li>
+    ))
+  }
+</ul>

@@ -12,9 +12,13 @@ BUTTON TOKENS
 
 --button-padding-inline:2rem;
 
+--button-padding-y: .9rem;
+
+--button-padding-x: 1.75rem;
+
 --button-gap:.75rem;
 
---button-radius:var(--radius-pill);
+--button-radius:var(--radius-md);
 
 --button-font-size:var(--label-md);
 

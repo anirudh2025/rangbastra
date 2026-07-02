@@ -8,30 +8,74 @@ NAVBAR TOKENS
 
 :root{
 
---navbar-height:88px;
+    /* Layout */
 
---navbar-padding-inline:1.5rem;
+    --navbar-height:52px;
 
---navbar-padding-block:.75rem;
+    --navbar-padding-inline:1.5rem;
 
---navbar-gap:2rem;
+    --navbar-padding-block:.75rem;
 
---navbar-background:rgba(5,5,5,.35);
+    --navbar-gap:2rem;
 
---navbar-background-scrolled:rgba(5,5,5,.60);
+    --navbar-max-width:1600px;
 
---navbar-border:var(--glass-border);
+    /* Appearance */
 
---navbar-blur:var(--glass-blur-lg);
+    --navbar-background:rgba(5,5,5,.15);
 
---navbar-radius:var(--radius-pill);
+    --navbar-background-scrolled:rgba(5,5,5,.60);
 
---navbar-shadow:var(--navbar-shadow);
+    --navbar-border:var(--glass-border);
 
---navbar-link-color:var(--text-secondary);
+    --navbar-blur:var(--glass-blur-lg);
 
---navbar-link-hover:var(--text-primary);
+    --navbar-radius:var(--radius-lg);
 
---navbar-logo-height:40px;
+    --navbar-shadow:var(--shadow-lg);
+
+    /* Navigation */
+
+    --navbar-link-color:var(--text-secondary);
+
+    --navbar-link-hover:var(--text-primary);
+
+    --navbar-link-gap:2.5rem;
+
+    --navbar-link-size:.95rem;
+
+    --navbar-link-weight:500;
+
+    --navbar-link-letter-spacing:.02em;
+
+    /* Logo */
+
+    --navbar-logo-height:56px;
+
+    /* Mobile */
+
+    --navbar-mobile-width:min(26rem,90vw);
+
+    --navbar-mobile-padding:2rem;
+
+    --navbar-mobile-gap:2rem;
+
+    /* Motion */
+
+    --navbar-transition:
+
+        background var(--duration-normal) var(--ease-standard),
+
+        backdrop-filter var(--duration-normal) var(--ease-standard),
+
+        border-color var(--duration-normal) var(--ease-standard),
+
+        box-shadow var(--duration-normal) var(--ease-standard),
+
+        transform var(--duration-normal) var(--ease-standard);
+
+    /* Layer */
+
+    --navbar-z-index:var(--z-navbar);
 
 }

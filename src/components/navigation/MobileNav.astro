@@ -1,251 +1,75 @@
-<nav
-    id="mobileNav"
-    class="mobile-nav"
+---
+import NavLink from "./NavLink.astro";
+import type { NavigationItem } from "../../data/navigation";
+
+interface Props {
+  items: NavigationItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div
+  class="mobile-nav"
+  id="mobile-navigation"
+  data-mobile-nav
+  aria-hidden="true"
 >
+  <div class="mobile-nav__content">
 
-    <div class="mobile-nav-content">
+    <ul class="mobile-nav__list">
 
-        <a href="/collections">Collections</a>
+      {
+        items.map((item) => (
 
-        <a href="/custom-couture">Custom Couture</a>
+          <li class="mobile-nav__item">
 
-        <a href="/lookbook">Lookbook</a>
+            <NavLink
+              item={item}
+            />
 
-        <a href="/about">About</a>
+          </li>
 
-        <a href="/contact">Contact</a>
+        ))
+      }
 
-        <div class="mobile-divider"></div>
+    </ul>
 
-        <p class="mobile-caption">
+    <div class="mobile-nav__footer">
 
-            Every masterpiece begins
-            with a conversation.
+      <div
+        class="mobile-nav__divider"
+        aria-hidden="true"
+      />
 
-        </p>
+      <p class="mobile-nav__statement">
+        Every masterpiece begins with a conversation.
+      </p>
+
+      <nav
+        class="mobile-nav__social"
+        aria-label="Social Links"
+      >
+
+        <a
+          href="https://instagram.com/rangbastra"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Instagram
+        </a>
+
+        <a
+          href="https://wa.me/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          WhatsApp
+        </a>
+
+      </nav>
 
     </div>
 
-</nav>
-
-<style>
-
-.mobile-nav{
-
-    max-height:0;
-
-    overflow:hidden;
-
-    opacity:0;
-
-    visibility:hidden;
-
-    transition:
-
-        max-height .65s var(--ease-luxury),
-
-        opacity .35s ease,
-
-        visibility .35s;
-
-}
-
-.mobile-nav.open{
-
-    max-height:560px;
-
-    opacity:1;
-
-    visibility:visible;
-
-}
-
-.mobile-nav-content{
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    padding:
-
-        1.25rem
-
-        2rem
-
-        2.5rem;
-
-}
-
-.mobile-nav a{
-
-    position:relative;
-
-    color:var(--text-secondary);
-
-    font-size:1.18rem;
-
-    font-weight:500;
-
-    padding:1.1rem 0;
-
-    transition:
-
-        color .35s ease,
-
-        transform .45s var(--ease-luxury),
-
-        opacity .45s ease;
-
-    opacity:0;
-
-    transform:
-
-        translateY(14px);
-
-}
-
-.mobile-nav.open a{
-
-    opacity:1;
-
-    transform:
-
-        translateY(0);
-
-}
-
-.mobile-nav.open a:nth-child(1){
-
-    transition-delay:.05s;
-
-}
-
-.mobile-nav.open a:nth-child(2){
-
-    transition-delay:.10s;
-
-}
-
-.mobile-nav.open a:nth-child(3){
-
-    transition-delay:.15s;
-
-}
-
-.mobile-nav.open a:nth-child(4){
-
-    transition-delay:.20s;
-
-}
-
-.mobile-nav.open a:nth-child(5){
-
-    transition-delay:.25s;
-
-}
-
-.mobile-nav a:hover{
-
-    color:var(--text-primary);
-
-}
-
-.mobile-divider{
-
-    width:90px;
-
-    height:1px;
-
-    margin:
-
-        2rem
-
-        0
-
-        1.5rem;
-
-    background:
-
-        linear-gradient(
-
-            90deg,
-
-            transparent,
-
-            rgba(148,115,100,.95),
-
-            transparent
-
-        );
-
-    opacity:0;
-
-    transition:
-
-        opacity .45s ease;
-
-}
-
-.mobile-nav.open .mobile-divider{
-
-    opacity:1;
-
-    transition-delay:.3s;
-
-}
-
-.mobile-caption{
-
-    max-width:240px;
-
-    text-align:center;
-
-    color:var(--text-muted);
-
-    font-size:.88rem;
-
-    line-height:1.8;
-
-    letter-spacing:.08em;
-
-    text-transform:uppercase;
-
-    opacity:0;
-
-    transform:
-
-        translateY(12px);
-
-    transition:
-
-        opacity .45s ease,
-
-        transform .45s ease;
-
-}
-
-.mobile-nav.open .mobile-caption{
-
-    opacity:1;
-
-    transform:
-
-        translateY(0);
-
-    transition-delay:.35s;
-
-}
-
-@media(min-width:1025px){
-
-.mobile-nav{
-
-display:none;
-
-}
-
-}
-
-</style>
+  </div>
+</div>

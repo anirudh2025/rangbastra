@@ -1,0 +1,83 @@
+---
+import Icon from "./Icon.astro";
+
+interface Props{
+    icon?:string;
+
+    iconPosition?:"left"|"right";
+
+    iconSize?:number;
+
+    animated?:boolean;
+
+    class?:string;
+
+    iconClass?:string;
+}
+
+const{
+    icon,
+    iconPosition="right",
+    iconSize=16,
+    animated=true,
+    class:className="",
+    iconClass=""
+}=Astro.props;
+---
+
+<span
+    class:list={[
+        "label",
+        `label--${iconPosition}`,
+        animated && "label--animated",
+        className
+    ]}
+>
+
+    {
+        icon && iconPosition==="left" && (
+
+            <span
+                class:list={[
+                    "label__icon",
+                    iconClass
+                ]}
+            >
+
+                <Icon
+                    name={icon}
+                    size={iconSize}
+                />
+
+            </span>
+
+        )
+    }
+
+    <span class="label__text">
+
+        <slot />
+
+    </span>
+
+    {
+        icon && iconPosition==="right" && (
+
+            <span
+                class:list={[
+                    "label__icon",
+                    iconClass
+                ]}
+            >
+
+                <Icon
+                    name={icon}
+                    size={iconSize}
+                />
+
+            </span>
+
+        )
+    }
+
+</span>

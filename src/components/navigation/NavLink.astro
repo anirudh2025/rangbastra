@@ -1,104 +1,32 @@
 ---
-interface Props{
-    href:string;
-    label:string;
+import Label from "../primitives/Label.astro";
+import type { NavigationItem } from "../../data/navigation";
+
+interface Props {
+    item: NavigationItem;
+    isActive?: boolean;
 }
 
-const {href,label}=Astro.props;
+const {
+    item,
+    isActive = false
+} = Astro.props;
 ---
 
-<a href={href} class="nav-link">
+<a
+    href={item.href}
+    class:list={[
+        "nav-link",
+        isActive && "nav-link--active"
+    ]}
+    aria-current={isActive ? "page" : undefined}
+>
 
-    {label}
-
-    <span class="nav-divider"></span>
+    <Label
+        icon={item.icon}
+        iconSize={14}
+    >
+        {item.label}
+    </Label>
 
 </a>
-
-<style>
-
-.nav-link{
-
-    position:relative;
-
-    display:inline-flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    gap:.55rem;
-
-    color:var(--text-secondary);
-
-    text-decoration:none;
-
-    font-size:var(--text-sm);
-
-    font-weight:var(--font-medium);
-
-    letter-spacing:.01em;
-
-    transition:
-
-        color .45s var(--ease-luxury),
-
-        transform .45s var(--ease-luxury);
-
-}
-
-.nav-link:hover{
-
-    color:var(--text-primary);
-
-}
-
-.nav-divider{
-
-    width:0;
-
-    height:1px;
-
-    opacity:0;
-
-    border-radius:999px;
-
-    background:
-
-        linear-gradient(
-
-            90deg,
-
-            transparent 0%,
-
-            rgba(199,181,168,.25) 15%,
-
-            rgba(157,123,105,.95) 50%,
-
-            rgba(199,181,168,.25) 85%,
-
-            transparent 100%
-
-        );
-
-    box-shadow:
-
-        0 0 8px rgba(157,123,105,.22);
-
-    transition:
-
-        width .45s cubic-bezier(.22,1,.36,1),
-
-        opacity .35s ease;
-
-}
-
-.nav-link:hover .nav-divider{
-
-    width:42px;
-
-    opacity:1;
-
-}
-
-</style>

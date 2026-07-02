@@ -130,20 +130,15 @@ rgba(255,255,255,.05);
 --glass-border:
 rgba(255,255,255,.08);
 
---glass-blur-xs:
-blur(8px);
+--glass-blur-xs: 8px;
 
---glass-blur-sm:
-blur(12px);
+--glass-blur-sm: 12px;
 
---glass-blur-md:
-blur(18px);
+--glass-blur-md: 18px;
 
---glass-blur-lg:
-blur(28px);
+--glass-blur-lg: 28px;
 
---glass-blur-xl:
-blur(40px);
+--glass-blur-xl: 40px;
 
 
 /*========================================================

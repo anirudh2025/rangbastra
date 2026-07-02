@@ -1,0 +1,27 @@
+/*
+========================================================
+CLOUTORA LUXURY FRAMEWORK v3
+
+LABEL TOKENS
+========================================================
+*/
+
+:root{
+
+    /* Layout */
+
+    --label-icon-size:1rem;
+
+    --label-icon-gap:.5rem;
+
+    /* Motion */
+
+    --label-icon-offset:6px;
+
+    --label-icon-scale:.82;
+
+    --label-duration:var(--duration-normal);
+
+    --label-easing:var(--ease-standard);
+
+}

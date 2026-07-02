@@ -1,245 +1,57 @@
 ---
+
 import Logo from "./Logo.astro";
 import DesktopNav from "./DesktopNav.astro";
+import MobileNav from "./MobileNav.astro";
 import CTAButton from "./CTAButton.astro";
 import MobileMenuButton from "./MobileMenuButton.astro";
-import MobileNav from "./MobileNav.astro";
+
+import { navigation as navigationItems } from "../../data/navigation";
+
 ---
 
 <header
-    id="navbar"
-    class="navbar"
+  class="navbar"
+  data-navbar
+  data-menu-open="false"
 >
+  <nav
+    class="navbar__inner"
+    aria-label="Primary Navigation"
+  >
+    <div class="navbar__header">
 
-    <div class="navbar-container">
-
+      <a
+        href="/"
+        class="navbar__brand"
+        aria-label="Rangbastra Home"
+      >
         <Logo />
+      </a>
 
-        <DesktopNav />
+      <DesktopNav
+        items={navigationItems}
+      />
 
-        <div class="actions">
+      <div class="navbar__actions">
 
-            <CTAButton
-                href="/consultation"
-            />
+        <CTAButton />
 
-            <MobileMenuButton />
+        <MobileMenuButton />
 
-        </div>
+      </div>
 
     </div>
 
-    <MobileNav />
+    <MobileNav
+      items={navigationItems}
+    />
 
+  </nav>
 </header>
 
-<style>
-
-.navbar{
-
-    position:fixed;
-
-    top:24px;
-
-    left:50%;
-
-    transform:translateX(-50%);
-
-    width:min(
-
-        calc(100% - 120px),
-
-        1520px
-
-    );
-
-    z-index:9999;
-
-    overflow:hidden;
-
-    border-radius:30px;
-
-    background:
-
-        linear-gradient(
-
-            135deg,
-
-            rgba(6,6,6,.72),
-
-            rgba(24,19,17,.62)
-
-        );
-
-    backdrop-filter:
-
-        blur(18px)
-
-        saturate(165%);
-
-    -webkit-backdrop-filter:
-
-        blur(18px)
-
-        saturate(165%);
-
-    border:
-
-        1px solid rgba(255,255,255,.055);
-
-    transition:
-
-        background .55s var(--ease-luxury),
-
-        border-color .55s var(--ease-luxury),
-
-        transform .55s var(--ease-luxury);
-
-}
-
-.navbar.menu-open{
-
-    background:
-
-        linear-gradient(
-
-            180deg,
-
-            rgba(8,8,8,.94),
-
-            rgba(14,12,11,.90)
-
-        );
-
-    border-color:
-
-        rgba(255,255,255,.08);
-
-}
-
-.navbar-container{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    min-height:84px;
-
-    padding-inline:36px;
-
-    gap:2rem;
-
-}
-
-.actions{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:16px;
-
-}
-
-@media(max-width:1024px){
-
-.navbar{
-
-    width:calc(100% - 36px);
-
-    top:16px;
-
-    border-radius:24px;
-
-}
-
-.navbar-container{
-
-    min-height:74px;
-
-    padding-inline:22px;
-
-}
-
-.actions{
-
-    gap:10px;
-
-}
-
-/* Hide CTA while menu is expanded */
-
-.navbar.menu-open .cta-button{
-
-    opacity:0;
-
-    visibility:hidden;
-
-    pointer-events:none;
-
-    transform:translateY(-10px);
-
-    transition:
-
-        opacity .3s ease,
-
-        transform .3s ease,
-
-        visibility .3s;
-
-}
-
-}
-
-</style>
-
 <script>
+  import { initializeNavbar } from "../../lib/navigation/navbar";
 
-const navbar=document.getElementById("navbar");
-const button=document.getElementById("mobileMenuButton");
-const menu=document.getElementById("mobileNav");
-
-button?.addEventListener("click",()=>{
-
-    const opened=button.classList.toggle("active");
-
-    navbar?.classList.toggle("menu-open",opened);
-
-    menu?.classList.toggle("open",opened);
-
-    button.setAttribute(
-        "aria-expanded",
-        String(opened)
-    );
-
-    document.documentElement.classList.toggle(
-    "menu-open",
-    opened
-);
-
-document.body.classList.toggle(
-"menu-open",
-opened
-);
-
-});
-
-window.addEventListener("resize",()=>{
-
-    if(window.innerWidth>1024){
-
-        navbar?.classList.remove("menu-open");
-
-        menu?.classList.remove("open");
-
-        button?.classList.remove("active");
-
-        document.body.style.overflow="";
-
-    }
-
-});
-
+  initializeNavbar();
 </script>

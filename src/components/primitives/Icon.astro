@@ -3,6 +3,9 @@ import Sparkles from "../icons/journey/Sparkles.astro";
 import Needle from "../icons/journey/Needle.astro";
 import Thread from "../icons/journey/Thread.astro";
 import Crown from "../icons/journey/Crown.astro";
+import Calendar from "../icons/navigation/Calendar.astro";
+import Instagram from "../icons/navigation/Instagram.astro";
+import Whatsapp from "../icons/navigation/Whatsapp.astro";
 
 interface Props{
     name:string;
@@ -24,7 +27,10 @@ const icons={
     sparkles:Sparkles,
     needle:Needle,
     thread:Thread,
-    crown:Crown
+    crown:Crown,
+    calendar:Calendar,
+    instagram:Instagram,
+    whatsapp:Whatsapp
 };
 
 const SelectedIcon=icons[name as keyof typeof icons];

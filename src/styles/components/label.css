@@ -1,0 +1,134 @@
+/* ===========================================================
+   LABEL
+   CLOUTORA LUXURY FRAMEWORK v3
+=========================================================== */
+
+.label{
+    position:relative;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    color:inherit;
+
+    overflow:visible;
+
+    padding-inline-end:1.2rem;
+}
+
+.label--left{
+    padding-inline-end:0;
+    padding-inline-start:1.2rem;
+}
+
+/* ===========================================================
+   TEXT
+=========================================================== */
+
+.label__text{
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    color:inherit;
+
+    transition:
+        color var(--label-duration) var(--label-easing);
+
+}
+
+/* ===========================================================
+   ICON
+=========================================================== */
+
+.label__icon{
+
+    position:absolute;
+
+    inset-inline-end:0;
+    inset-block-start:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    width:var(--label-icon-size);
+    height:var(--label-icon-size);
+
+    color:currentColor;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    will-change:
+        opacity,
+        transform;
+
+    transform:
+        translateY(-50%)
+        scale(.82);
+
+    transition:
+        opacity var(--label-duration) var(--label-easing),
+        transform var(--label-duration) var(--label-easing);
+
+}
+
+.label--left .label__icon{
+
+    inset-inline-end:auto;
+    inset-inline-start:0;
+
+}
+
+/* ===========================================================
+   PARENT HOVER
+=========================================================== */
+
+.button:hover .label__icon,
+.button:focus-visible .label__icon,
+
+.nav-link:hover .label__icon,
+.nav-link:focus-visible .label__icon,
+
+.mobile-nav__social a:hover .label__icon,
+.mobile-nav__social a:focus-visible .label__icon{
+
+    opacity:1;
+
+    transform:
+        translateY(-50%)
+        scale(1);
+
+}
+
+/* ===========================================================
+   SVG
+=========================================================== */
+
+.label__icon svg{
+
+    width:100%;
+    height:100%;
+
+    display:block;
+
+}
+
+/* ===========================================================
+   REDUCED MOTION
+=========================================================== */
+
+@media (prefers-reduced-motion: reduce){
+
+    .label__icon,
+    .label__text{
+
+        transition:none;
+
+    }
+
+}
