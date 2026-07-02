@@ -27,8 +27,8 @@ const {
     <img
       src={image}
       alt=""
-      width="900"
-      height="1200"
+      width="1600"
+      height="1000"
       loading="lazy"
       decoding="async"
     />
@@ -143,8 +143,9 @@ const {
     border-radius: var(--radius-2xl);
     background: var(--surface-raised);
     box-shadow: var(--shadow-floating);
-    opacity: 0;
+    opacity: .42;
     pointer-events: none;
+    filter: saturate(.78);
     transition:
       opacity var(--motion-luxury) var(--ease-luxury),
       transform var(--motion-luxury) var(--ease-luxury),
@@ -153,12 +154,12 @@ const {
 
   .journey-card--reveal-right .image-panel {
     right: 0;
-    transform: translate(8%, -50%) scale(.98);
+    transform: translate(28%, -50%) scale(.98);
   }
 
   .journey-card--reveal-left .image-panel {
     left: 0;
-    transform: translate(-8%, -50%) scale(.98);
+    transform: translate(-28%, -50%) scale(.98);
   }
 
   .journey-card:hover .image-panel,
@@ -320,12 +321,14 @@ const {
       width: auto;
       height: var(--journey-mobile-image-height);
       aspect-ratio: 16 / 10;
-      transform: translateY(calc((var(--journey-mobile-image-height) + var(--space-3)) * -1)) scale(.98);
+      opacity: .78;
+      filter: saturate(.82);
+      transform: translateY(0) scale(1);
     }
 
     .journey-card--reveal-left .image-panel,
     .journey-card--reveal-right .image-panel {
-      transform: translateY(calc((var(--journey-mobile-image-height) + var(--space-3)) * -1)) scale(.98);
+      transform: translateY(0) scale(1);
     }
 
     .journey-card:hover .image-panel,

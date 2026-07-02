@@ -12,8 +12,19 @@ export interface JourneyStep{
 
 }
 
-const defaultJourneyImage =
-"https://res.cloudinary.com/dfxlm7z58/image/upload/f_auto,q_auto,dpr_auto,c_fill,w_900,h_1200,g_auto/v1782458746/RB_Hero_v7dyxg.png";
+const journeyImages = {
+    vision:
+        "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/RB_Fabric_Swatches_ortjph.webp",
+
+    consultation:
+        "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Consult_Our_Designer_pbxliz.webp",
+
+    craft:
+        "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Crafted_with_Precision_yh1xgw.webp",
+
+    celebration:
+        "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Celebrate_Beautifully_pgr9c6.webp"
+};
 
 export const journey:JourneyStep[]=[
 
@@ -27,7 +38,7 @@ description:"Tell us about your occasion, inspiration and dream outfit.",
 
 icon:"sparkles",
 
-image:defaultJourneyImage
+image:journeyImages.vision
 
 },
 
@@ -41,7 +52,7 @@ description:"Discuss fabrics, silhouettes, colours and handcrafted details.",
 
 icon:"needle",
 
-image:defaultJourneyImage
+image:journeyImages.consultation
 
 },
 
@@ -55,7 +66,7 @@ description:"Every outfit is individually tailored with exceptional craftsmanshi
 
 icon:"thread",
 
-image:defaultJourneyImage
+image:journeyImages.craft
 
 },
 
@@ -69,7 +80,7 @@ description:"Walk into your celebration wearing a piece created exclusively for 
 
 icon:"crown",
 
-image:defaultJourneyImage
+image:journeyImages.celebration
 
 }
 
