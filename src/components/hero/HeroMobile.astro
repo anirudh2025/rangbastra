@@ -78,6 +78,12 @@ const mobileHero =
 
     height:auto;
 
+    user-select:none;
+
+    pointer-events:none;
+
+    -webkit-user-drag:none;
+
 }
 
 .hero-overlay{
@@ -92,11 +98,47 @@ const mobileHero =
 
 .hero-shell{
 
-    width:min(100% - 2rem,26rem);
+    width:min(100% - 2rem,44rem);
 
     margin-inline:auto;
 
-    padding-top:clamp(8.5rem,12vh,8.5rem);
+    padding-top:clamp(8.25rem,14vh,10.5rem);
+
+}
+
+}
+
+@media (max-width:768px){
+
+.hero-shell{
+
+    width:min(100% - 2rem,32rem);
+
+    padding-top:clamp(7.5rem,13vh,9.25rem);
+
+}
+
+}
+
+@media (max-width:640px){
+
+.hero-shell{
+
+    width:min(100% - 1.5rem,28rem);
+
+    padding-top:clamp(7.25rem,12vh,8.25rem);
+
+}
+
+}
+
+@media (max-width:380px){
+
+.hero-shell{
+
+    width:min(100% - 1.25rem,24rem);
+
+    padding-top:6.85rem;
 
 }
 

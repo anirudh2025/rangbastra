@@ -47,11 +47,11 @@ import HeroContent from "./HeroContent.astro";
        Layout Tokens
     ========================== */
 
-    --hero-shell-width:min(100% - 120px,1520px);
+    --hero-shell-width:min(100% - 7.5rem,1520px);
 
-    --hero-content-width:clamp(42rem,48vw,52rem);
+    --hero-content-width:clamp(44rem,48vw,52rem);
 
-    --hero-top:clamp(10.5rem,11vh,12.5rem);
+    --hero-content-offset:clamp(16rem,22vh,22rem);
 
     --hero-left:clamp(.5rem,1vw,1.25rem);
 
@@ -131,16 +131,7 @@ import HeroContent from "./HeroContent.astro";
 
     height:100%;
 
-    padding-top:
-    calc(
-
-    var(--hero-top)
-
-    +
-
-    clamp(8.5rem,11vh,18rem)
-
-    );
+    padding-top:var(--hero-content-offset);
 
 }
 
@@ -161,7 +152,7 @@ import HeroContent from "./HeroContent.astro";
 
     --hero-content-width:52rem;
 
-    --hero-top:10.5rem;
+    --hero-content-offset:clamp(17rem,22vh,22rem);
 
 }
 
@@ -174,11 +165,11 @@ import HeroContent from "./HeroContent.astro";
 
 .hero-desktop{
 
-    --hero-shell-width:min(100% - 80px,1320px);
+    --hero-shell-width:min(100% - 5rem,1320px);
 
-    --hero-content-width:41vw;
+    --hero-content-width:clamp(40rem,46vw,46rem);
 
-    --hero-top:8.7rem;
+    --hero-content-offset:clamp(14rem,20vh,17rem);
 
 }
 
@@ -191,11 +182,11 @@ import HeroContent from "./HeroContent.astro";
 
 .hero-desktop{
 
-    --hero-shell-width:min(100% - 64px,1240px);
+    --hero-shell-width:min(100% - 4rem,1240px);
 
-    --hero-content-width:40vw;
+    --hero-content-width:clamp(38rem,48vw,43rem);
 
-    --hero-top:8.2rem;
+    --hero-content-offset:clamp(12.25rem,18vh,15.25rem);
 
 }
 
@@ -208,7 +199,7 @@ import HeroContent from "./HeroContent.astro";
 
 .hero-desktop{
 
-    --hero-top:7.5rem;
+    --hero-content-offset:clamp(11.25rem,16vh,13rem);
 
 }
 
@@ -220,7 +211,7 @@ import HeroContent from "./HeroContent.astro";
 
 .hero-desktop{
 
-    --hero-top:6.8rem;
+    --hero-content-offset:clamp(10.5rem,14vh,11.5rem);
 
 }
 
@@ -232,9 +223,9 @@ import HeroContent from "./HeroContent.astro";
 
 .hero-desktop{
 
-    --hero-top:6rem;
+    --hero-content-offset:9.5rem;
 
-    --hero-content-width:38vw;
+    --hero-content-width:clamp(34rem,45vw,40rem);
 
 }
 
