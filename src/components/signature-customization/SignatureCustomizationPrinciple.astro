@@ -1,0 +1,160 @@
+---
+import Icon from "../primitives/Icon.astro";
+
+interface Props {
+  index: number;
+  title: string;
+  statement: string;
+  icon: string;
+}
+
+const { index, title, statement, icon } = Astro.props;
+---
+
+<article class="principle">
+  <span class="principle-number">{String(index).padStart(2, "0")}</span>
+
+  <span class="principle-icon" aria-hidden="true">
+    <Icon
+      name={icon}
+      size={28}
+      color="currentColor"
+    />
+  </span>
+
+  <div class="principle-copy">
+    <h3>{title}</h3>
+
+    <p>{statement}</p>
+  </div>
+</article>
+
+<style>
+  .principle {
+    position: relative;
+    display: grid;
+    min-height: clamp(22rem, 30vw, 31rem);
+    align-content: space-between;
+    gap: var(--space-9);
+    padding: clamp(var(--space-5), 3vw, var(--space-8));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-2xl);
+    background: var(--gradient-glass), var(--surface-raised);
+    box-shadow: var(--elevation-2), var(--shadow-inset);
+    overflow: hidden;
+    transition:
+      transform var(--motion-medium) var(--ease-luxury),
+      border-color var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  .principle::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 48%;
+    background: var(--gradient-overlay);
+    opacity: .36;
+    transform: translateY(22%);
+    transition:
+      opacity var(--motion-medium) var(--ease-luxury),
+      transform var(--motion-medium) var(--ease-luxury);
+  }
+
+  .principle:hover {
+    transform: translateY(var(--hover-lift-soft));
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-premium), var(--glow-soft), var(--shadow-inset-strong);
+  }
+
+  .principle:hover::before {
+    opacity: .5;
+    transform: translateY(8%);
+  }
+
+  .principle-number {
+    position: relative;
+    z-index: var(--z-content);
+    color: var(--text-disabled);
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 7vw, 7rem);
+    font-weight: var(--weight-light);
+    line-height: 1;
+    transition:
+      color var(--motion-medium) var(--ease-luxury),
+      text-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  .principle-icon {
+    position: absolute;
+    top: clamp(var(--space-5), 3vw, var(--space-7));
+    right: clamp(var(--space-5), 3vw, var(--space-7));
+    z-index: var(--z-content);
+    display: grid;
+    width: clamp(var(--space-8), 4vw, var(--space-10));
+    height: clamp(var(--space-8), 4vw, var(--space-10));
+    place-items: center;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-circle);
+    background: var(--surface-glass);
+    color: var(--sand-300);
+    box-shadow: var(--shadow-inset);
+    transition:
+      color var(--motion-medium) var(--ease-luxury),
+      border-color var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury),
+      transform var(--motion-medium) var(--ease-luxury);
+  }
+
+  .principle-copy {
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  h3 {
+    max-width: 13ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3vw, 3.35rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-title);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+    transition: color var(--motion-medium) var(--ease-luxury);
+  }
+
+  p {
+    max-width: var(--measure-xs);
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+    transition: color var(--motion-medium) var(--ease-luxury);
+  }
+
+  .principle:hover .principle-number {
+    color: var(--text-muted);
+    text-shadow: var(--glow-soft);
+  }
+
+  .principle:hover .principle-icon {
+    transform: scale(var(--scale-hover));
+    border-color: var(--border-strong);
+    color: var(--ivory-100);
+    box-shadow: var(--glow-soft), var(--shadow-inset-strong);
+  }
+
+  .principle:hover h3,
+  .principle:hover p {
+    color: var(--ivory-100);
+  }
+
+  @media (max-width: 767px) {
+    .principle {
+      min-height: 24rem;
+      border-radius: var(--radius-xl);
+    }
+  }
+</style>

@@ -1,0 +1,172 @@
+---
+interface Props {
+  title: string;
+  caption: string;
+  image: string;
+  variant: "portrait" | "landscape" | "feature" | "tall";
+}
+
+const { title, caption, image, variant } = Astro.props;
+---
+
+<figure class:list={["lookbook-frame", `lookbook-frame--${variant}`]}>
+  <div class="media">
+    <img
+      src={image}
+      alt={title}
+      width="1100"
+      height="1400"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+
+  <figcaption>
+    <span>{title}</span>
+    {caption}
+  </figcaption>
+</figure>
+
+<style>
+  .lookbook-frame {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    align-self: start;
+  }
+
+  .media {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-2xl);
+    background: var(--surface-raised);
+    box-shadow: var(--elevation-2), var(--shadow-inset);
+    transition:
+      transform var(--motion-medium) var(--ease-luxury),
+      border-color var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  .media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-overlay);
+    opacity: .58;
+    transition: opacity var(--motion-medium) var(--ease-luxury);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.02);
+    transition: transform var(--motion-luxury) var(--ease-luxury);
+  }
+
+  figcaption {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 34ch;
+    color: var(--text-muted);
+    font-size: var(--caption);
+    line-height: var(--leading-caption);
+    text-wrap: pretty;
+    transition:
+      color var(--motion-medium) var(--ease-luxury),
+      transform var(--motion-medium) var(--ease-luxury);
+  }
+
+  figcaption span {
+    color: var(--sand-200);
+    font-family: var(--font-signature);
+    font-size: clamp(1.55rem, 2.5vw, 2.65rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-heading);
+    text-shadow: var(--glow-soft);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .lookbook-frame:hover .media {
+    transform: translateY(var(--hover-lift-soft));
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-premium), var(--glow-soft), var(--shadow-inset-strong);
+  }
+
+  .lookbook-frame:hover .media::after {
+    opacity: .38;
+  }
+
+  .lookbook-frame:hover img {
+    transform: scale(var(--scale-image));
+  }
+
+  .lookbook-frame:hover figcaption {
+    color: var(--text-secondary);
+    transform: translateY(calc(var(--motion-distance-xs) * -1));
+  }
+
+  .lookbook-frame--feature {
+    grid-column: 1 / span 7;
+    grid-row: span 2;
+  }
+
+  .lookbook-frame--portrait {
+    grid-column: 9 / span 4;
+    margin-top: var(--space-11);
+  }
+
+  .lookbook-frame--landscape {
+    grid-column: 2 / span 5;
+    margin-top: var(--space-9);
+  }
+
+  .lookbook-frame--tall {
+    grid-column: 8 / span 5;
+    margin-top: calc(var(--space-8) * -1);
+  }
+
+  .lookbook-frame--feature .media {
+    aspect-ratio: 4 / 5;
+  }
+
+  .lookbook-frame--portrait .media {
+    aspect-ratio: 3 / 4;
+  }
+
+  .lookbook-frame--landscape .media {
+    aspect-ratio: 5 / 4;
+  }
+
+  .lookbook-frame--tall .media {
+    aspect-ratio: 2 / 3;
+  }
+
+  @media (max-width: 1023px) {
+    .lookbook-frame--feature,
+    .lookbook-frame--portrait,
+    .lookbook-frame--landscape,
+    .lookbook-frame--tall {
+      grid-column: auto;
+      margin-top: 0;
+    }
+
+    .lookbook-frame--feature {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .media {
+      border-radius: var(--radius-xl);
+    }
+
+    .lookbook-frame--feature .media,
+    .lookbook-frame--portrait .media,
+    .lookbook-frame--landscape .media,
+    .lookbook-frame--tall .media {
+      aspect-ratio: 4 / 5;
+    }
+  }
+</style>

@@ -4,106 +4,87 @@ import JourneyCard from "./JourneyCard.astro";
 ---
 
 <div class="timeline">
-
-    {
-
-        journey.map((item,index)=>(
-
-            <div
-
-                class:list={[
-
-                    "timeline-item",
-
-                    index % 2 === 0
-                        ? "left"
-                        : "right"
-
-                ]}
-
-            >
-
-                <JourneyCard
-
-                    step={item.id}
-
-                    title={item.title}
-
-                    description={item.description}
-
-                    icon={item.icon}
-
-                />
-
-            </div>
-
-        ))
-
-    }
-
+  {
+    journey.map((item, index) => (
+      <div
+        class:list={[
+          "timeline-item",
+          index % 2 === 0 ? "timeline-item--left" : "timeline-item--right",
+        ]}
+      >
+        <JourneyCard
+          step={item.id}
+          title={item.title}
+          description={item.description}
+          icon={item.icon}
+          image={item.image}
+          revealSide={index % 2 === 0 ? "right" : "left"}
+        />
+      </div>
+    ))
+  }
 </div>
 
 <style>
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: clamp(var(--space-8), 7vw, var(--space-12));
+  }
 
-.timeline{
-
-    --timeline-gap:
-        clamp(
-            3.5rem,
-            6vw,
-            5rem
-        );
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:var(--timeline-gap);
-
-    margin-top:clamp(
-        4rem,
-        7vw,
-        7rem
+  .timeline::before {
+    content: "";
+    position: absolute;
+    inset-block: var(--space-6);
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      var(--border-default),
+      transparent
     );
+    transform: translateX(-50%);
+  }
 
-    position:relative;
+  .timeline-item {
+    position: relative;
+    width: min(100%, 46rem);
+  }
 
-}
+  .timeline-item--left {
+    justify-self: start;
+    padding-right: clamp(var(--space-7), 6vw, var(--space-12));
+  }
 
-.timeline-item{
+  .timeline-item--right {
+    justify-self: end;
+    padding-left: clamp(var(--space-7), 6vw, var(--space-12));
+  }
 
-    width:min(100%,720px);
+  @media (max-width: 1023px) {
+    .timeline {
+      gap: var(--space-8);
+    }
 
-}
+    .timeline::before {
+      left: var(--space-2);
+      transform: none;
+    }
 
-.timeline-item.left{
+    .timeline-item,
+    .timeline-item--left,
+    .timeline-item--right {
+      width: 100%;
+      justify-self: stretch;
+      padding-inline: 0 0;
+      padding-left: var(--space-6);
+    }
+  }
 
-    align-self:flex-start;
-
-}
-
-.timeline-item.right{
-
-    align-self:flex-end;
-
-}
-
-@media(max-width:900px){
-
-.timeline{
-
-gap:var(--space-7);
-
-}
-
-.timeline-item{
-
-width:100%;
-
-align-self:stretch!important;
-
-}
-
-}
-
+  @media (max-width: 767px) {
+    .timeline {
+      gap: var(--space-7);
+    }
+  }
 </style>

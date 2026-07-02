@@ -1,0 +1,52 @@
+---
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import CraftsmanshipHeader from "../../components/craftsmanship/CraftsmanshipHeader.astro";
+import CraftsmanshipList from "../../components/craftsmanship/CraftsmanshipList.astro";
+---
+
+<Section class="craftsmanship-section">
+  <Container class="craftsmanship-container">
+    <CraftsmanshipHeader />
+
+    <CraftsmanshipList />
+  </Container>
+</Section>
+
+<style>
+  :global(.craftsmanship-section) {
+    --section-padding-block: clamp(var(--space-10), 10vw, var(--space-14));
+
+    overflow: hidden;
+  }
+
+  :global(.craftsmanship-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    grid-template-columns: minmax(20rem, .78fr) minmax(0, 1fr);
+    gap: clamp(var(--space-8), 7vw, var(--space-12));
+    align-items: start;
+  }
+
+  @media (max-width: 1023px) {
+    :global(.craftsmanship-container) {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+  }
+
+  @media (max-width: 767px) {
+    :global(.craftsmanship-section) {
+      --section-padding-block: clamp(var(--space-9), 18vw, var(--space-12));
+    }
+
+    :global(.craftsmanship-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      gap: var(--space-7);
+    }
+  }
+</style>

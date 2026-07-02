@@ -1,0 +1,24 @@
+---
+import { craftsmanshipPillars } from "../../data/craftsmanship";
+import CraftsmanshipPillar from "./CraftsmanshipPillar.astro";
+---
+
+<div class="craftsmanship-list">
+  {
+    craftsmanshipPillars.map((pillar) => (
+      <CraftsmanshipPillar
+        index={pillar.id}
+        title={pillar.title}
+        description={pillar.description}
+        icon={pillar.icon}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .craftsmanship-list {
+    display: grid;
+    align-self: end;
+  }
+</style>

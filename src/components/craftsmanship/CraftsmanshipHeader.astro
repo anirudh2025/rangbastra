@@ -1,32 +1,25 @@
----
----
-
-<header class="header">
-  <span class="eyebrow">Featured Collections</span>
+<header class="craftsmanship-header">
+  <span class="eyebrow">Craftsmanship</span>
 
   <h2>
-    <span class="title-intro">Crafted For</span>
-    <span class="title-statement">Every Celebration</span>
+    <span class="title-intro">Made With The</span>
+    <span class="title-statement">Patience Of Couture</span>
   </h2>
 
   <p>
-    Discover signature couture collections designed to celebrate every
-    unforgettable moment.
+    Rangbastra pieces are shaped through material intelligence, hand-finished
+    detail and a fitting process designed around the individual.
   </p>
 </header>
 
 <style>
-  .header {
+  .craftsmanship-header {
     display: grid;
-    justify-items: center;
-    gap: var(--space-4);
+    gap: var(--space-5);
     max-width: var(--measure-md);
-    margin: 0 auto clamp(var(--space-8), 6vw, var(--space-11));
-    text-align: center;
   }
 
   .eyebrow {
-    display: inline-block;
     color: var(--cocoa-400);
     font-size: var(--caption);
     font-weight: var(--weight-semibold);
@@ -38,7 +31,8 @@
   h2 {
     display: grid;
     gap: var(--space-2);
-    margin: 0;
+    max-width: min(100%, 50rem);
+    color: var(--text-primary);
     font-family: var(--font-display);
     font-weight: var(--weight-light);
     text-wrap: balance;
@@ -67,7 +61,6 @@
 
   p {
     max-width: var(--measure-md);
-    margin-inline: auto;
     color: var(--text-secondary);
     font-size: var(--body-md);
     line-height: var(--leading-body);
@@ -75,11 +68,8 @@
   }
 
   @media (max-width: 767px) {
-    .header {
-      justify-items: start;
-      gap: var(--space-3);
-      margin-bottom: var(--space-7);
-      text-align: left;
+    .craftsmanship-header {
+      gap: var(--space-4);
     }
 
     .title-intro {

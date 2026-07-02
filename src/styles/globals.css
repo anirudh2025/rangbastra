@@ -105,11 +105,7 @@ min-height:100svh;
 
 overflow-x:hidden;
 
-background:
-
-var(--gradient-radial),
-
-var(--surface-canvas);
+background:var(--surface-canvas);
 
 color:var(--text-primary);
 
@@ -138,6 +134,82 @@ main{
 position:relative;
 
 isolation:isolate;
+
+}
+
+main::before,
+main::after{
+
+content:"";
+
+position:absolute;
+
+inset:0;
+
+z-index:-1;
+
+pointer-events:none;
+
+}
+
+main::before{
+
+background:
+radial-gradient(
+ellipse at 12% 18%,
+rgba(106,78,66,.08),
+transparent 34%
+),
+radial-gradient(
+ellipse at 88% 38%,
+rgba(106,78,66,.07),
+transparent 36%
+),
+radial-gradient(
+ellipse at 44% 72%,
+rgba(181,147,130,.045),
+transparent 38%
+);
+
+}
+
+main::after{
+
+background:
+linear-gradient(
+118deg,
+transparent 0%,
+rgba(62,43,35,.03) 14%,
+rgba(106,78,66,.075) 24%,
+rgba(181,147,130,.04) 31%,
+transparent 42%
+),
+linear-gradient(
+62deg,
+transparent 10%,
+rgba(106,78,66,.055) 38%,
+rgba(181,147,130,.035) 48%,
+transparent 64%
+),
+linear-gradient(
+142deg,
+transparent 36%,
+rgba(62,43,35,.05) 54%,
+rgba(181,147,130,.035) 62%,
+transparent 74%
+),
+linear-gradient(
+72deg,
+transparent 8%,
+rgba(106,78,66,.035) 34%,
+transparent 58%
+);
+
+opacity:.52;
+
+filter:blur(var(--glass-blur-xl));
+
+transform:scale(1.12);
 
 }
 

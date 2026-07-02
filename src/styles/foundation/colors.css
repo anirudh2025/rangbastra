@@ -14,6 +14,7 @@ PRIMITIVE PALETTE
 ========================================================*/
 
 --obsidian-950:#050505;
+--obsidian-1000:#000000;
 --obsidian-900:#090909;
 --obsidian-850:#0D0D0D;
 --obsidian-800:#121212;
@@ -42,7 +43,7 @@ SURFACES
 ========================================================*/
 
 --surface-canvas:
-var(--obsidian-950);
+var(--obsidian-1000);
 
 --surface-base:
 rgba(255,255,255,.02);
@@ -148,9 +149,25 @@ GRADIENTS
 --gradient-primary:
 linear-gradient(
 135deg,
-#050505 0%,
+var(--obsidian-1000) 0%,
 #141110 42%,
 #6A4E42 100%
+);
+
+--gradient-brand-text:
+linear-gradient(
+135deg,
+var(--ivory-50),
+var(--sand-300),
+var(--cocoa-500)
+);
+
+--gradient-obsidian:
+linear-gradient(
+180deg,
+var(--obsidian-1000) 0%,
+var(--cocoa-900) 48%,
+var(--obsidian-1000) 100%
 );
 
 --gradient-gold:
@@ -173,6 +190,23 @@ radial-gradient(
 circle at top,
 rgba(106,78,66,.18),
 transparent 72%
+);
+
+--gradient-ambient-cocoa:
+radial-gradient(
+circle at center,
+rgba(106,78,66,.16),
+transparent 68%
+);
+
+--gradient-satin-fold:
+linear-gradient(
+135deg,
+transparent 0%,
+rgba(106,78,66,.06) 28%,
+rgba(181,147,130,.035) 46%,
+rgba(62,43,35,.06) 64%,
+transparent 100%
 );
 
 --gradient-glass:

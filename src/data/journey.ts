@@ -1,8 +1,3 @@
-import Sparkles from "../components/icons/journey/Sparkles.astro";
-import Needle from "../components/icons/journey/Needle.astro";
-import Thread from "../components/icons/journey/Thread.astro";
-import Crown from "../components/icons/journey/Crown.astro";
-
 export interface JourneyStep{
 
     id:number;
@@ -11,7 +6,7 @@ export interface JourneyStep{
 
     description:string;
 
-    icon:any;
+    icon:string;
 
     image:string;
 

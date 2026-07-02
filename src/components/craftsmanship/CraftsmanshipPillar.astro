@@ -1,0 +1,149 @@
+---
+import Icon from "../primitives/Icon.astro";
+
+interface Props {
+  index: number;
+  title: string;
+  description: string;
+  icon: string;
+}
+
+const { index, title, description, icon } = Astro.props;
+---
+
+<article class="craftsmanship-pillar">
+  <span class="number">{String(index).padStart(2, "0")}</span>
+
+  <div class="icon" aria-hidden="true">
+    <Icon
+      name={icon}
+      size={30}
+      color="currentColor"
+    />
+  </div>
+
+  <div class="content">
+    <h3>{title}</h3>
+
+    <p>{description}</p>
+  </div>
+</article>
+
+<style>
+  .craftsmanship-pillar {
+    display: grid;
+    grid-template-columns: minmax(var(--space-8), .34fr) auto minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(var(--space-4), 3vw, var(--space-8));
+    padding-block: clamp(var(--space-5), 4vw, var(--space-8));
+    border-top: 1px solid var(--border-default);
+    transition:
+      border-color var(--motion-medium) var(--ease-luxury),
+      transform var(--motion-medium) var(--ease-luxury);
+  }
+
+  .craftsmanship-pillar:last-child {
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .craftsmanship-pillar:hover {
+    border-color: var(--border-strong);
+    transform: translateX(var(--motion-distance-xs));
+  }
+
+  .number {
+    color: var(--text-disabled);
+    font-family: var(--font-display);
+    font-size: var(--title-lg);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+    transition:
+      color var(--motion-medium) var(--ease-luxury),
+      text-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  .icon {
+    display: grid;
+    width: clamp(var(--space-8), 4vw, var(--space-10));
+    height: clamp(var(--space-8), 4vw, var(--space-10));
+    place-items: center;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-circle);
+    background: var(--surface-glass);
+    color: var(--sand-300);
+    box-shadow: var(--shadow-inset);
+    transition:
+      color var(--motion-medium) var(--ease-luxury),
+      border-color var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury),
+      transform var(--motion-medium) var(--ease-luxury);
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: minmax(12rem, .72fr) minmax(0, 1fr);
+    align-items: baseline;
+    gap: clamp(var(--space-4), 4vw, var(--space-9));
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3vw, 3rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-title);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+    transition: color var(--motion-medium) var(--ease-luxury);
+  }
+
+  p {
+    max-width: var(--measure-xs);
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+    transition: color var(--motion-medium) var(--ease-luxury);
+  }
+
+  .craftsmanship-pillar:hover .number {
+    color: var(--text-muted);
+    text-shadow: var(--glow-soft);
+  }
+
+  .craftsmanship-pillar:hover .icon {
+    transform: scale(var(--scale-hover));
+    border-color: var(--border-strong);
+    color: var(--ivory-100);
+    box-shadow: var(--glow-soft), var(--shadow-inset-strong);
+  }
+
+  .craftsmanship-pillar:hover h3,
+  .craftsmanship-pillar:hover p {
+    color: var(--ivory-100);
+  }
+
+  @media (max-width: 1023px) {
+    .craftsmanship-pillar {
+      grid-template-columns: minmax(var(--space-7), auto) auto;
+    }
+
+    .content {
+      grid-column: 1 / -1;
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+      padding-left: calc(clamp(var(--space-8), 4vw, var(--space-10)) + var(--space-4));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .craftsmanship-pillar {
+      gap: var(--space-4);
+      padding-block: var(--space-6);
+    }
+
+    .content {
+      padding-left: 0;
+    }
+  }
+</style>

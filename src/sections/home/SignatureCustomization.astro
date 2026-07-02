@@ -1,0 +1,68 @@
+---
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import SignatureCustomizationHeader from "../../components/signature-customization/SignatureCustomizationHeader.astro";
+import SignatureCustomizationPrinciples from "../../components/signature-customization/SignatureCustomizationPrinciples.astro";
+import SignatureCustomizationVisual from "../../components/signature-customization/SignatureCustomizationVisual.astro";
+---
+
+<Section class="signature-customization-section">
+  <Container class="signature-customization-container">
+    <div class="chapter">
+      <SignatureCustomizationHeader />
+
+      <SignatureCustomizationVisual />
+    </div>
+
+    <SignatureCustomizationPrinciples />
+  </Container>
+</Section>
+
+<style>
+  :global(.signature-customization-section) {
+    --section-padding-block: clamp(var(--space-11), 12vw, var(--space-14));
+
+    overflow: hidden;
+    background: var(--surface-canvas);
+  }
+
+  :global(.signature-customization-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    gap: clamp(var(--space-9), 8vw, var(--space-13));
+  }
+
+  .chapter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, .42fr);
+    gap: clamp(var(--space-8), 8vw, var(--space-13));
+    align-items: end;
+  }
+
+  @media (max-width: 1023px) {
+    .chapter {
+      grid-template-columns: minmax(0, 1fr) minmax(16rem, .54fr);
+      gap: var(--space-8);
+    }
+  }
+
+  @media (max-width: 767px) {
+    :global(.signature-customization-section) {
+      --section-padding-block: clamp(var(--space-9), 18vw, var(--space-12));
+    }
+
+    :global(.signature-customization-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      gap: var(--space-8);
+    }
+
+    .chapter {
+      grid-template-columns: 1fr;
+      gap: var(--space-7);
+    }
+  }
+</style>

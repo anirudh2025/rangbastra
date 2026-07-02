@@ -7,97 +7,40 @@ import JourneyTimeline from "./JourneyTimeline.astro";
 ---
 
 <Section class="journey-section">
+  <Container class="journey-container">
+    <JourneyHeader />
 
-    <Container class="journey-container">
-
-        <JourneyHeader />
-
-        <JourneyTimeline />
-
-    </Container>
-
+    <JourneyTimeline />
+  </Container>
 </Section>
 
 <style>
+  :global(.journey-section) {
+    --section-padding-block: clamp(var(--space-10), 10vw, var(--space-14));
 
-.journey-section{
+    overflow: hidden;
+    background: var(--surface-canvas);
+  }
 
-    /*
-    =====================================================
-    SECTION TOKENS
-    =====================================================
-    */
+  :global(.journey-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
 
-    --journey-background:
-        linear-gradient(
-            180deg,
-            transparent,
-            rgba(106,78,66,.035),
-            rgba(106,78,66,.055),
-            rgba(106,78,66,.035),
-            transparent
-        );
+    position: relative;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(var(--space-8), 7vw, var(--space-12));
+  }
 
-    --journey-gap:
-        clamp(
-            4rem,
-            6vw,
-            6rem
-        );
+  @media (max-width: 767px) {
+    :global(.journey-section) {
+      --section-padding-block: clamp(var(--space-9), 18vw, var(--space-12));
+    }
 
-    --journey-max-width:
-        1180px;
-
-    position:relative;
-
-    overflow:hidden;
-
-    background:var(--journey-background);
-
-}
-
-.journey-container{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:var(--journey-gap);
-
-    width:100%;
-
-    max-width:var(--journey-max-width);
-
-    margin-inline:auto;
-
-    position:relative;
-
-    z-index:2;
-
-}
-
-.journey-section::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    pointer-events:none;
-
-    background:
-
-        radial-gradient(
-
-            circle at top,
-
-            rgba(255,255,255,.018),
-
-            transparent 70%
-
-        );
-
-}
-
+    :global(.journey-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      gap: var(--space-8);
+    }
+  }
 </style>

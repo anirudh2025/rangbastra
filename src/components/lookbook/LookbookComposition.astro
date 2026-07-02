@@ -1,0 +1,40 @@
+---
+import { lookbookStories } from "../../data/lookbook";
+import LookbookFrame from "./LookbookFrame.astro";
+---
+
+<div class="lookbook-composition">
+  {
+    lookbookStories.map((story) => (
+      <LookbookFrame
+        title={story.title}
+        caption={story.caption}
+        image={story.image}
+        variant={story.variant}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .lookbook-composition {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: clamp(var(--space-4), 2vw, var(--space-6));
+    align-items: start;
+  }
+
+  @media (max-width: 1023px) {
+    .lookbook-composition {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .lookbook-composition {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+  }
+</style>

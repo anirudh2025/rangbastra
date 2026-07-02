@@ -1,0 +1,89 @@
+---
+import { signatureCustomizationImage } from "../../data/signatureCustomization";
+---
+
+<figure class="signature-visual">
+  <div class="image-frame">
+    <img
+      src={signatureCustomizationImage.src}
+      alt={signatureCustomizationImage.alt}
+      width="900"
+      height="1200"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+
+  <figcaption>
+    Not selected from a rack. Shaped until it feels inevitable.
+  </figcaption>
+</figure>
+
+<style>
+  .signature-visual {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    max-width: min(100%, 34rem);
+  }
+
+  .signature-visual::before {
+    content: "";
+    position: absolute;
+    inset: var(--space-6) auto auto calc(var(--space-8) * -1);
+    z-index: -1;
+    width: 68%;
+    aspect-ratio: 1;
+    border-radius: var(--radius-circle);
+    background: var(--gradient-radial);
+    opacity: .74;
+    filter: blur(var(--glass-blur-xl));
+  }
+
+  .image-frame {
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-3xl);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-floating), var(--shadow-inset);
+  }
+
+  img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    object-fit: cover;
+    transform: scale(1.02);
+    transition: transform var(--motion-luxury) var(--ease-luxury);
+  }
+
+  .signature-visual:hover img {
+    transform: scale(1);
+  }
+
+  figcaption {
+    max-width: 30ch;
+    color: var(--text-muted);
+    font-size: var(--caption);
+    line-height: var(--leading-caption);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1023px) {
+    .signature-visual {
+      max-width: min(100%, 28rem);
+      justify-self: end;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .signature-visual {
+      max-width: 100%;
+      justify-self: stretch;
+    }
+
+    .image-frame {
+      border-radius: var(--radius-xl);
+    }
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import LookbookHeader from "../../components/lookbook/LookbookHeader.astro";
+import LookbookComposition from "../../components/lookbook/LookbookComposition.astro";
+---
+
+<Section class="lookbook-section">
+  <Container class="lookbook-container">
+    <LookbookHeader />
+
+    <LookbookComposition />
+  </Container>
+</Section>
+
+<style>
+  :global(.lookbook-section) {
+    --section-padding-block: clamp(var(--space-11), 12vw, var(--space-14));
+
+    overflow: hidden;
+  }
+
+  :global(.lookbook-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    gap: clamp(var(--space-9), 8vw, var(--space-13));
+  }
+
+  @media (max-width: 767px) {
+    :global(.lookbook-section) {
+      --section-padding-block: clamp(var(--space-9), 18vw, var(--space-12));
+    }
+
+    :global(.lookbook-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      gap: var(--space-8);
+    }
+  }
+</style>
