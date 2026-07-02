@@ -1,123 +1,196 @@
 ---
-interface Props{
-    title:string;
-    subtitle:string;
-    image:string;
-    href:string;
+interface Props {
+  title: string;
+  subtitle: string;
+  image: string;
+  href: string;
 }
 
-const {title,subtitle,image,href}=Astro.props;
+const { title, subtitle, image, href } = Astro.props;
 ---
 
 <a href={href} class="card">
+  <img
+    src={image}
+    alt={title}
+    width="900"
+    height="1125"
+    loading="lazy"
+    decoding="async"
+  />
 
-    <img
-        src={image}
-        alt={title}
-    />
+  <span class="shine" aria-hidden="true"></span>
 
-    <div class="overlay">
+  <span class="overlay">
+    <span class="subtitle">{subtitle}</span>
 
-        <span>{subtitle}</span>
+    <h3>{title}</h3>
 
-        <h3>{title}</h3>
-
-    </div>
-
+    <span class="cta">View Collection</span>
+  </span>
 </a>
 
 <style>
+  .card {
+    --collection-card-overlay: var(--gradient-overlay);
+    --collection-card-sheen: var(--gradient-glass);
 
-.card{
+    position: relative;
+    display: block;
+    overflow: hidden;
+    isolation: isolate;
+    aspect-ratio: 3 / 4;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: var(--surface-raised);
+    box-shadow: var(--elevation-2), var(--shadow-inset);
+    transition:
+      transform var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury),
+      border-color var(--motion-medium) var(--ease-luxury);
+  }
 
-position:relative;
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      var(--collection-card-overlay),
+      var(--collection-card-sheen);
+    opacity: .94;
+    transition: opacity var(--motion-medium) var(--ease-luxury);
+  }
 
-display:block;
+  .card:hover,
+  .card:focus-visible {
+    transform: translateY(var(--hover-lift-soft));
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-premium), var(--glow-soft), var(--shadow-inset-strong);
+  }
 
-overflow:hidden;
+  .card:hover::after,
+  .card:focus-visible::after {
+    opacity: 1;
+  }
 
-border-radius:28px;
+  .card:active {
+    transform: scale(var(--active-scale));
+  }
 
-aspect-ratio:4/5;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.01);
+    transition: transform var(--motion-slow) var(--ease-luxury);
+  }
 
-background:#111;
+  .card:hover img,
+  .card:focus-visible img {
+    transform: scale(var(--hover-scale-image));
+  }
 
-transition:
-transform .45s ease,
-box-shadow .45s ease;
+  .shine {
+    position: absolute;
+    inset: 1px;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: calc(var(--radius-xl) - 1px);
+    background: var(--gradient-glass);
+    opacity: 0;
+    transform: translateX(-28%);
+    transition:
+      opacity var(--motion-medium) var(--ease-luxury),
+      transform var(--motion-luxury) var(--ease-luxury);
+  }
 
-}
+  .card:hover .shine,
+  .card:focus-visible .shine {
+    opacity: .38;
+    transform: translateX(28%);
+  }
 
-.card:hover{
+  .overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: clamp(var(--space-4), 2vw, var(--space-7));
+  }
 
-transform:translateY(-6px);
+  .subtitle,
+  .cta {
+    color: var(--sand-300);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-caption);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
 
-box-shadow:0 30px 80px rgba(0,0,0,.35);
+  h3 {
+    max-width: 11ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 2.05vw, 2.15rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
 
-}
+  .cta {
+    display: inline-flex;
+    width: fit-content;
+    margin-top: var(--space-1);
+    color: var(--ivory-100);
+    opacity: 0;
+    transform: translateY(var(--distance-xs));
+    transition:
+      opacity var(--motion-base) var(--ease-luxury),
+      transform var(--motion-base) var(--ease-luxury);
+  }
 
-img{
+  .cta::after {
+    content: "";
+    align-self: center;
+    width: var(--space-6);
+    height: 1px;
+    margin-left: var(--space-3);
+    background: currentColor;
+    transform-origin: left;
+    transform: scaleX(.65);
+    transition: transform var(--motion-base) var(--ease-luxury);
+  }
 
-width:100%;
+  .card:hover .cta,
+  .card:focus-visible .cta {
+    opacity: .9;
+    transform: translateY(0);
+  }
 
-height:auto;
+  .card:hover .cta::after,
+  .card:focus-visible .cta::after {
+    transform: scaleX(1);
+  }
 
-object-fit:cover;
+  @media (max-width: 767px) {
+    .overlay {
+      gap: var(--space-2);
+      padding: var(--space-4);
+    }
 
-transition:transform .7s ease;
+    h3 {
+      max-width: 9ch;
+      font-size: clamp(1.18rem, 6.4vw, 1.55rem);
+    }
 
-}
-
-.card:hover img{
-
-transform:scale(1.02);
-
-}
-
-.overlay{
-
-position:absolute;
-
-inset:0;
-
-display:flex;
-
-flex-direction:column;
-
-justify-content:flex-end;
-
-padding:2rem;
-
-background:linear-gradient(
-180deg,
-transparent,
-rgba(0,0,0,.75)
-);
-
-}
-
-span{
-
-font-size:.82rem;
-
-letter-spacing:.15em;
-
-text-transform:uppercase;
-
-color:#D8B58A;
-
-margin-bottom:.5rem;
-
-}
-
-h3{
-
-font-family:var(--font-display);
-
-font-size:2rem;
-
-color:white;
-
-}
-
+    .cta {
+      display: none;
+    }
+  }
 </style>

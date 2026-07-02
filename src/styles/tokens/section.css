@@ -8,10 +8,6 @@ SECTION TOKENS
 
 :root{
 
---section-padding-block:var(--section-padding-block);
-
---section-padding-inline:var(--section-padding-inline);
-
 --section-title-gap:var(--space-6);
 
 --section-content-gap:var(--space-8);

@@ -6,9 +6,9 @@ import CollectionHeader from "../../components/collections/CollectionHeader.astr
 import CollectionGrid from "../../components/collections/CollectionGrid.astro";
 ---
 
-<Section>
+<Section class="featured-collections-section">
 
-    <Container>
+    <Container class="featured-collections-container">
 
         <CollectionHeader />
 
@@ -17,3 +17,26 @@ import CollectionGrid from "../../components/collections/CollectionGrid.astro";
     </Container>
 
 </Section>
+
+<style>
+    :global(.featured-collections-section) {
+        --section-padding-block: clamp(var(--space-8), 6vw, var(--space-10));
+
+        overflow: hidden;
+    }
+
+    :global(.featured-collections-container) {
+        --container-default: var(--container-wide);
+        --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+    }
+
+    @media (max-width: 767px) {
+        :global(.featured-collections-section) {
+            --section-padding-block: clamp(var(--space-9), 18vw, var(--space-11));
+        }
+
+        :global(.featured-collections-container) {
+            --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+        }
+    }
+</style>

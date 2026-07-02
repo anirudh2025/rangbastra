@@ -1,78 +1,66 @@
 ---
 ---
 
-<div class="header">
+<header class="header">
+  <span class="eyebrow">Featured Collections</span>
 
-    <span>
+  <h2>Crafted For Every Celebration</h2>
 
-        Featured Collections
-
-    </span>
-
-    <h2>
-
-        Crafted For Every Celebration.
-
-    </h2>
-
-    <p>
-
-        Discover signature couture collections designed to celebrate every unforgettable moment.
-
-    </p>
-
-</div>
+  <p>
+    Discover signature couture collections designed to celebrate every
+    unforgettable moment.
+  </p>
+</header>
 
 <style>
+  .header {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-4);
+    max-width: var(--measure-md);
+    margin: 0 auto clamp(var(--space-8), 6vw, var(--space-11));
+    text-align: center;
+  }
 
-.header{
+  .eyebrow {
+    display: inline-block;
+    color: var(--cocoa-400);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
 
-max-width:700px;
+  h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 4.5vw, 4.75rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-heading);
+    letter-spacing: var(--tracking-heading);
+    text-wrap: balance;
+  }
 
-margin:0 auto 4rem;
+  p {
+    max-width: var(--measure-xs);
+    margin-inline: auto;
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
 
-text-align:center;
+  @media (max-width: 767px) {
+    .header {
+      justify-items: start;
+      gap: var(--space-3);
+      margin-bottom: var(--space-7);
+      text-align: left;
+    }
 
-}
-
-span{
-
-display:inline-block;
-
-margin-bottom:1rem;
-
-color:var(--accent);
-
-text-transform:uppercase;
-
-letter-spacing:.2em;
-
-font-size:.82rem;
-
-font-weight:600;
-
-}
-
-h2{
-
-font-family:var(--font-display);
-
-font-size:clamp(1.5rem,5vw,4rem);
-
-font-weight:300;
-
-margin-bottom:1rem;
-
-line-height:1.2;
-
-}
-
-p{
-
-color:var(--text-secondary);
-
-line-height:1.3;
-
-}
-
+    h2 {
+      font-size: clamp(2.1rem, 12vw, 3.25rem);
+    }
+  }
 </style>

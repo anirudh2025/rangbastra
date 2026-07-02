@@ -3,42 +3,76 @@ import { collections } from "../../data/collections";
 import CollectionCard from "./CollectionCard.astro";
 ---
 
-<div class="grid">
-
-{
-collections.map((collection)=>(
-
-<CollectionCard
-
-{...collection}
-
-/>
-
-))
-}
-
+<div class="collection-rail" aria-label="Featured collections">
+  <ul class="collection-track">
+    {
+      collections.map((collection) => (
+        <li class="collection-item">
+          <CollectionCard {...collection} />
+        </li>
+      ))
+    }
+  </ul>
 </div>
 
 <style>
+  .collection-rail {
+    --collection-gap: clamp(var(--space-4), 1.8vw, var(--space-6));
+    --collection-columns: 4;
+    --collection-rail-padding: var(--space-1);
 
-.grid{
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+    padding-inline: var(--collection-rail-padding);
+    padding-block: var(--space-3) var(--space-8);
+  }
 
-display:grid;
+  .collection-rail::-webkit-scrollbar {
+    display: none;
+  }
 
-grid-template-columns:repeat(2,1fr);
+  .collection-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc(
+      (100% - (var(--collection-gap) * (var(--collection-columns) - 1))) /
+        var(--collection-columns)
+    );
+    gap: var(--collection-gap);
+    min-width: 100%;
+  }
 
-gap:2rem;
+  .collection-item {
+    min-width: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
 
-}
+  @media (max-width: 767px) {
+    .collection-rail {
+      --collection-columns: 2;
+      --collection-gap: var(--space-3);
+      --collection-rail-padding: 0;
 
-@media(max-width:768px){
+      padding-block: var(--space-2) var(--space-7);
+    }
+  }
 
-.grid{
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .collection-rail {
+      --collection-columns: 4;
+      --collection-gap: var(--space-4);
+    }
+  }
 
-grid-template-columns:1fr;
-
-}
-
-}
-
+  @media (min-width: 1024px) {
+    .collection-rail {
+      --collection-columns: 4;
+    }
+  }
 </style>
