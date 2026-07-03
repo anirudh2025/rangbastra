@@ -20,7 +20,7 @@ import CollectionGrid from "../../components/collections/CollectionGrid.astro";
 
 <style>
     :global(.featured-collections-section) {
-        --section-padding-block: clamp(var(--space-10), 9vw, var(--space-13));
+        --section-padding-block: clamp(var(--space-4), 9vw, var(--space-8));
 
         overflow: hidden;
     }
@@ -32,7 +32,7 @@ import CollectionGrid from "../../components/collections/CollectionGrid.astro";
 
     @media (max-width: 767px) {
         :global(.featured-collections-section) {
-            --section-padding-block: clamp(var(--space-9), 18vw, var(--space-11));
+            --section-padding-block: clamp(var(--space-4), 12vw, var(--space-8));
         }
 
         :global(.featured-collections-container) {

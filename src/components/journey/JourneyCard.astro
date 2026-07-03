@@ -18,6 +18,18 @@ const {
   image,
   revealSide = "right",
 } = Astro.props;
+
+// Create a responsive srcset for Cloudinary-hosted images (if possible)
+const makeSrcset = (url?: string): string | null => {
+  if (!url || !url.includes("/upload/")) return null;
+  const widths = [480, 800, 1200, 1600];
+  return widths
+    .map((w) => url.replace("/upload/", `/upload/w_${w}/`) + ` ${w}w`)
+    .join(", ");
+};
+
+const srcset = makeSrcset(image);
+const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
 ---
 
 <article class:list={["journey-card", `journey-card--reveal-${revealSide}`]}>
@@ -31,6 +43,8 @@ const {
       height="1000"
       loading="lazy"
       decoding="async"
+      srcset={srcset}
+      sizes={srcset ? sizesAttr : undefined}
     />
   </div>
 
@@ -146,10 +160,12 @@ const {
     opacity: .42;
     pointer-events: none;
     filter: saturate(.78);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     transition:
       opacity var(--motion-luxury) var(--ease-luxury),
-      transform var(--motion-luxury) var(--ease-luxury),
-      filter var(--motion-luxury) var(--ease-luxury);
+      transform var(--motion-luxury) var(--ease-luxury);
   }
 
   .journey-card--reveal-right .image-panel {
@@ -189,7 +205,10 @@ const {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scale(1.02);
+    transform: translateZ(0) scale(1.02);
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     transition: transform var(--motion-luxury) var(--ease-luxury);
   }
 
