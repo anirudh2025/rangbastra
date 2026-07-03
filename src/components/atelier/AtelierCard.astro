@@ -1,0 +1,283 @@
+---
+interface Props {
+  step: number;
+  title: string;
+  description: string;
+}
+
+const { step, title, description } = Astro.props;
+---
+
+<article class="atelier-card">
+  <div class="number-wrap" aria-hidden="true">
+    <span class="number">{String(step).padStart(2, "0")}</span>
+  </div>
+
+  <div class="card-surface">
+    <span class="kicker">Chapter {String(step).padStart(2, "0")}</span>
+
+    <div class="content">
+      <h3>{title}</h3>
+      <span class="divider" aria-hidden="true"></span>
+      <p>{description}</p>
+    </div>
+  </div>
+</article>
+
+<style>
+  .atelier-card {
+    --atelier-card-padding: clamp(var(--space-5), 3vw, var(--space-8));
+    --atelier-number-size: clamp(3.8rem, 7vw, 7rem);
+
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(var(--space-4), 3vw, var(--space-6));
+    align-items: center;
+    isolation: isolate;
+  }
+
+  .atelier-card::before {
+    content: "";
+    position: absolute;
+    inset: -18% -8%;
+    z-index: -1;
+    background: radial-gradient(
+      circle at center,
+      rgba(129, 99, 84, .18),
+      transparent 64%
+    );
+    opacity: .62;
+    filter: blur(18px);
+    transition: opacity var(--motion-medium) var(--ease-luxury);
+  }
+
+  .number-wrap {
+    position: relative;
+    display: grid;
+    width: clamp(5.5rem, 9vw, 9rem);
+    min-height: clamp(7rem, 10vw, 10rem);
+    place-items: center;
+  }
+
+  .number-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 8% 48%;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(181, 147, 130, .66),
+      transparent
+    );
+    box-shadow: var(--glow-soft);
+    transition:
+      background var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  .number {
+    position: relative;
+    z-index: 1;
+    color: var(--sand-300);
+    font-family: var(--font-display);
+    font-size: var(--atelier-number-size);
+    font-weight: var(--weight-light);
+    line-height: 1;
+    text-shadow: var(--glow-cocoa-neon);
+    animation: atelier-number-pulse 4200ms var(--ease-luxury) infinite;
+    transition:
+      color var(--motion-medium) var(--ease-luxury),
+      text-shadow var(--motion-medium) var(--ease-luxury),
+      transform var(--motion-medium) var(--ease-luxury);
+  }
+
+  .card-surface {
+    position: relative;
+    display: grid;
+    min-height: clamp(17rem, 24vw, 23rem);
+    overflow: hidden;
+    align-content: end;
+    gap: clamp(var(--space-7), 5vw, var(--space-10));
+    padding: var(--atelier-card-padding);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-2xl);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .07), transparent 34%),
+      var(--gradient-obsidian);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+    transition:
+      transform var(--motion-medium) var(--ease-luxury),
+      border-color var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  .card-surface::before,
+  .card-surface::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .card-surface::before {
+    inset: 0;
+    background:
+      radial-gradient(circle at 18% 8%, rgba(181, 147, 130, .16), transparent 38%),
+      radial-gradient(circle at 88% 92%, rgba(106, 78, 66, .18), transparent 42%);
+    opacity: .72;
+    transition: opacity var(--motion-medium) var(--ease-luxury);
+  }
+
+  .card-surface::after {
+    inset: 0;
+    background: var(--gradient-satin-fold);
+    opacity: .42;
+    mix-blend-mode: screen;
+  }
+
+  .kicker,
+  .content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .kicker {
+    align-self: start;
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .content {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure-xs);
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 2.8vw, 3rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-title);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .divider {
+    width: clamp(var(--space-8), 10vw, var(--space-12));
+    height: 1px;
+    background: linear-gradient(90deg, var(--cocoa-400), transparent);
+    box-shadow: var(--glow-soft);
+    transform-origin: left;
+    transition:
+      transform var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+    transition: color var(--motion-medium) var(--ease-luxury);
+  }
+
+  .atelier-card:hover::before,
+  .atelier-card:focus-within::before {
+    opacity: .92;
+  }
+
+  .atelier-card:hover .card-surface,
+  .atelier-card:focus-within .card-surface {
+    transform: translateY(var(--hover-lift-soft));
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-premium), var(--glow-strong), var(--shadow-inset-strong);
+  }
+
+  .atelier-card:hover .card-surface::before,
+  .atelier-card:focus-within .card-surface::before {
+    opacity: .96;
+  }
+
+  .atelier-card:hover .number-wrap::before,
+  .atelier-card:focus-within .number-wrap::before {
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(221, 208, 198, .88),
+      transparent
+    );
+    box-shadow: var(--glow-cocoa-neon);
+  }
+
+  .atelier-card:hover .number,
+  .atelier-card:focus-within .number {
+    color: var(--ivory-100);
+    text-shadow: var(--glow-cocoa-neon), var(--glow-gold);
+    transform: translateY(-2px);
+  }
+
+  .atelier-card:hover .divider,
+  .atelier-card:focus-within .divider {
+    transform: scaleX(1.28);
+    box-shadow: var(--glow-medium);
+  }
+
+  .atelier-card:hover p,
+  .atelier-card:focus-within p {
+    color: var(--text-primary);
+  }
+
+  @keyframes atelier-number-pulse {
+    0%,
+    100% {
+      opacity: .86;
+      text-shadow: var(--glow-soft);
+    }
+
+    48% {
+      opacity: 1;
+      text-shadow: var(--glow-cocoa-neon);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .number {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .atelier-card {
+      --atelier-card-padding: var(--space-5);
+      --atelier-number-size: clamp(3rem, 16vw, 4.8rem);
+
+      grid-template-columns: clamp(4rem, 18vw, 5.5rem) minmax(0, 1fr);
+      gap: var(--space-3);
+      align-items: start;
+    }
+
+    .number-wrap {
+      width: auto;
+      min-height: 100%;
+      padding-top: var(--space-2);
+    }
+
+    .number-wrap::before {
+      inset: 0 auto;
+      left: 50%;
+      height: 100%;
+    }
+
+    .card-surface {
+      min-height: 18rem;
+      gap: var(--space-6);
+      border-radius: var(--radius-xl);
+    }
+  }
+</style>

@@ -1,0 +1,106 @@
+---
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import BrideStoriesHeader from "../../components/bride-stories/BrideStoriesHeader.astro";
+import BrideStoriesList from "../../components/bride-stories/BrideStoriesList.astro";
+---
+
+<Section class="bride-stories-section">
+  <Container class="bride-stories-container">
+    <BrideStoriesHeader />
+
+    <BrideStoriesList />
+  </Container>
+</Section>
+
+<style>
+  :global(.bride-stories-section) {
+    --section-padding-block: clamp(var(--space-11), 12vw, var(--space-14));
+    --bride-stories-background: #000000;
+    --bride-stories-cocoa-glow-opacity: .18;
+    --bride-stories-satin-opacity: .42;
+    --bride-stories-container-gap: clamp(var(--space-9), 9vw, var(--space-13));
+
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 18% 18%,
+        rgba(106, 78, 66, var(--bride-stories-cocoa-glow-opacity)),
+        transparent 34%
+      ),
+      radial-gradient(
+        circle at 86% 58%,
+        rgba(181, 147, 130, .1),
+        transparent 32%
+      ),
+      var(--bride-stories-background);
+    isolation: isolate;
+  }
+
+  :global(.bride-stories-section)::before,
+  :global(.bride-stories-section)::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  :global(.bride-stories-section)::before {
+    top: 12%;
+    left: -12%;
+    width: min(46rem, 62vw);
+    height: min(58rem, 70vw);
+    background: var(--gradient-satin-fold);
+    opacity: var(--bride-stories-satin-opacity);
+    transform: rotate(18deg);
+  }
+
+  :global(.bride-stories-section)::after {
+    right: -18%;
+    bottom: 8%;
+    width: min(54rem, 68vw);
+    height: min(36rem, 48vw);
+    background:
+      linear-gradient(145deg, transparent, rgba(181, 147, 130, .055), transparent),
+      var(--gradient-satin-fold);
+    opacity: calc(var(--bride-stories-satin-opacity) * .76);
+    transform: rotate(-12deg);
+  }
+
+  :global(.bride-stories-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    gap: var(--bride-stories-container-gap);
+  }
+
+  @media (max-width: 767px) {
+    :global(.bride-stories-section) {
+      --section-padding-block: clamp(var(--space-9), 18vw, var(--space-12));
+      --bride-stories-cocoa-glow-opacity: .14;
+      --bride-stories-satin-opacity: .28;
+    }
+
+    :global(.bride-stories-section)::before {
+      top: 8%;
+      left: -48%;
+      width: 32rem;
+      height: 42rem;
+    }
+
+    :global(.bride-stories-section)::after {
+      right: -52%;
+      bottom: 4%;
+      width: 34rem;
+      height: 24rem;
+    }
+
+    :global(.bride-stories-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      --bride-stories-container-gap: var(--space-8);
+    }
+  }
+</style>

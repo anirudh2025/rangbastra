@@ -1,0 +1,100 @@
+---
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import AtelierHeader from "../../components/atelier/AtelierHeader.astro";
+import AtelierTimeline from "../../components/atelier/AtelierTimeline.astro";
+---
+
+<Section class="atelier-experience-section">
+  <Container class="atelier-experience-container">
+    <AtelierHeader />
+
+    <AtelierTimeline />
+  </Container>
+</Section>
+
+<style>
+  :global(.atelier-experience-section) {
+    --section-padding-block: clamp(var(--space-11), 12vw, var(--space-14));
+
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(106, 78, 66, .18), transparent 30%),
+      radial-gradient(circle at 86% 34%, rgba(181, 147, 130, .12), transparent 34%),
+      radial-gradient(circle at 42% 92%, rgba(106, 78, 66, .13), transparent 38%),
+      #000000;
+    isolation: isolate;
+  }
+
+  :global(.atelier-experience-section)::before,
+  :global(.atelier-experience-section)::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  :global(.atelier-experience-section)::before {
+    top: 8%;
+    right: -18%;
+    width: min(58rem, 72vw);
+    height: min(58rem, 72vw);
+    background:
+      var(--gradient-satin-fold),
+      linear-gradient(120deg, transparent, rgba(255, 255, 255, .035), transparent);
+    opacity: .62;
+    filter: blur(.5px);
+    transform: rotate(-18deg);
+  }
+
+  :global(.atelier-experience-section)::after {
+    bottom: -16%;
+    left: -14%;
+    width: min(46rem, 62vw);
+    height: min(34rem, 48vw);
+    background:
+      linear-gradient(155deg, transparent 10%, rgba(129, 99, 84, .09), transparent 72%),
+      var(--gradient-satin-fold);
+    opacity: .5;
+    transform: rotate(13deg);
+  }
+
+  :global(.atelier-experience-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(var(--space-9), 9vw, var(--space-13));
+  }
+
+  @media (max-width: 767px) {
+    :global(.atelier-experience-section) {
+      --section-padding-block: clamp(var(--space-9), 18vw, var(--space-12));
+    }
+
+    :global(.atelier-experience-section)::before {
+      top: 4%;
+      right: -42%;
+      width: 34rem;
+      height: 34rem;
+      opacity: .4;
+    }
+
+    :global(.atelier-experience-section)::after {
+      bottom: -10%;
+      left: -44%;
+      width: 30rem;
+      height: 22rem;
+      opacity: .34;
+    }
+
+    :global(.atelier-experience-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+
+      gap: var(--space-8);
+    }
+  }
+</style>

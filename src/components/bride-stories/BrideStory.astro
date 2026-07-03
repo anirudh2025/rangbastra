@@ -1,0 +1,308 @@
+---
+interface Props {
+  brideName: string;
+  city: string;
+  quote: string;
+  image: string;
+  imageAlt: string;
+  index: number;
+}
+
+const { brideName, city, quote, image, imageAlt, index } = Astro.props;
+const isReversed = index % 2 === 1;
+
+const makeSrcset = (url?: string): string | null => {
+  if (!url || !url.includes("/upload/")) return null;
+  const widths = [640, 960, 1280, 1600];
+
+  return widths
+    .map((width) => url.replace("/upload/", `/upload/w_${width}/`) + ` ${width}w`)
+    .join(", ");
+};
+
+const srcset = makeSrcset(image);
+const sizes = "(max-width: 767px) 92vw, (max-width: 1199px) 48vw, 44rem";
+---
+
+<article
+  class:list={[
+    "bride-story",
+    isReversed ? "bride-story--reversed" : "bride-story--standard",
+  ]}
+  style={`--story-reveal-delay: ${index * 120}ms`}
+>
+  <figure class="media">
+    <img
+      src={image}
+      alt={imageAlt}
+      width="1200"
+      height="1500"
+      loading="lazy"
+      decoding="async"
+      srcset={srcset}
+      sizes={srcset ? sizes : undefined}
+    />
+  </figure>
+
+  <div class="story-copy">
+    <span class="story-number">{String(index + 1).padStart(2, "0")}</span>
+
+    <blockquote>
+      <p>{quote}</p>
+    </blockquote>
+
+    <div class="bride-meta">
+      <span class="bride-name">{brideName}</span>
+      <span class="city">{city}</span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .bride-story {
+    --bride-story-grid: minmax(0, 1.06fr) minmax(20rem, .72fr);
+    --bride-story-gap: clamp(var(--space-7), 7vw, var(--space-12));
+    --bride-story-image-radius: var(--radius-2xl);
+    --bride-story-image-background: rgba(255, 255, 255, .025);
+    --bride-story-image-glow: var(--shadow-premium), var(--glow-soft);
+    --bride-story-copy-width: var(--measure-sm);
+    --bride-story-quote-size: clamp(1.8rem, 3.3vw, 4rem);
+    --bride-story-meta-gap: var(--space-2);
+
+    display: grid;
+    grid-template-columns: var(--bride-story-grid);
+    gap: var(--bride-story-gap);
+    align-items: center;
+    opacity: 0;
+    transform: translateY(var(--distance-md));
+    animation: bride-story-reveal var(--motion-editorial) var(--ease-luxury) forwards;
+    animation-delay: var(--story-reveal-delay);
+  }
+
+  .bride-story--reversed {
+    grid-template-columns: minmax(20rem, .72fr) minmax(0, 1.06fr);
+  }
+
+  .bride-story--reversed .media {
+    order: 2;
+  }
+
+  .bride-story--reversed .story-copy {
+    justify-self: end;
+    text-align: right;
+  }
+
+  .bride-story--reversed .bride-meta::before {
+    margin-left: auto;
+  }
+
+  .media {
+    position: relative;
+    display: grid;
+    overflow: hidden;
+    min-height: clamp(28rem, 48vw, 46rem);
+    padding: var(--bride-story-image-padding, clamp(var(--space-4), 2vw, var(--space-6)));
+    border: 1px solid var(--border-default);
+    border-radius: var(--bride-story-image-radius);
+    background:
+      radial-gradient(circle at 24% 20%, rgba(181, 147, 130, .12), transparent 38%),
+      var(--bride-story-image-background);
+    box-shadow: var(--bride-story-image-glow), var(--shadow-inset);
+    transition:
+      transform var(--motion-medium) var(--ease-luxury),
+      border-color var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  .media::before,
+  .media::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .media::before {
+    inset: 0;
+    background: var(--gradient-satin-fold);
+    opacity: var(--bride-story-satin-opacity, .38);
+    mix-blend-mode: screen;
+  }
+
+  .media::after {
+    inset: 0;
+    background: linear-gradient(180deg, transparent 52%, rgba(0, 0, 0, .48));
+    opacity: var(--bride-story-image-overlay-opacity, .46);
+    transition: opacity var(--motion-medium) var(--ease-luxury);
+  }
+
+  img {
+    position: relative;
+    z-index: 1;
+    align-self: center;
+    width: 100%;
+    max-height: min(70vh, 44rem);
+    object-fit: contain;
+    filter: saturate(var(--bride-story-image-saturation, .86));
+    transition:
+      transform var(--motion-luxury) var(--ease-luxury),
+      filter var(--motion-medium) var(--ease-luxury);
+  }
+
+  .story-copy {
+    display: grid;
+    gap: clamp(var(--space-5), 4vw, var(--space-8));
+    max-width: var(--bride-story-copy-width);
+  }
+
+  .story-number {
+    color: var(--cocoa-400);
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 8vw, 9rem);
+    font-weight: var(--weight-light);
+    line-height: .86;
+    opacity: var(--bride-story-number-opacity, .5);
+    text-shadow: var(--glow-soft);
+  }
+
+  blockquote {
+    margin: 0;
+  }
+
+  blockquote p {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: var(--bride-story-quote-size);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  blockquote p::before {
+    content: open-quote;
+  }
+
+  blockquote p::after {
+    content: close-quote;
+  }
+
+  .bride-meta {
+    display: grid;
+    gap: var(--bride-story-meta-gap);
+    color: var(--text-muted);
+  }
+
+  .bride-meta::before {
+    content: "";
+    width: clamp(var(--space-8), 10vw, var(--space-12));
+    height: 1px;
+    margin-bottom: var(--space-2);
+    background: linear-gradient(90deg, var(--cocoa-400), transparent);
+    box-shadow: var(--glow-soft);
+  }
+
+  .bride-story--reversed .bride-meta::before {
+    background: linear-gradient(270deg, var(--cocoa-400), transparent);
+  }
+
+  .bride-name {
+    color: var(--sand-200);
+    font-family: var(--font-signature);
+    font-size: clamp(1.75rem, 3vw, 3rem);
+    line-height: var(--leading-heading);
+    text-shadow: var(--glow-soft);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .city {
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .bride-story:hover .media,
+  .bride-story:focus-within .media {
+    transform: translateY(var(--hover-lift-soft));
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-premium), var(--glow-medium), var(--shadow-inset-strong);
+  }
+
+  .bride-story:hover .media::after,
+  .bride-story:focus-within .media::after {
+    opacity: .3;
+  }
+
+  .bride-story:hover img,
+  .bride-story:focus-within img {
+    transform: scale(1.015);
+    filter: saturate(1);
+  }
+
+  @keyframes bride-story-reveal {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bride-story {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .bride-story,
+    .bride-story--reversed {
+      --bride-story-grid: 1fr;
+
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    .bride-story--reversed .media {
+      order: 0;
+    }
+
+    .bride-story--reversed .story-copy {
+      justify-self: start;
+      text-align: left;
+    }
+
+    .bride-story--reversed .bride-meta::before {
+      margin-left: 0;
+      background: linear-gradient(90deg, var(--cocoa-400), transparent);
+    }
+
+    .media {
+      min-height: auto;
+    }
+
+    img {
+      max-height: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .bride-story {
+      gap: var(--space-5);
+    }
+
+    .media {
+      padding: var(--space-3);
+      border-radius: var(--radius-xl);
+    }
+
+    .story-copy {
+      gap: var(--space-5);
+    }
+
+    .story-number {
+      font-size: clamp(3.25rem, 18vw, 5.5rem);
+    }
+  }
+</style>

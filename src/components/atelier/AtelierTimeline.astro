@@ -1,0 +1,143 @@
+---
+import { atelierExperience } from "../../data/atelierExperience";
+import AtelierCard from "./AtelierCard.astro";
+---
+
+<div class="atelier-timeline">
+  {
+    atelierExperience.map((item, index) => (
+      <div
+        class:list={[
+          "timeline-item",
+          index % 2 === 0 ? "timeline-item--left" : "timeline-item--right",
+        ]}
+      >
+        <AtelierCard
+          step={item.id}
+          title={item.title}
+          description={item.description}
+        />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .atelier-timeline {
+    position: relative;
+    display: grid;
+    gap: clamp(var(--space-8), 8vw, var(--space-13));
+  }
+
+  .atelier-timeline::before {
+    content: "";
+    position: absolute;
+    inset-block: clamp(var(--space-8), 9vw, var(--space-12));
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(106, 78, 66, .52) 18%,
+      rgba(221, 208, 198, .28) 50%,
+      rgba(106, 78, 66, .52) 82%,
+      transparent
+    );
+    box-shadow: var(--glow-medium);
+    transform: translateX(-50%);
+  }
+
+  .timeline-item {
+    position: relative;
+    width: min(100%, 47rem);
+  }
+
+  .timeline-item--left {
+    justify-self: start;
+    padding-right: clamp(var(--space-8), 8vw, var(--space-13));
+  }
+
+  .timeline-item--right {
+    justify-self: end;
+    padding-left: clamp(var(--space-8), 8vw, var(--space-13));
+  }
+
+  .timeline-item--right :global(.atelier-card) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .timeline-item--right :global(.number-wrap) {
+    order: 2;
+  }
+
+  .timeline-item--right :global(.content) {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .timeline-item--right :global(.divider) {
+    margin-left: auto;
+    transform-origin: right;
+    background: linear-gradient(270deg, var(--cocoa-400), transparent);
+  }
+
+  @media (min-width: 1024px) {
+    .timeline-item--left {
+      transform: translateY(var(--space-2));
+    }
+
+    .timeline-item--right {
+      transform: translateY(calc(var(--space-2) * -1));
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .atelier-timeline {
+      gap: var(--space-8);
+    }
+
+    .atelier-timeline::before {
+      left: clamp(2rem, 9vw, 2.75rem);
+      transform: none;
+    }
+
+    .timeline-item,
+    .timeline-item--left,
+    .timeline-item--right {
+      width: 100%;
+      justify-self: stretch;
+      padding-inline: 0;
+      transform: none;
+    }
+
+    .timeline-item--right :global(.atelier-card) {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .timeline-item--right :global(.number-wrap) {
+      order: 0;
+    }
+
+    .timeline-item--right :global(.content) {
+      margin-left: 0;
+      text-align: left;
+    }
+
+    .timeline-item--right :global(.divider) {
+      margin-left: 0;
+      transform-origin: left;
+      background: linear-gradient(90deg, var(--cocoa-400), transparent);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .atelier-timeline {
+      gap: var(--space-7);
+    }
+
+    .atelier-timeline::before {
+      left: clamp(2rem, 9vw, 2.75rem);
+      inset-block: var(--space-4);
+    }
+  }
+</style>

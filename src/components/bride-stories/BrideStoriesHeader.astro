@@ -1,0 +1,81 @@
+<header class="bride-stories-header">
+  <span class="eyebrow">Bride Stories</span>
+
+  <h2>
+    <span class="title-intro">Moments Woven Into</span>
+    <span class="title-statement">Beautiful Memories</span>
+  </h2>
+
+  <p>
+    A quiet editorial archive of brides, celebrations and the pieces that
+    became part of their most meaningful day.
+  </p>
+</header>
+
+<style>
+  .bride-stories-header {
+    display: grid;
+    gap: var(--bride-stories-header-gap, var(--space-5));
+    max-width: var(--bride-stories-header-width, var(--measure-md));
+  }
+
+  .eyebrow {
+    color: var(--bride-stories-eyebrow-color, var(--cocoa-400));
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--bride-stories-title-gap, var(--space-2));
+    max-width: var(--bride-stories-title-width, min(100%, 54rem));
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: var(--section-heading-intro);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.18;
+  }
+
+  .title-statement {
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: var(--section-heading-statement);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.12;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--bride-stories-copy-width, var(--measure-sm));
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 767px) {
+    .bride-stories-header {
+      gap: var(--space-4);
+    }
+
+    .title-intro {
+      font-size: var(--section-heading-intro-mobile);
+    }
+
+    .title-statement {
+      font-size: var(--section-heading-statement-mobile);
+    }
+  }
+</style>

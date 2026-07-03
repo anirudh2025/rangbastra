@@ -1,0 +1,263 @@
+---
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import Button from "../../components/primitives/Button.astro";
+import Label from "../../components/primitives/Label.astro";
+---
+
+<Section class="luxury-consultation-section">
+  <Container class="luxury-consultation-container">
+    <div class="invitation">
+      <span class="eyebrow">Private Atelier Invitation</span>
+
+      <h2>
+        <span class="title-intro">Every Extraordinary Story</span>
+        <span class="title-statement">Begins With A Conversation</span>
+      </h2>
+
+      <p>
+        Step into a slower, more personal way of creating couture. In the quiet
+        intimacy of consultation, your traditions, memories and dreams begin to
+        take form as a Rangbastra piece made only for you.
+      </p>
+
+      <div class="actions" aria-label="Begin your Rangbastra couture journey">
+        <Button href="/consultation" class="consultation-primary">
+          <Label icon="sparkles">Schedule Your Consultation</Label>
+        </Button>
+
+        <Button href="/collections" class="consultation-secondary">
+          <Label icon="sparkles">Explore Collections</Label>
+        </Button>
+      </div>
+    </div>
+  </Container>
+</Section>
+
+<style>
+  :global(.luxury-consultation-section) {
+    --section-padding-block: clamp(var(--space-12), 16vw, var(--space-14));
+    --consultation-background: #000000;
+    --consultation-glow-opacity: .18;
+    --consultation-satin-opacity: .34;
+    --consultation-content-width: min(100%, 68rem);
+    --consultation-body-width: var(--measure-md);
+    --consultation-action-gap: var(--space-4);
+    --consultation-button-min-width: 15.5rem;
+
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 50% 32%,
+        rgba(106, 78, 66, var(--consultation-glow-opacity)),
+        transparent 38%
+      ),
+      radial-gradient(circle at 16% 82%, rgba(181, 147, 130, .08), transparent 28%),
+      radial-gradient(circle at 88% 18%, rgba(106, 78, 66, .1), transparent 30%),
+      var(--consultation-background);
+    isolation: isolate;
+  }
+
+  :global(.luxury-consultation-section)::before,
+  :global(.luxury-consultation-section)::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  :global(.luxury-consultation-section)::before {
+    top: 4%;
+    left: 50%;
+    width: min(72rem, 82vw);
+    height: min(30rem, 36vw);
+    background: var(--gradient-satin-fold);
+    opacity: var(--consultation-satin-opacity);
+    transform: translateX(-50%) rotate(-4deg);
+  }
+
+  :global(.luxury-consultation-section)::after {
+    right: -16%;
+    bottom: -14%;
+    width: min(44rem, 60vw);
+    height: min(44rem, 60vw);
+    background: radial-gradient(circle, rgba(129, 99, 84, .16), transparent 68%);
+    opacity: .74;
+    filter: blur(10px);
+  }
+
+  :global(.luxury-consultation-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+  }
+
+  .invitation {
+    display: grid;
+    justify-items: center;
+    gap: clamp(var(--space-5), 4vw, var(--space-8));
+    max-width: var(--consultation-content-width);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .eyebrow {
+    color: var(--cocoa-400);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--space-2);
+    max-width: min(100%, 64rem);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: var(--section-heading-intro);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.18;
+  }
+
+  .title-statement {
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: var(--section-heading-statement);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.12;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--consultation-body-width);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--consultation-action-gap);
+    padding-top: var(--space-2);
+  }
+
+  :global(.consultation-primary),
+  :global(.consultation-secondary) {
+    min-width: var(--consultation-button-min-width);
+    min-height: var(--button-height);
+    box-shadow: var(--glow-soft), var(--shadow-inset);
+  }
+
+  :global(.consultation-primary) {
+    background: var(--gradient-primary);
+    isolation: isolate;
+  }
+
+  :global(.consultation-primary)::after {
+    content: "";
+    position: absolute;
+    inset: -7px;
+    z-index: -1;
+    border: 1px solid rgba(181, 147, 130, .38);
+    border-radius: calc(var(--button-radius) + 7px);
+    opacity: 0;
+    transform: scale(.98);
+    transition:
+      opacity var(--motion-medium) var(--ease-luxury),
+      transform var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  :global(.consultation-primary:hover),
+  :global(.consultation-primary:focus-visible) {
+    background: var(--gradient-primary);
+    box-shadow: var(--glow-medium), var(--button-shadow-hover), var(--shadow-inset-strong);
+  }
+
+  :global(.consultation-primary:hover)::after,
+  :global(.consultation-primary:focus-visible)::after {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: var(--glow-soft);
+  }
+
+  :global(.consultation-secondary) {
+    border: 1px solid var(--border-default);
+    background: rgba(255, 255, 255, .025);
+    color: var(--text-secondary);
+  }
+
+  :global(.consultation-secondary:hover),
+  :global(.consultation-secondary:focus-visible) {
+    border-color: var(--border-strong);
+    background: rgba(255, 255, 255, .045);
+    color: var(--text-primary);
+    box-shadow: var(--glow-soft), var(--shadow-inset-strong);
+  }
+
+  @media (max-width: 767px) {
+    :global(.luxury-consultation-section) {
+      --section-padding-block: clamp(var(--space-10), 22vw, var(--space-13));
+      --consultation-glow-opacity: .14;
+      --consultation-satin-opacity: .24;
+      --consultation-button-min-width: min(100%, 18rem);
+    }
+
+    :global(.luxury-consultation-section)::before {
+      top: 8%;
+      width: 42rem;
+      height: 22rem;
+      transform: translateX(-50%) rotate(-8deg);
+    }
+
+    :global(.luxury-consultation-section)::after {
+      right: -44%;
+      bottom: -10%;
+      width: 32rem;
+      height: 32rem;
+    }
+
+    :global(.luxury-consultation-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+    }
+
+    .invitation {
+      gap: var(--space-5);
+    }
+
+    .title-intro {
+      font-size: var(--section-heading-intro-mobile);
+    }
+
+    .title-statement {
+      font-size: var(--section-heading-statement-mobile);
+    }
+
+    .actions {
+      width: 100%;
+      gap: var(--space-3);
+    }
+
+    :global(.consultation-primary),
+    :global(.consultation-secondary) {
+      width: min(100%, 20rem);
+    }
+  }
+</style>

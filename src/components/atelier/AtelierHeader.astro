@@ -1,0 +1,94 @@
+<header class="atelier-header">
+  <span class="eyebrow">Atelier Experience</span>
+
+  <h2>
+    <span class="title-intro">Every Masterpiece Begins With</span>
+    <span class="title-statement">A Personal Story</span>
+  </h2>
+
+  <p>
+    Behind every Rangbastra creation is an intimate exchange of memory,
+    occasion and artistry, shaped slowly into couture that feels destined for
+    the person who wears it.
+  </p>
+</header>
+
+<style>
+  .atelier-header {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-5);
+    max-width: var(--measure-md);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .eyebrow {
+    color: var(--cocoa-400);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--space-2);
+    max-width: min(100%, 58rem);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: var(--section-heading-intro);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.18;
+  }
+
+  .title-statement {
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: var(--section-heading-statement);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.12;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 767px) {
+    .atelier-header {
+      justify-items: start;
+      gap: var(--space-4);
+      text-align: left;
+    }
+
+    h2,
+    p {
+      text-align: left;
+    }
+
+    .title-intro {
+      font-size: var(--section-heading-intro-mobile);
+    }
+
+    .title-statement {
+      font-size: var(--section-heading-statement-mobile);
+    }
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+import { brideStories } from "../../data/brideStories";
+import BrideStory from "./BrideStory.astro";
+---
+
+<div class="bride-stories-list">
+  {
+    brideStories.map((story, index) => (
+      <BrideStory
+        brideName={story.brideName}
+        city={story.city}
+        quote={story.quote}
+        image={story.image}
+        imageAlt={story.imageAlt}
+        index={index}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .bride-stories-list {
+    display: grid;
+    gap: var(--bride-stories-list-gap, clamp(var(--space-10), 11vw, var(--space-14)));
+  }
+
+  @media (max-width: 767px) {
+    .bride-stories-list {
+      gap: var(--bride-stories-list-gap-mobile, var(--space-9));
+    }
+  }
+</style>
