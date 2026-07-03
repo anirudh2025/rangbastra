@@ -29,6 +29,10 @@ cursive;
 FONT WEIGHTS
 ========================================================*/
 
+--weight-thin:100;
+
+--weight-extralight:200;
+
 --weight-light:300;
 
 --weight-regular:400;

@@ -149,9 +149,9 @@ GRADIENTS
 --gradient-primary:
 linear-gradient(
 135deg,
-var(--obsidian-1000) 0%,
-#141110 42%,
-#6A4E42 100%
+#29160f 0%,
+#6A4E42 42%,
+#3d2318 100%
 );
 
 --gradient-brand-text:

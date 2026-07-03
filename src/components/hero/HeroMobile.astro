@@ -143,4 +143,33 @@ const mobileHero =
 }
 
 }
+
+/* Mobile overrides: allow signature title to wrap and scale down so it doesn't overflow */
+.hero-shell .title-line,
+.hero-shell .title-highlight {
+        white-space: normal;
+        display: block;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        hyphens: auto;
+        max-width: 100%;
+}
+
+@media (max-width:640px){
+    .hero-shell .title-line{
+        font-size: clamp(.6rem,5vw,1.2rem);
+        line-height: 1.12;
+    }
+
+    .hero-shell .title-highlight{
+        font-size: clamp(.6rem,4.5vw,1.4rem);
+    }
+}
+
+@media (max-width:380px){
+    .hero-shell .title-line,
+    .hero-shell .title-highlight{
+        font-size: clamp(1.4rem,7.5vw,1.9rem);
+    }
+}
 </style>
