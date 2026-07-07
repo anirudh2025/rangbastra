@@ -7,13 +7,29 @@ title?: string;
 
 description?: string;
 
+canonical?: string;
+
+image?: string;
+
+keywords?: string;
+
+robots?: string;
+
 }
 
 const {
 
 title,
 
-description
+description,
+
+canonical,
+
+image,
+
+keywords,
+
+robots
 
 } = Astro.props;
 ---
@@ -23,6 +39,14 @@ description
 title={title}
 
 description={description}
+
+canonical={canonical}
+
+image={image}
+
+keywords={keywords}
+
+robots={robots}
 
 >
 

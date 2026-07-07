@@ -20,7 +20,7 @@ import SignatureCustomizationVisual from "../../components/signature-customizati
 
 <style>
   :global(.signature-customization-section) {
-    --section-padding-block: clamp(var(--space-11), 12vw, var(--space-14));
+    --section-padding-block: clamp(var(--space-10), 10vw, var(--space-13));
 
     overflow: hidden;
     background: var(--surface-canvas);
@@ -33,14 +33,14 @@ import SignatureCustomizationVisual from "../../components/signature-customizati
     position: relative;
     z-index: var(--z-content);
     display: grid;
-    gap: clamp(var(--space-9), 8vw, var(--space-13));
+    gap: clamp(var(--space-8), 7vw, var(--space-12));
   }
 
   .chapter {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(18rem, .42fr);
-    gap: clamp(var(--space-8), 8vw, var(--space-13));
-    align-items: end;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, .68fr);
+    gap: clamp(var(--space-7), 6vw, var(--space-11));
+    align-items: center;
   }
 
   @media (max-width: 1023px) {

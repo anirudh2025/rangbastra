@@ -1,0 +1,206 @@
+---
+import Button from "../primitives/Button.astro";
+import Label from "../primitives/Label.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import { ourStoryImages } from "../../data/ourStory";
+---
+
+<section class="story-hero" aria-labelledby="story-heading">
+  <div class="chapter-marker" aria-hidden="true">
+    <span>Chapter</span>
+    <strong>01</strong>
+  </div>
+
+  <figure class="story-hero__media">
+    <img
+      src={ourStoryImages.hero}
+      alt="Rangbastra couture design moment shaped with personal attention"
+      width="1200"
+      height="1500"
+      loading="eager"
+      decoding="async"
+    />
+  </figure>
+
+  <div class="story-hero__copy">
+    <Eyebrow>Our Story</Eyebrow>
+
+    <h1 id="story-heading">
+      <span class="title-intro">Every Story</span>
+      <span class="title-statement">Begins With You</span>
+    </h1>
+
+    <p>
+      Rangbastra exists for the woman who does not want to disappear inside a
+      garment. She wants the garment to understand her.
+    </p>
+
+    <div class="story-hero__actions" aria-label="Our Story actions">
+      <Button href="/collections">
+        <Label icon="sparkle">Explore Our Collections</Label>
+      </Button>
+
+      <Button href="/design-your-outfit">
+        <Label icon="designer">Craft Your Story</Label>
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .story-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, .9fr) minmax(22rem, .7fr);
+    gap: clamp(var(--space-7), 7vw, var(--space-12));
+    align-items: center;
+    min-height: min(54rem, calc(100svh - var(--navbar-height)));
+    padding-top: clamp(var(--space-11), 12vw, var(--space-13));
+  }
+
+  .chapter-marker {
+    position: absolute;
+    top: clamp(var(--space-11), 13vw, var(--space-13));
+    left: clamp(var(--space-4), 4vw, var(--space-7));
+    z-index: 2;
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    background: rgba(0, 0, 0, .34);
+    backdrop-filter: blur(12px);
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .chapter-marker::after {
+    content: "";
+    width: 1px;
+    height: 7rem;
+    margin-inline: auto;
+    background: linear-gradient(180deg, rgba(198, 169, 114, .52), transparent);
+  }
+
+  .chapter-marker strong {
+    color: var(--sand-200);
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: var(--weight-light);
+    line-height: 1;
+  }
+
+  .story-hero__media {
+    position: relative;
+    overflow: hidden;
+    min-height: clamp(34rem, 58vw, 48rem);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  .story-hero__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, .02), rgba(0, 0, 0, .54)),
+      var(--gradient-glass);
+    opacity: .72;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+  }
+
+  .story-hero__copy {
+    display: grid;
+    gap: clamp(var(--space-4), 3vw, var(--space-6));
+    max-width: 40rem;
+  }
+
+  h1 {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: clamp(2.35rem, 4vw, 5rem);
+    line-height: 1.08;
+  }
+
+  .title-statement {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: clamp(3rem, 6.2vw, 7.4rem);
+    font-weight: var(--weight-medium);
+    line-height: .94;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .story-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  @media (max-width: 900px) {
+    .story-hero {
+      grid-template-columns: 1fr;
+      padding-top: clamp(var(--space-11), 24vw, var(--space-13));
+    }
+
+    .chapter-marker {
+      display: none;
+    }
+
+    .story-hero__media {
+      min-height: clamp(29rem, 105vw, 46rem);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .story-hero__copy {
+      max-width: none;
+    }
+
+    .title-intro {
+      font-size: clamp(2rem, 10vw, 3.2rem);
+    }
+
+    .title-statement {
+      font-size: clamp(2.85rem, 15vw, 4.65rem);
+    }
+
+    .story-hero__actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  }
+</style>

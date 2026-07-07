@@ -1,0 +1,76 @@
+---
+import DesignYourOutfitHeader from "./DesignYourOutfitHeader.astro";
+import { designYourOutfitFaq } from "../../data/designYourOutfit";
+---
+
+<section class="faq-section" aria-labelledby="faq-heading">
+  <DesignYourOutfitHeader
+    eyebrow="Design Questions"
+    intro="Before The"
+    statement="Conversation Begins"
+    copy="A few quiet answers before you begin your custom design."
+  />
+
+  <div class="faq-list">
+    {
+      designYourOutfitFaq.map((item) => (
+        <details>
+          <summary>{item.question}</summary>
+          <p>{item.answer}</p>
+        </details>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .faq-section {
+    display: grid;
+    grid-template-columns: minmax(0, .58fr) minmax(24rem, .72fr);
+    gap: clamp(var(--space-7), 7vw, var(--space-11));
+    align-items: start;
+  }
+
+  .faq-list {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  details {
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, .016);
+    box-shadow: var(--shadow-inset);
+  }
+
+  summary {
+    cursor: pointer;
+    padding: var(--space-5);
+    color: var(--text-primary);
+    font-size: var(--label-lg);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-title);
+    text-wrap: balance;
+  }
+
+  summary:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: var(--space-2);
+    border-radius: var(--radius-md);
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    padding: 0 var(--space-5) var(--space-5);
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 900px) {
+    .faq-section {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

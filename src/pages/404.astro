@@ -1,0 +1,97 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/primitives/Button.astro";
+import Container from "../components/primitives/Container.astro";
+import Eyebrow from "../components/primitives/Eyebrow.astro";
+import Section from "../components/primitives/Section.astro";
+---
+
+<BaseLayout
+  title="Lost In The Atelier | Rangbastra"
+  description="The page you were looking for could not be found."
+  canonical="/404"
+  robots="noindex, follow"
+>
+  <Section class="lost-atelier-section">
+    <Container class="lost-atelier-container">
+      <div class="lost-atelier-mark" aria-hidden="true">404</div>
+
+      <main class="lost-atelier" aria-labelledby="lost-heading">
+        <Eyebrow>Lost In The Atelier</Eyebrow>
+        <h1 id="lost-heading">This corridor has gone quiet.</h1>
+        <p>
+          The page may have moved, but the couture story can continue from a
+          more certain room.
+        </p>
+        <div class="lost-actions">
+          <Button href="/collections">Explore Collections</Button>
+          <Button href="/design-your-outfit">Design Your Outfit</Button>
+        </div>
+      </main>
+    </Container>
+  </Section>
+</BaseLayout>
+
+<style>
+  :global(.lost-atelier-section) {
+    --section-padding-block: 0;
+    min-height: 100svh;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(106, 78, 66, .22), transparent 32%),
+      linear-gradient(90deg, transparent 0 50%, rgba(198, 169, 114, .08) 50.05% 50.12%, transparent 50.2%),
+      var(--surface-canvas);
+  }
+
+  :global(.lost-atelier-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+    position: relative;
+    display: grid;
+    min-height: 100svh;
+    place-items: center;
+    text-align: center;
+  }
+
+  .lost-atelier-mark {
+    position: absolute;
+    color: rgba(255, 255, 255, .045);
+    font-family: var(--font-display);
+    font-size: clamp(10rem, 30vw, 34rem);
+    font-weight: var(--weight-light);
+    line-height: 1;
+  }
+
+  .lost-atelier {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-5);
+  }
+
+  h1 {
+    max-width: 10ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(3.4rem, 8vw, 9rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: .95;
+    text-wrap: balance;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+  }
+
+  .lost-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+</style>

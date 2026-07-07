@@ -1,0 +1,44 @@
+---
+import EditorialInfoPage from "../components/support/EditorialInfoPage.astro";
+
+const blocks = [
+  {
+    title: "Editorial Presentation",
+    body: [
+      "Rangbastra presents couture through an editorial lens. Images, product names, craft descriptions and styling references are intended to help visitors understand the mood and possibilities of the atelier.",
+      "Some imagery may be representative until dedicated photography is available for every individual piece.",
+    ],
+  },
+  {
+    title: "Custom Couture Variation",
+    body: [
+      "Custom couture naturally varies by fabric, handwork, colour, measurement, motif placement and artisan process. Small variations are part of handcrafted creation.",
+      "Final design, availability, timeline and investment are confirmed only through direct consultation with the Rangbastra team.",
+    ],
+  },
+  {
+    title: "No Online Purchase Claim",
+    body: [
+      "The website is currently built as a discovery and inquiry experience. It does not complete online purchases, collect payment through a checkout system or confirm orders automatically.",
+      "Any order-related commitment must be confirmed through official Rangbastra communication.",
+    ],
+  },
+  {
+    title: "External Channels",
+    body: [
+      "WhatsApp, Instagram and email links are provided for convenience. Communication through those channels is subject to the policies and reliability of the respective platforms.",
+      "Please verify that you are speaking with an official Rangbastra channel before sharing personal or order-sensitive information.",
+    ],
+  },
+];
+---
+
+<EditorialInfoPage
+  title="Disclaimer | Rangbastra"
+  description="Rangbastra disclaimer for editorial imagery, custom couture variation, inquiry-led services and communication through WhatsApp, email and Instagram."
+  canonical="/disclaimer"
+  eyebrow="Disclaimer"
+  heading="A Note On Couture, Craft And Variation"
+  intro="A practical disclaimer for an editorial custom couture website where every final piece is shaped through conversation."
+  blocks={blocks}
+/>

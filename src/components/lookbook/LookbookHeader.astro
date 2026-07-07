@@ -1,5 +1,9 @@
+---
+import Eyebrow from "../primitives/Eyebrow.astro";
+---
+
 <header class="lookbook-header">
-  <span class="eyebrow">Editorial Lookbook</span>
+  <Eyebrow>Editorial Lookbook</Eyebrow>
 
   <h2>
     <span class="title-intro">Scenes From</span>
@@ -17,15 +21,6 @@
     display: grid;
     gap: var(--space-5);
     max-width: var(--measure-md);
-  }
-
-  .eyebrow {
-    color: var(--cocoa-400);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    text-transform: uppercase;
   }
 
   h2 {

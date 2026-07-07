@@ -1,0 +1,43 @@
+---
+import EditorialInfoPage from "../components/support/EditorialInfoPage.astro";
+
+const blocks = [
+  {
+    title: "Custom Pieces",
+    body: [
+      "Custom couture is created around a client's selected design direction, measurements, fabric, embroidery and occasion. Because of this, custom pieces are generally not eligible for return or exchange once confirmed and made.",
+      "Any concern should be communicated as early as possible during fittings or review stages so the atelier can guide practical next steps.",
+    ],
+  },
+  {
+    title: "Alterations And Fit Review",
+    body: [
+      "Fit adjustments, if applicable, depend on the garment construction, timeline, fabric margin and nature of the request. Alteration feasibility is confirmed by the Rangbastra team.",
+      "Clients are responsible for providing accurate measurements and attending agreed fitting or review sessions where required.",
+    ],
+  },
+  {
+    title: "Ready Boutique References",
+    body: [
+      "If any non-custom boutique piece is offered separately, its exchange terms will be confirmed at the time of purchase or inquiry. The website does not currently operate an automatic online return portal.",
+    ],
+  },
+  {
+    title: "Damage Or Issue Reporting",
+    body: [
+      "If a delivered piece appears damaged or materially different from the confirmed discussion, contact Rangbastra promptly through official WhatsApp or email with clear images and order communication references.",
+      "Resolution is reviewed case by case with care and fairness.",
+    ],
+  },
+];
+---
+
+<EditorialInfoPage
+  title="Returns And Exchanges | Rangbastra"
+  description="Returns and exchanges guidance for Rangbastra custom couture, including custom-piece limitations, alterations, fit reviews and issue reporting."
+  canonical="/returns-and-exchanges"
+  eyebrow="Returns And Exchanges"
+  heading="A Careful Policy For Custom Couture"
+  intro="Custom garments are intimate, specific and made with intent, so return and alteration guidance must be clear from the beginning."
+  blocks={blocks}
+/>

@@ -1,5 +1,9 @@
+---
+import Eyebrow from "../primitives/Eyebrow.astro";
+---
+
 <header class="journey-header">
-  <span class="eyebrow">The Experience</span>
+  <Eyebrow>The Experience</Eyebrow>
 
   <h2 class="title">
     <span class="title-intro">Your Journey To</span>
@@ -21,18 +25,6 @@
     max-width: var(--measure-md);
     margin-inline: auto;
     text-align: center;
-  }
-
-  .eyebrow {
-    color: #000;
-    background: var(--gradient-primary);
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    justify-self: center;
-    text-transform: uppercase;
   }
 
   .title {

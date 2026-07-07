@@ -40,7 +40,7 @@ NAVBAR TOKENS
 
     --navbar-link-hover:var(--text-primary);
 
-    --navbar-link-gap:2.5rem;
+    --navbar-link-gap:clamp(1.25rem,1.8vw,2.15rem);
 
     --navbar-link-size:.95rem;
 

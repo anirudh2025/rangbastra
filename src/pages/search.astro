@@ -1,0 +1,345 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/primitives/Button.astro";
+import Container from "../components/primitives/Container.astro";
+import Eyebrow from "../components/primitives/Eyebrow.astro";
+import Icon from "../components/primitives/Icon.astro";
+import Section from "../components/primitives/Section.astro";
+import Footer from "../sections/home/Footer.astro";
+import { getPublishedCouturePieces } from "../lib/couture";
+
+const products = getPublishedCouturePieces();
+---
+
+<BaseLayout
+  title="Search The Couture Archive | Rangbastra"
+  description="Search Rangbastra's curated couture archive by piece, occasion, fabric, craft and collection mood."
+  canonical="/search"
+>
+  <Section class="search-archive-section">
+    <Container class="search-archive-container">
+      <section class="archive-hero" aria-labelledby="search-heading">
+        <div class="archive-index" aria-hidden="true">
+          <span>Archive Desk</span>
+          <strong>{products.length}</strong>
+          <span>Published pieces</span>
+        </div>
+
+        <div class="archive-copy">
+          <Eyebrow>Couture Archive</Eyebrow>
+          <h1 id="search-heading">
+            <span>Find The Piece</span>
+            <span>That Feels Remembered</span>
+          </h1>
+        </div>
+
+        <form class="archive-search" role="search" data-search-form>
+          <label for="archive-query">Search by mood, craft, fabric, occasion or name</label>
+          <div class="archive-input-wrap">
+            <Icon name="search" size={24} />
+            <input
+              id="archive-query"
+              name="q"
+              type="search"
+              autocomplete="off"
+              placeholder="Try bridal, mirror work, Tiara, Banarasi..."
+              data-search-input
+            />
+          </div>
+        </form>
+      </section>
+
+      <section class="archive-results" aria-live="polite">
+        <div class="archive-results__meta">
+          <span data-search-count>{products.length} pieces in the archive</span>
+          <a href="/collections">Open full collection</a>
+        </div>
+
+        <div class="archive-grid" data-search-results>
+          {
+            products.slice(0, 12).map((product) => (
+              <a href={`/products/${product.slug}`} class="archive-card" data-search-card>
+                <img src={product.featuredImage} alt={`${product.name} couture piece`} loading="lazy" decoding="async" />
+                <span>{product.category}</span>
+                <h2>{product.name}</h2>
+                <p>{product.shortDescription}</p>
+              </a>
+            ))
+          }
+        </div>
+
+        <div class="archive-empty" data-search-empty hidden>
+          <Icon name="search" size={34} />
+          <h2>No archive match yet.</h2>
+          <p>Try searching by occasion, fabric, craft detail, colour mood or piece name.</p>
+          <Button href="/design-your-outfit">Design Your Outfit</Button>
+        </div>
+      </section>
+    </Container>
+  </Section>
+
+  <Footer />
+
+  <script type="application/json" id="search-products" set:html={JSON.stringify(products)} />
+  <script>
+    const data = JSON.parse(document.getElementById("search-products")?.textContent || "[]");
+    const input = document.querySelector("[data-search-input]");
+    const results = document.querySelector("[data-search-results]");
+    const empty = document.querySelector("[data-search-empty]");
+    const count = document.querySelector("[data-search-count]");
+
+    const card = (product) => `
+      <a href="/products/${product.slug}" class="archive-card" data-search-card>
+        <img src="${product.featuredImage}" alt="${product.name} couture piece" loading="lazy" decoding="async" />
+        <span>${product.category}</span>
+        <h2>${product.name}</h2>
+        <p>${product.shortDescription}</p>
+      </a>
+    `;
+
+    const haystack = (product) => [
+      product.name,
+      product.category,
+      product.occasion,
+      product.fabric,
+      product.handwork,
+      product.style,
+      product.colorFamily,
+      product.shortDescription,
+      ...(product.craftTags || []),
+    ].filter(Boolean).join(" ").toLowerCase();
+
+    const render = () => {
+      const query = input?.value.trim().toLowerCase() || "";
+      const matches = query
+        ? data.filter((product) => haystack(product).includes(query))
+        : data.slice(0, 12);
+
+      if (results) results.innerHTML = matches.map(card).join("");
+      if (empty) empty.hidden = matches.length > 0;
+      if (count) count.textContent = query
+        ? `${matches.length} archive ${matches.length === 1 ? "match" : "matches"}`
+        : `${data.length} pieces in the archive`;
+    };
+
+    input?.addEventListener("input", render);
+  </script>
+</BaseLayout>
+
+<style>
+  :global(.search-archive-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
+    overflow: hidden;
+    background:
+      linear-gradient(90deg, transparent 0 9%, rgba(198, 169, 114, .08) 9.05% 9.12%, transparent 9.2%),
+      radial-gradient(circle at 72% 18%, rgba(106, 78, 66, .18), transparent 32%),
+      radial-gradient(circle at 18% 74%, rgba(198, 169, 114, .055), transparent 26%),
+      var(--surface-canvas);
+  }
+
+  :global(.search-archive-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+    display: grid;
+    gap: clamp(var(--space-8), 8vw, var(--space-12));
+  }
+
+  .archive-hero {
+    display: grid;
+    grid-template-columns: minmax(9rem, .22fr) minmax(0, .8fr);
+    gap: clamp(var(--space-6), 6vw, var(--space-10));
+    align-items: end;
+    padding-top: clamp(var(--space-12), 15vw, var(--space-14));
+  }
+
+  .archive-index {
+    display: grid;
+    gap: var(--space-2);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid rgba(198, 169, 114, .3);
+  }
+
+  .archive-index span {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .archive-index strong {
+    color: var(--sand-200);
+    font-family: var(--font-display);
+    font-size: clamp(3.2rem, 7vw, 7rem);
+    font-weight: var(--weight-light);
+    line-height: 1;
+  }
+
+  .archive-copy {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  h1 {
+    display: grid;
+    max-width: 12ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 8rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: .95;
+    text-wrap: balance;
+  }
+
+  h1 span:last-child {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .archive-search {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-3);
+    max-width: 64rem;
+    margin-top: clamp(var(--space-4), 4vw, var(--space-8));
+  }
+
+  label,
+  .archive-results__meta {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .archive-input-wrap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--space-4);
+    min-height: clamp(4.75rem, 8vw, 6.5rem);
+    padding-inline: clamp(var(--space-4), 4vw, var(--space-7));
+    border: 1px solid var(--border-default);
+    background: rgba(255, 255, 255, .035);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  input {
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font: inherit;
+    font-family: var(--font-display);
+    font-size: clamp(1.65rem, 3vw, 3.4rem);
+    outline: 0;
+  }
+
+  input::placeholder {
+    color: rgba(255, 255, 255, .32);
+  }
+
+  .archive-results {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .archive-results__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .archive-results__meta a {
+    color: var(--sand-200);
+    text-decoration: none;
+  }
+
+  .archive-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .archive-card {
+    display: grid;
+    gap: var(--space-3);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .archive-card img {
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    object-fit: cover;
+    border: 1px solid var(--border-default);
+  }
+
+  .archive-card span {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .archive-card h2 {
+    color: var(--text-primary);
+    font-family: var(--font-signature);
+    font-size: clamp(1.7rem, 2.4vw, 2.7rem);
+    font-weight: var(--weight-regular);
+  }
+
+  .archive-card p,
+  .archive-empty p {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+  }
+
+  .archive-empty {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-4);
+    padding: clamp(var(--space-8), 8vw, var(--space-11));
+    border: 1px solid var(--border-default);
+    text-align: center;
+  }
+
+  .archive-empty[hidden] {
+    display: none;
+  }
+
+  .archive-empty h2 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 4vw, 4.8rem);
+    font-weight: var(--weight-light);
+  }
+
+  @media (max-width: 980px) {
+    .archive-hero {
+      grid-template-columns: 1fr;
+    }
+
+    .archive-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    :global(.search-archive-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+    }
+
+    .archive-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,51 @@
+---
+import EditorialInfoPage from "../components/support/EditorialInfoPage.astro";
+
+const blocks = [
+  {
+    title: "Boutique And Custom Couture Nature",
+    body: [
+      "Rangbastra is a custom couture and boutique experience. The website presents collections, references and inquiry pathways, but final outfit details are confirmed through direct design discussion.",
+      "Images, descriptions, craft notes and timelines are provided to guide discovery. Actual customization, fabric availability, embroidery detail and making timelines may vary by design conversation.",
+    ],
+  },
+  {
+    title: "Inquiries, Appointments And Design Discussions",
+    body: [
+      "Submitting an inquiry or contacting us on WhatsApp, email or Instagram does not automatically confirm an appointment, order, price or delivery timeline. Confirmation happens only after direct communication from the Rangbastra team.",
+      "Clients are responsible for sharing accurate event dates, measurements, references and requirements so the atelier can guide the process appropriately.",
+    ],
+  },
+  {
+    title: "Pricing And Customization",
+    body: [
+      "Couture investment depends on craft, fabric, embroidery, complexity, customization and timeline. Any visible pricing direction is indicative unless confirmed directly by Rangbastra.",
+      "Because custom pieces are made around individual requirements, changes after design confirmation may affect price, timeline and feasibility.",
+    ],
+  },
+  {
+    title: "Website Use",
+    body: [
+      "The website content, imagery, copy, icons and Rangbastra identity are protected brand materials and may not be copied, reproduced or used commercially without permission.",
+      "The site currently does not process online payments. Any payment terms, deposits or order confirmations must be agreed directly through Rangbastra's official communication channels.",
+    ],
+  },
+  {
+    title: "Limitations",
+    body: [
+      "We aim to keep information accurate and current, but the website may contain evolving editorial references, product references or availability changes.",
+      "By using the site, you agree to use it for lawful personal discovery and inquiry purposes only.",
+    ],
+  },
+];
+---
+
+<EditorialInfoPage
+  title="Terms And Conditions | Rangbastra"
+  description="Terms and conditions for using the Rangbastra custom couture website, inquiry flow, appointment communication and boutique services."
+  canonical="/terms-and-conditions"
+  eyebrow="Terms And Conditions"
+  heading="The Terms Of A Couture Conversation"
+  intro="Clear terms for using the Rangbastra website and beginning an appointment-led couture journey."
+  blocks={blocks}
+/>

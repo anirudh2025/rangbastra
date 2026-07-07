@@ -95,6 +95,14 @@ scrollbar-gutter:stable;
 
 }
 
+@media (max-width: 767px) {
+html{
+
+scrollbar-gutter:auto;
+
+}
+}
+
 /*========================================================
 BODY
 ========================================================*/
@@ -132,6 +140,8 @@ LAYOUT
 main{
 
 position:relative;
+
+overflow:clip;
 
 isolation:isolate;
 
@@ -207,9 +217,9 @@ transparent 58%
 
 opacity:.52;
 
-filter:blur(var(--glass-blur-xl));
+filter:none;
 
-transform:scale(1.12);
+transform:none;
 
 }
 

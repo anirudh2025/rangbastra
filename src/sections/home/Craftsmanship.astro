@@ -5,7 +5,7 @@ import CraftsmanshipHeader from "../../components/craftsmanship/CraftsmanshipHea
 import CraftsmanshipList from "../../components/craftsmanship/CraftsmanshipList.astro";
 ---
 
-<Section class="craftsmanship-section">
+<Section id="craftsmanship" class="craftsmanship-section">
   <Container class="craftsmanship-container">
     <CraftsmanshipHeader />
 
@@ -15,7 +15,7 @@ import CraftsmanshipList from "../../components/craftsmanship/CraftsmanshipList.
 
 <style>
   :global(.craftsmanship-section) {
-    --section-padding-block: clamp(var(--space-10), 10vw, var(--space-14));
+    --section-padding-block: clamp(var(--space-10), 9vw, var(--space-13));
 
     overflow: hidden;
   }

@@ -38,12 +38,18 @@ import JourneyCard from "./JourneyCard.astro";
     inset-block: var(--space-6);
     left: 50%;
     width: 1px;
-    background: linear-gradient(
-      180deg,
-      transparent,
-      var(--border-default),
-      transparent
-    );
+    background:
+      linear-gradient(
+        180deg,
+        transparent,
+        rgba(181, 147, 130, .18) 14%,
+        rgba(221, 208, 198, .34) 48%,
+        rgba(106, 78, 66, .24) 84%,
+        transparent
+      );
+    box-shadow:
+      0 0 18px rgba(181, 147, 130, .14),
+      0 0 42px rgba(106, 78, 66, .12);
     transform: translateX(-50%);
   }
 

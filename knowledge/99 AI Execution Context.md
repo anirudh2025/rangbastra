@@ -116,7 +116,7 @@ Read before every implementation
 
 05 Motion System
 
-06 Product Experience
+06 COUTURE EXPERIENCE
 
 07 Content Collections
 

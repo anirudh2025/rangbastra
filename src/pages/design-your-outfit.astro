@@ -1,0 +1,98 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/primitives/Section.astro";
+import Container from "../components/primitives/Container.astro";
+import DesignYourOutfitHero from "../components/design-your-outfit/DesignYourOutfitHero.astro";
+import DesignYourOutfitTimeline from "../components/design-your-outfit/DesignYourOutfitTimeline.astro";
+import DesignYourOutfitForm from "../components/design-your-outfit/DesignYourOutfitForm.astro";
+import DesignYourOutfitPromise from "../components/design-your-outfit/DesignYourOutfitPromise.astro";
+import DesignYourOutfitPhilosophy from "../components/design-your-outfit/DesignYourOutfitPhilosophy.astro";
+import DesignYourOutfitFAQ from "../components/design-your-outfit/DesignYourOutfitFAQ.astro";
+import DesignYourOutfitInvitation from "../components/design-your-outfit/DesignYourOutfitInvitation.astro";
+import Footer from "../sections/home/Footer.astro";
+import { designYourOutfitImages } from "../data/designYourOutfit";
+---
+
+<BaseLayout
+  title="Design Your Outfit | Rangbastra"
+  description="Begin your Rangbastra custom design journey with your story, occasion, inspirations and celebration details."
+  canonical="/design-your-outfit"
+  image={designYourOutfitImages.hero}
+>
+  <Section class="design-outfit-section">
+    <Container class="design-outfit-container">
+      <DesignYourOutfitHero />
+      <DesignYourOutfitTimeline />
+      <DesignYourOutfitForm />
+      <DesignYourOutfitPromise />
+      <DesignYourOutfitPhilosophy />
+      <DesignYourOutfitFAQ />
+      <DesignYourOutfitInvitation />
+    </Container>
+  </Section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.design-outfit-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 11vw, var(--space-14));
+
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 78% 9%, rgba(106, 78, 66, .18), transparent 34%),
+      radial-gradient(circle at 9% 30%, rgba(198, 169, 114, .065), transparent 28%),
+      linear-gradient(180deg, rgba(0, 0, 0, .96), transparent 24%),
+      var(--surface-canvas);
+    isolation: isolate;
+  }
+
+  :global(.design-outfit-section)::before,
+  :global(.design-outfit-section)::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  :global(.design-outfit-section)::before {
+    top: 12%;
+    right: -18%;
+    width: min(64rem, 70vw);
+    height: min(34rem, 42vw);
+    background: var(--gradient-satin-fold);
+    opacity: .16;
+    transform: rotate(-3deg);
+  }
+
+  :global(.design-outfit-section)::after {
+    left: -16%;
+    bottom: 16%;
+    width: min(54rem, 66vw);
+    height: min(34rem, 42vw);
+    background: var(--gradient-satin-fold);
+    opacity: .1;
+    transform: rotate(5deg);
+  }
+
+  :global(.design-outfit-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    gap: clamp(var(--space-10), 11vw, var(--space-14));
+  }
+
+  @media (max-width: 767px) {
+    :global(.design-outfit-section) {
+      --section-padding-block: 0 clamp(var(--space-9), 20vw, var(--space-12));
+    }
+
+    :global(.design-outfit-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      gap: clamp(var(--space-9), 18vw, var(--space-12));
+    }
+  }
+</style>

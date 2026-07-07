@@ -28,6 +28,8 @@ BUTTON TOKENS
 
 --button-primary-background-hover:var(--accent-hover);
 
+--button-primary-gradient-hover:var(--gradient-primary-hover);
+
 --button-primary-color:var(--text-on-accent);
 
 --button-primary-border:transparent;

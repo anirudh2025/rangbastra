@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Container from "../../components/primitives/Container.astro";
+import Section from "../../components/primitives/Section.astro";
+import AccountShell from "../../components/account/AccountShell.astro";
+import Footer from "../../sections/home/Footer.astro";
+---
+
+<BaseLayout title="Create Client Room | Rangbastra" description="Create a Rangbastra private client room to save couture inspirations and prepare a personal design journey." canonical="/account/signup">
+  <Section class="account-section">
+    <Container class="account-container">
+      <AccountShell mode="signup" />
+    </Container>
+  </Section>
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.account-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 22% 20%, rgba(198, 169, 114, .085), transparent 30%),
+      radial-gradient(circle at 78% 16%, rgba(106, 78, 66, .2), transparent 34%),
+      var(--surface-canvas);
+  }
+
+  :global(.account-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+  }
+</style>

@@ -4,14 +4,20 @@ interface Props {
     type?: "button" | "submit" | "reset";
     class?: string;
     disabled?: boolean;
+    target?: string;
+    rel?: string;
 }
 
 const {
     href,
     type = "button",
     class: className = "",
-    disabled = false
+    disabled = false,
+    target,
+    rel
 } = Astro.props;
+
+const computedRel = rel ?? (target === "_blank" ? "noopener noreferrer" : undefined);
 ---
 
 {
@@ -20,13 +26,15 @@ const {
         <a
             href={disabled ? undefined : href}
             aria-disabled={disabled}
+            target={target}
+            rel={computedRel}
             class:list={[
                 "button",
                 className,
                 disabled && "button--disabled"
             ]}
         >
-            <slot />
+            <span class="button__content"><slot /></span>
         </a>
 
     ) : (
@@ -39,7 +47,7 @@ const {
                 className
             ]}
         >
-            <slot />
+            <span class="button__content"><slot /></span>
         </button>
 
     )
@@ -65,11 +73,13 @@ const {
         var(--button-padding-y)
         var(--button-padding-x);
 
-    border:none;
+    border:1px solid rgba(255, 255, 255, 0.22);
 
-    border-radius:var(--button-radius);
+    border-radius:var(--radius-md);
 
-    background:var(--accent);
+    background:
+        linear-gradient(135deg,rgba(255,255,255,.08),transparent 34%),
+        var(--gradient-obsidian);
 
     color:var(--ivory-50);
 
@@ -87,33 +97,177 @@ const {
 
     cursor:pointer;
 
+    isolation:isolate;
+
+    box-shadow:
+        0 18px 44px rgba(0,0,0,.34),
+        0 0 0 1px rgba(255,255,255,.035) inset,
+        var(--shadow-inset);
+
     transition:
-        background .35s var(--ease-luxury),
-        color .35s var(--ease-luxury),
-        transform .35s var(--ease-luxury),
-        box-shadow .35s var(--ease-luxury);
+        background 320ms var(--ease-luxury),
+        border-color 320ms var(--ease-luxury),
+        color 320ms var(--ease-luxury),
+        transform 320ms var(--ease-luxury),
+        box-shadow 320ms var(--ease-luxury);
+
+}
+
+.button__content{
+
+    position:relative;
+
+    z-index:1;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:.6rem;
+
+    width:100%;
+
+    min-width:0;
+
+    text-align:center;
+
+    transition:transform 360ms var(--ease-luxury);
+
+}
+
+.button__content :global(.label){
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    padding-inline:0;
+
+    transition:transform 360ms var(--ease-luxury);
+
+}
+
+.button__content :global(.label__icon){
+
+    display:none;
+
+}
+
+.button::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:1px;
+
+    z-index:-1;
+
+    border-radius:calc(var(--button-radius) - 1px);
+
+    background:
+        linear-gradient(120deg,rgba(0, 0, 0, 0.18),transparent 38%,rgba(0,0,0,.12));
+
+    opacity:.55;
+
+    transition:opacity var(--motion-button) var(--ease-luxury);
+
+}
+
+.button::after{
+
+    content:"✦";
+
+    position:absolute;
+
+    top:50%;
+    right:1.05rem;
+
+    z-index:1;
+
+    color:var(--sand-200);
+
+    font-size:.82rem;
+    line-height:1;
+
+    opacity:0;
+
+    transform:translate3d(.5rem,-50%,0) scale(.88) rotate(-10deg);
+
+    transition:
+        opacity 360ms var(--ease-luxury),
+        transform 420ms var(--ease-luxury);
 
 }
 
 .button:hover{
 
-    background:var(--accent-hover);
+    border-color:rgba(221,208,198,.34);
 
-    transform:translateY(-2px);
+    background:
+        linear-gradient(135deg,rgba(0,0,0,.18),transparent 34%),
+        var(--button-primary-gradient-hover);
+
+    box-shadow:
+        0 20px 48px rgba(0,0,0,.4),
+        0 0 0 1px rgba(255,255,255,.04) inset,
+        var(--shadow-inset-strong);
+
+    transform:translate3d(0,-2px,0);
+
+}
+
+.button:hover .button__content,
+.button:focus-visible .button__content{
+
+    transform:translate3d(-.42rem,0,0);
+
+}
+
+.button:hover .button__content :global(.label),
+.button:focus-visible .button__content :global(.label){
+
+    transform:none;
+
+}
+
+.button:hover::after,
+.button:focus-visible::after{
+
+    opacity:.95;
+
+    transform:translate3d(0,-50%,0) scale(1) rotate(0deg);
+
+}
+
+.button:hover::before{
+
+    opacity:.78;
 
 }
 
 .button:active{
 
-    transform:translateY(0);
+    transform:translate3d(0,0,0);
 
 }
 
 .button:focus-visible{
 
-    outline:2px solid var(--focus-ring);
+    outline:1px solid var(--sand-200);
 
-    outline-offset:4px;
+    outline-offset:5px;
+
+    box-shadow:
+        0 22px 54px rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.12) inset,
+        var(--glow-medium);
 
 }
 
@@ -125,6 +279,34 @@ const {
     cursor:not-allowed;
 
     pointer-events:none;
+
+}
+
+@media (prefers-reduced-motion:reduce){
+
+.button,
+.button:hover,
+.button:active,
+.button__content{
+
+    transform:none;
+
+    transition:none;
+
+}
+
+.button::after{
+
+    transition:none;
+
+}
+
+.button:hover::after,
+.button:focus-visible::after{
+
+    transform:translate3d(0,-50%,0) scale(1);
+
+}
 
 }
 

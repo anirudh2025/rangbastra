@@ -1,0 +1,114 @@
+---
+import type { CouturePiece } from "../../data/couture";
+
+interface Props {
+  product: CouturePiece;
+}
+
+const { product } = Astro.props;
+---
+
+<section class="product-gallery" aria-labelledby="product-gallery-heading">
+  <div class="gallery-header">
+    <span>Gallery</span>
+    <h2 id="product-gallery-heading">Texture, Proportion, <span>Presence</span></h2>
+  </div>
+
+  <div class="gallery-grid">
+    {
+      product.gallery.map((image, index) => (
+        <figure class:list={["gallery-frame", index === 0 && "gallery-frame--wide"]}>
+          <img
+            src={image}
+            alt={`${product.name} editorial view ${index + 1}`}
+            width="900"
+            height="1200"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .product-gallery {
+    display: grid;
+    gap: clamp(var(--space-6), 5vw, var(--space-9));
+  }
+
+  .gallery-header {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 58rem;
+  }
+
+  .gallery-header span {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2.3rem, 4.8vw, 5.1rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .gallery-header h2 span {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-transform: none;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+    gap: var(--space-4);
+  }
+
+  .gallery-frame {
+    overflow: hidden;
+    min-height: clamp(23rem, 42vw, 38rem);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-inset);
+  }
+
+  .gallery-frame--wide {
+    grid-row: span 2;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+  }
+
+  @media (max-width: 760px) {
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gallery-frame {
+      min-height: clamp(23rem, 118vw, 36rem);
+      border-radius: var(--radius-lg);
+    }
+  }
+</style>

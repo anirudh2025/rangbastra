@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/primitives/Section.astro";
+import Container from "../components/primitives/Container.astro";
+import CustomCoutureHero from "../components/custom-couture/CustomCoutureHero.astro";
+import CustomCoutureBespoke from "../components/custom-couture/CustomCoutureBespoke.astro";
+import CustomCoutureJourney from "../components/custom-couture/CustomCoutureJourney.astro";
+import CustomCoutureOccasions from "../components/custom-couture/CustomCoutureOccasions.astro";
+import CustomCoutureInspirations from "../components/custom-couture/CustomCoutureInspirations.astro";
+import CustomCoutureCraft from "../components/custom-couture/CustomCoutureCraft.astro";
+import CustomCouturePricing from "../components/custom-couture/CustomCouturePricing.astro";
+import CustomCoutureFAQ from "../components/custom-couture/CustomCoutureFAQ.astro";
+import CustomCoutureInvitation from "../components/custom-couture/CustomCoutureInvitation.astro";
+import Footer from "../sections/home/Footer.astro";
+import { customCoutureImages } from "../data/customCouture";
+---
+
+<BaseLayout
+  title="Custom Couture Experience | Rangbastra"
+  description="Begin a private Rangbastra custom couture journey shaped around your story, celebration, craft, fabric, embroidery and final fitting."
+  canonical="/custom-couture"
+  image={customCoutureImages.hero}
+>
+  <Section class="custom-couture-section">
+    <Container class="custom-couture-container">
+      <CustomCoutureHero />
+      <CustomCoutureBespoke />
+      <CustomCoutureJourney />
+      <CustomCoutureOccasions />
+      <CustomCoutureInspirations />
+      <CustomCoutureCraft />
+      <CustomCouturePricing />
+      <CustomCoutureFAQ />
+      <CustomCoutureInvitation />
+    </Container>
+  </Section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.custom-couture-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 11vw, var(--space-14));
+
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, .96), transparent 24%),
+      radial-gradient(circle at 78% 9%, rgba(106, 78, 66, .16), transparent 36%),
+      radial-gradient(circle at 12% 42%, rgba(181, 147, 130, .07), transparent 32%),
+      radial-gradient(circle at 88% 72%, rgba(106, 78, 66, .08), transparent 34%),
+      var(--surface-canvas);
+    isolation: isolate;
+  }
+
+  :global(.custom-couture-section)::before,
+  :global(.custom-couture-section)::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  :global(.custom-couture-section)::before {
+    top: 12%;
+    right: -18%;
+    width: min(64rem, 70vw);
+    height: min(34rem, 42vw);
+    background: var(--gradient-satin-fold);
+    opacity: .22;
+    transform: rotate(-8deg);
+  }
+
+  :global(.custom-couture-section)::after {
+    left: -16%;
+    bottom: 16%;
+    width: min(54rem, 66vw);
+    height: min(34rem, 42vw);
+    background: var(--gradient-satin-fold);
+    opacity: .16;
+    transform: rotate(12deg);
+  }
+
+  :global(.custom-couture-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    gap: clamp(var(--space-10), 11vw, var(--space-14));
+  }
+
+  @media (max-width: 767px) {
+    :global(.custom-couture-section) {
+      --section-padding-block: 0 clamp(var(--space-9), 20vw, var(--space-12));
+    }
+
+    :global(.custom-couture-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      gap: clamp(var(--space-9), 18vw, var(--space-12));
+    }
+  }
+</style>

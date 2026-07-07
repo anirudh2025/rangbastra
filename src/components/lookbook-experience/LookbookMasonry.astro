@@ -1,0 +1,432 @@
+---
+import { lookbookMasonry } from "../../data/lookbookExperience";
+import LookbookExperienceHeader from "./LookbookExperienceHeader.astro";
+---
+
+<section class="lookbook-masonry-section" aria-labelledby="lookbook-grid-heading">
+  <LookbookExperienceHeader
+    id="lookbook-grid-heading"
+    eyebrow="Lookbook Grid"
+    intro="Frames That"
+    statement="Open Into Mood"
+    copy="A non-linear editorial wall of portrait, landscape and close-up frames. Select an image to enter the lookbook in full screen."
+  />
+
+  <div class="masonry-grid">
+    {
+      lookbookMasonry.map((item, index) => (
+        <button
+          class:list={["masonry-item", `masonry-item--${item.frame}`]}
+          type="button"
+          data-lookbook-index={index}
+          aria-label={`Open ${item.title} from ${item.collection}`}
+          style={`--masonry-image: url("${item.image}")`}
+        >
+          <img src={item.image} alt={item.title} loading="lazy" decoding="async" />
+          <span class="masonry-item-copy">
+            <span>{item.collection}</span>
+            <strong>{item.title}</strong>
+          </span>
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="lookbook-lightbox" data-lookbook-lightbox hidden role="dialog" aria-modal="true" aria-labelledby="lookbook-lightbox-title">
+    <button class="lightbox-control lightbox-close" type="button" data-lightbox-close aria-label="Close image">Close</button>
+    <button class="lightbox-control lightbox-prev" type="button" data-lightbox-prev aria-label="Previous image">Prev</button>
+    <figure class="lightbox-frame">
+      <img data-lightbox-image src={lookbookMasonry[0].image} alt="" decoding="async" />
+      <figcaption>
+        <span data-lightbox-collection>{lookbookMasonry[0].collection}</span>
+        <h3 id="lookbook-lightbox-title" data-lightbox-title>{lookbookMasonry[0].title}</h3>
+        <p data-lightbox-caption>{lookbookMasonry[0].caption}</p>
+        <small data-lightbox-counter>1 / {lookbookMasonry.length}</small>
+      </figcaption>
+    </figure>
+    <button class="lightbox-control lightbox-next" type="button" data-lightbox-next aria-label="Next image">Next</button>
+  </div>
+
+  <script type="application/json" id="lookbook-lightbox-data" set:html={JSON.stringify(lookbookMasonry)} />
+
+  <script>
+    const dataElement = document.getElementById("lookbook-lightbox-data");
+    const items = JSON.parse(dataElement?.textContent || "[]");
+    const lightbox = document.querySelector("[data-lookbook-lightbox]");
+    const image = document.querySelector("[data-lightbox-image]");
+    const title = document.querySelector("[data-lightbox-title]");
+    const collection = document.querySelector("[data-lightbox-collection]");
+    const caption = document.querySelector("[data-lightbox-caption]");
+    const counter = document.querySelector("[data-lightbox-counter]");
+    const closeButton = document.querySelector("[data-lightbox-close]");
+    const prevButton = document.querySelector("[data-lightbox-prev]");
+    const nextButton = document.querySelector("[data-lightbox-next]");
+    const triggers = [...document.querySelectorAll("[data-lookbook-index]")];
+    let activeIndex = 0;
+    let touchStartX = 0;
+
+    const updateLightbox = () => {
+      const item = items[activeIndex];
+      if (!item || !(image instanceof HTMLImageElement)) return;
+
+      image.src = item.image;
+      image.alt = item.title;
+      if (title) title.textContent = item.title;
+      if (collection) collection.textContent = item.collection;
+      if (caption) caption.textContent = item.caption;
+      if (counter) counter.textContent = `${activeIndex + 1} / ${items.length}`;
+    };
+
+    const openLightbox = (index) => {
+      if (!(lightbox instanceof HTMLElement)) return;
+      activeIndex = index;
+      updateLightbox();
+      lightbox.hidden = false;
+      requestAnimationFrame(() => lightbox.classList.add("is-open"));
+      document.documentElement.classList.add("lookbook-lightbox-active");
+      closeButton?.focus();
+    };
+
+    const closeLightbox = () => {
+      if (!(lightbox instanceof HTMLElement)) return;
+      lightbox.classList.remove("is-open");
+      document.documentElement.classList.remove("lookbook-lightbox-active");
+      window.setTimeout(() => {
+        if (!lightbox.classList.contains("is-open")) lightbox.hidden = true;
+      }, 220);
+      triggers[activeIndex]?.focus();
+    };
+
+    const moveLightbox = (direction) => {
+      activeIndex = (activeIndex + direction + items.length) % items.length;
+      updateLightbox();
+    };
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        openLightbox(Number(trigger.getAttribute("data-lookbook-index") || 0));
+      });
+    });
+
+    closeButton?.addEventListener("click", closeLightbox);
+    prevButton?.addEventListener("click", () => moveLightbox(-1));
+    nextButton?.addEventListener("click", () => moveLightbox(1));
+
+    document.addEventListener("keydown", (event) => {
+      if (!(lightbox instanceof HTMLElement) || lightbox.hidden) return;
+      if (event.key === "Escape") closeLightbox();
+      if (event.key === "ArrowLeft") moveLightbox(-1);
+      if (event.key === "ArrowRight") moveLightbox(1);
+    });
+
+    lightbox?.addEventListener("touchstart", (event) => {
+      touchStartX = event.changedTouches[0]?.clientX || 0;
+    }, { passive: true });
+
+    lightbox?.addEventListener("touchend", (event) => {
+      const touchEndX = event.changedTouches[0]?.clientX || 0;
+      const delta = touchEndX - touchStartX;
+      if (Math.abs(delta) < 46) return;
+      moveLightbox(delta > 0 ? -1 : 1);
+    }, { passive: true });
+  </script>
+</section>
+
+<style>
+  .lookbook-masonry-section {
+    display: grid;
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+  }
+
+  .masonry-grid {
+    display: grid;
+    grid-auto-flow: dense;
+    grid-auto-rows: clamp(8rem, 11vw, 13rem);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(var(--space-3), 1.6vw, var(--space-5));
+  }
+
+  .masonry-item {
+    position: relative;
+    display: grid;
+    align-items: end;
+    overflow: hidden;
+    min-width: 0;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, .1);
+    background: var(--masonry-image) center / cover no-repeat;
+    color: inherit;
+    cursor: pointer;
+    isolation: isolate;
+  }
+
+  .masonry-item--feature {
+    grid-column: span 6;
+    grid-row: span 3;
+  }
+
+  .masonry-item--portrait,
+  .masonry-item--tall {
+    grid-column: span 3;
+    grid-row: span 3;
+  }
+
+  .masonry-item--landscape,
+  .masonry-item--wide {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+
+  .masonry-item--square {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+
+  .masonry-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, transparent 28%, rgba(0, 0, 0, .72));
+    opacity: .86;
+    pointer-events: none;
+  }
+
+  .masonry-item img {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.01);
+    transition: transform var(--motion-slow) var(--ease-luxury), filter var(--motion-slow) var(--ease-luxury);
+  }
+
+  .masonry-item-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    text-align: left;
+  }
+
+  .masonry-item-copy span {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .masonry-item-copy strong {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.2vw, 2.4rem);
+    font-weight: var(--weight-light);
+    line-height: 1.05;
+  }
+
+  .masonry-item:hover img,
+  .masonry-item:focus-visible img {
+    filter: saturate(1.04);
+    transform: scale(1.055);
+  }
+
+  .masonry-item:focus-visible {
+    outline: 1px solid var(--sand-200);
+    outline-offset: 5px;
+  }
+
+  .lookbook-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: grid;
+    place-items: center;
+    padding: clamp(var(--space-4), 4vw, var(--space-8));
+    background: rgba(0, 0, 0, .94);
+    opacity: 0;
+    transform: scale(.992);
+    transition: opacity 220ms var(--ease-luxury), transform 220ms var(--ease-luxury);
+  }
+
+  .lookbook-lightbox[hidden] {
+    display: none;
+  }
+
+  .lookbook-lightbox.is-open {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  :global(.lookbook-lightbox-active) {
+    overflow: hidden;
+  }
+
+  .lightbox-frame {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(17rem, .34fr);
+    width: min(100%, 82rem);
+    max-height: min(100%, 48rem);
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, .12);
+    background: var(--surface-canvas);
+    box-shadow: 0 32px 100px rgba(0, 0, 0, .55);
+  }
+
+  .lightbox-frame img {
+    width: 100%;
+    height: 100%;
+    max-height: min(78vh, 48rem);
+    object-fit: contain;
+    background: #000;
+  }
+
+  .lightbox-frame figcaption {
+    display: grid;
+    align-content: end;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: clamp(var(--space-5), 4vw, var(--space-7));
+  }
+
+  .lightbox-frame span,
+  .lightbox-frame small {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .lightbox-frame h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 4.2rem);
+    font-weight: var(--weight-light);
+    line-height: 1;
+  }
+
+  .lightbox-frame p {
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+  }
+
+  .lightbox-control {
+    position: fixed;
+    z-index: 2;
+    min-width: 4.75rem;
+    padding: .85rem 1rem;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(255, 255, 255, .055);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .lightbox-control:focus-visible {
+    outline: 1px solid var(--sand-200);
+    outline-offset: 4px;
+  }
+
+  .lightbox-close {
+    top: var(--space-5);
+    right: var(--space-5);
+  }
+
+  .lightbox-prev {
+    left: var(--space-5);
+  }
+
+  .lightbox-next {
+    right: var(--space-5);
+  }
+
+  @media (max-width: 1023px) {
+    .masonry-grid {
+      grid-auto-rows: clamp(7rem, 19vw, 12rem);
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .masonry-item--feature,
+    .masonry-item--landscape,
+    .masonry-item--wide {
+      grid-column: span 6;
+    }
+
+    .masonry-item--portrait,
+    .masonry-item--tall,
+    .masonry-item--square {
+      grid-column: span 3;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .masonry-grid {
+      display: grid;
+      grid-auto-rows: auto;
+      grid-template-columns: 1fr;
+    }
+
+    .masonry-item,
+    .masonry-item--feature,
+    .masonry-item--portrait,
+    .masonry-item--landscape,
+    .masonry-item--square,
+    .masonry-item--wide,
+    .masonry-item--tall {
+      grid-column: auto;
+      grid-row: auto;
+      aspect-ratio: 4 / 5;
+    }
+
+    .masonry-item--landscape,
+    .masonry-item--wide {
+      aspect-ratio: 16 / 10;
+    }
+
+    .lightbox-frame {
+      grid-template-columns: 1fr;
+      width: 100%;
+      max-height: 86vh;
+      overflow: auto;
+    }
+
+    .lightbox-frame img {
+      max-height: 58vh;
+    }
+
+    .lightbox-control {
+      position: absolute;
+    }
+
+    .lightbox-prev {
+      bottom: var(--space-4);
+      left: var(--space-4);
+    }
+
+    .lightbox-next {
+      right: var(--space-4);
+      bottom: var(--space-4);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .masonry-item img,
+    .masonry-item:hover img,
+    .masonry-item:focus-visible img,
+    .lookbook-lightbox {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

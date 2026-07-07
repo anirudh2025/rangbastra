@@ -1,0 +1,87 @@
+---
+import Icon from "../primitives/Icon.astro";
+import CustomCoutureHeader from "./CustomCoutureHeader.astro";
+import { pricingFactors } from "../../data/customCouture";
+---
+
+<section class="pricing-section" aria-labelledby="pricing-heading">
+  <div class="pricing-panel">
+    <CustomCoutureHeader
+      eyebrow="Pricing Philosophy"
+      intro="Every Couture Story"
+      statement="Is Considered Individually"
+      copy="Luxury brands do not begin with a price list because the work is not identical. Investment is shaped after the atelier understands the craft, fabric, embroidery, complexity, timeline and degree of customization."
+      align="center"
+    />
+
+    <ul aria-label="What influences a custom couture investment">
+      {
+        pricingFactors.map((factor) => (
+          <li>
+            <Icon name="sparkle" size={14} />
+            <span>{factor}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .pricing-panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: clamp(var(--space-6), 5vw, var(--space-9));
+    overflow: hidden;
+    padding: clamp(var(--space-8), 8vw, var(--space-11)) clamp(var(--space-5), 6vw, var(--space-10));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(circle at 50% 16%, rgba(106, 78, 66, .16), transparent 38%),
+      var(--gradient-satin-fold),
+      rgba(255, 255, 255, .014);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+    text-align: center;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    max-width: 48rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding-inline: var(--space-4);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    background: rgba(0, 0, 0, .24);
+    color: var(--text-secondary);
+    font-size: var(--label-md);
+    font-weight: var(--weight-semibold);
+  }
+
+  li :global(svg) {
+    color: var(--sand-200);
+    opacity: .78;
+  }
+
+  @media (max-width: 560px) {
+    .pricing-panel {
+      border-radius: var(--radius-lg);
+    }
+
+    ul {
+      justify-content: flex-start;
+      width: 100%;
+    }
+  }
+</style>

@@ -64,4 +64,19 @@ ROTATION
 --rotate-soft:1deg;
 --rotate-medium:2deg;
 
+/*========================================================
+REFINED INTERACTION MOTION
+========================================================*/
+
+--motion-hover:var(--motion-medium);
+--motion-button:var(--motion-base);
+--motion-image:var(--motion-luxury);
+--motion-reveal:var(--motion-editorial);
+
+--motion-card-lift:calc(var(--motion-distance-xs) * -1);
+--motion-button-lift:calc(var(--motion-distance-xs) * -.5);
+--motion-card-scale:1.01;
+--motion-image-scale-subtle:1.018;
+--motion-icon-scale:1.01;
+
 }

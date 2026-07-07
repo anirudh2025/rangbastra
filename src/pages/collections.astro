@@ -1,0 +1,73 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/primitives/Section.astro";
+import Container from "../components/primitives/Container.astro";
+import CoutureHero from "../components/couture/CoutureHero.astro";
+import CoutureGrid from "../components/couture/CoutureGrid.astro";
+import CoutureCollectionCTA from "../components/couture/CoutureCollectionCTA.astro";
+import Footer from "../sections/home/Footer.astro";
+---
+
+<BaseLayout
+  title="Rangbastra Couture Collections | Bridal & Occasion Wear"
+  description="Explore Rangbastra couture pieces shaped through personal design attention, handcrafted detail, and restrained luxury for bridal and occasion celebrations."
+  canonical="/collections"
+>
+  <Section class="couture-page-section">
+    <Container class="couture-page-container">
+      <CoutureHero />
+      <CoutureGrid />
+      <CoutureCollectionCTA />
+    </Container>
+  </Section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.couture-page-section) {
+    --section-padding-block: 0 clamp(var(--space-9), 10vw, var(--space-13));
+
+    overflow: hidden;
+    background:
+      linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px) 50% 0 / 25% 100%,
+      linear-gradient(180deg, rgba(0, 0, 0, .98), transparent 24%),
+      radial-gradient(circle at 86% 11%, rgba(198, 169, 114, .1), transparent 28%),
+      radial-gradient(circle at 14% 48%, rgba(181, 147, 130, .055), transparent 32%),
+      var(--surface-canvas);
+  }
+
+  :global(.couture-page-section)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, transparent 0 11%, rgba(198, 169, 114, .14) 11.1% 11.18%, transparent 11.3% 88.7%, rgba(198, 169, 114, .14) 88.82% 88.9%, transparent 89%),
+      var(--gradient-satin-fold);
+    opacity: .18;
+    transform: scale(1.08);
+  }
+
+  :global(.couture-page-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    gap: clamp(var(--space-9), 9vw, var(--space-13));
+  }
+
+  @media (max-width: 767px) {
+    :global(.couture-page-section) {
+      --section-padding-block: 0 clamp(var(--space-8), 18vw, var(--space-11));
+    }
+
+    :global(.couture-page-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      gap: var(--space-10);
+    }
+  }
+</style>

@@ -1,0 +1,150 @@
+---
+import { editorialShoots } from "../../data/lookbookExperience";
+import LookbookExperienceHeader from "./LookbookExperienceHeader.astro";
+---
+
+<section class="editorial-collections" aria-labelledby="editorial-collections-heading">
+  <LookbookExperienceHeader
+    id="editorial-collections-heading"
+    eyebrow="Editorial Collections"
+    intro="Magazine Covers"
+    statement="For Couture Moods"
+    copy="Each edit is composed like a cover story, giving every collection its own atmosphere, rhythm and emotional point of view."
+  />
+
+  <div class="shoot-grid">
+    {
+      editorialShoots.map((shoot) => (
+        <article
+          class="shoot-card"
+          style={`--shoot-image: url("${shoot.image}")`}
+        >
+          <img src={shoot.image} alt={`${shoot.title} editorial shoot`} loading="lazy" decoding="async" />
+          <div class="shoot-card-copy">
+            <span>{shoot.issue}</span>
+            <h3>{shoot.title}</h3>
+            <p>{shoot.caption}</p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .editorial-collections {
+    display: grid;
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+  }
+
+  .shoot-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(var(--space-3), 2vw, var(--space-5));
+  }
+
+  .shoot-card {
+    position: relative;
+    display: grid;
+    align-items: end;
+    overflow: hidden;
+    min-height: clamp(24rem, 38vw, 34rem);
+    border: 1px solid rgba(255, 255, 255, .1);
+    background: var(--shoot-image) center / cover no-repeat;
+    box-shadow: 0 26px 70px rgba(0, 0, 0, .32);
+    isolation: isolate;
+  }
+
+  .shoot-card:nth-child(1),
+  .shoot-card:nth-child(7) {
+    grid-column: span 2;
+  }
+
+  .shoot-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(180deg, transparent 28%, rgba(0, 0, 0, .82)),
+      linear-gradient(120deg, rgba(255, 255, 255, .08), transparent 38%);
+    opacity: .92;
+    pointer-events: none;
+  }
+
+  .shoot-card img {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.01);
+    transition: transform var(--motion-slow) var(--ease-luxury);
+  }
+
+  .shoot-card-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: var(--space-2);
+    padding: clamp(var(--space-4), 3vw, var(--space-6));
+  }
+
+  .shoot-card-copy span {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .shoot-card-copy h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3vw, 3.2rem);
+    font-weight: var(--weight-light);
+    line-height: 1.05;
+  }
+
+  .shoot-card-copy p {
+    max-width: 24rem;
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+  }
+
+  .shoot-card:hover img {
+    transform: scale(1.055);
+  }
+
+  @media (max-width: 1023px) {
+    .shoot-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .shoot-card:nth-child(1),
+    .shoot-card:nth-child(7) {
+      grid-column: span 1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .shoot-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .shoot-card {
+      min-height: clamp(22rem, 110vw, 31rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shoot-card img,
+    .shoot-card:hover img {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

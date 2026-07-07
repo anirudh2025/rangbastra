@@ -1,0 +1,147 @@
+---
+import { coutureCategories } from "../../data/couture";
+import { getPublishedCouturePieces } from "../../lib/couture";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import CoutureFilter from "./CoutureFilter.astro";
+import CoutureCard from "./CoutureCard.astro";
+
+const products = getPublishedCouturePieces();
+---
+
+<section class="product-catalog" aria-labelledby="catalog-heading">
+  <div class="catalog-header">
+    <div>
+      <Eyebrow>Catalogue</Eyebrow>
+      <h2 id="catalog-heading">Twenty-six Couture <span>Stories</span></h2>
+    </div>
+
+    <p>
+      Filter by occasion, then enter the piece that feels closest to your
+      celebration. Every selection begins as a private couture journey.
+    </p>
+  </div>
+
+  <CoutureFilter categories={coutureCategories} />
+
+  <div class="product-grid" aria-live="polite">
+    {
+      products.map((product, index) => (
+        <CoutureCard product={product} index={index} />
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .product-catalog {
+    --product-grid-gap: clamp(var(--space-6), 3vw, var(--space-8));
+    --product-grid-min: 17rem;
+
+    display: grid;
+    gap: clamp(var(--space-6), 5vw, var(--space-9));
+  }
+
+  .catalog-header {
+    display: grid;
+    grid-template-columns: minmax(0, .9fr) minmax(18rem, .58fr);
+    gap: clamp(var(--space-6), 6vw, var(--space-10));
+    align-items: end;
+  }
+
+  h2 {
+    max-width: 16ch;
+    margin-top: var(--space-3);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 4.8vw, 5.75rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .product-catalog h2 span {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-transform: none;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .catalog-header p {
+    max-width: var(--measure-xs);
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--product-grid-gap);
+    align-items: start;
+  }
+
+  .product-catalog:has(:global(#product-filter-bridal:checked))
+    :global(.product-card:not([data-category="Bridal"])),
+  .product-catalog:has(:global(#product-filter-festive:checked))
+    :global(.product-card:not([data-category="Festive"])),
+  .product-catalog:has(:global(#product-filter-reception:checked))
+    :global(.product-card:not([data-category="Reception"])),
+  .product-catalog:has(:global(#product-filter-engagement:checked))
+    :global(.product-card:not([data-category="Engagement"])),
+  .product-catalog:has(:global(#product-filter-custom-couture:checked))
+    :global(.product-card:not([data-category="Custom Couture"])) {
+    display: none;
+  }
+
+  @media (max-width: 1279px) {
+    .product-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .catalog-header {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+      max-width: min(100%, 34rem);
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .catalog-header p {
+      max-width: min(100%, 28ch);
+      overflow-wrap: break-word;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .product-catalog {
+      --product-grid-gap: var(--space-7);
+      max-width: calc(100vw - (var(--space-5) * 2));
+      overflow: hidden;
+    }
+
+    .product-grid {
+      grid-template-columns: 1fr;
+      max-width: 100%;
+    }
+
+    .catalog-header p {
+      max-width: 100%;
+      overflow-wrap: break-word;
+    }
+
+    h2 {
+      font-size: clamp(2.1rem, 12vw, 3.45rem);
+    }
+  }
+</style>

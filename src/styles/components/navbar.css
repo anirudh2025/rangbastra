@@ -249,8 +249,55 @@
 
 .navbar__cta:hover{
 
-    box-shadow:0 12px 30px rgba(0,0,0,.12);
+    background:var(--button-primary-background-hover);
 
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+
+}
+
+.utility-nav{
+    display:flex;
+    align-items:center;
+    gap:.35rem;
+}
+
+.utility-nav__link{
+    position:relative;
+    display:inline-grid;
+    place-items:center;
+    width:2.65rem;
+    height:2.65rem;
+    border:1px solid transparent;
+    border-radius:var(--radius-pill);
+    color:var(--text-secondary);
+    text-decoration:none;
+    transition:
+        color var(--motion-button) var(--ease-luxury),
+        border-color var(--motion-button) var(--ease-luxury),
+        background var(--motion-button) var(--ease-luxury),
+        transform var(--motion-button) var(--ease-luxury);
+}
+
+.utility-nav__link span{
+    position:absolute;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;
+}
+
+.utility-nav__link:hover,
+.utility-nav__link:focus-visible{
+    border-color:var(--border-default);
+    background:rgba(255,255,255,.035);
+    color:var(--text-primary);
+    transform:translate3d(0,var(--motion-button-lift),0);
+}
+
+.utility-nav__link:focus-visible{
+    outline:1px solid var(--focus-ring);
+    outline-offset:var(--space-1);
 }
 
 /* ===========================================================
@@ -282,7 +329,7 @@
 
     .desktop-nav{
 
-        gap:2rem;
+        gap:1.5rem;
 
     }
 
@@ -292,7 +339,7 @@
 
     .desktop-nav{
 
-        gap:1.5rem;
+        gap:1.1rem;
 
     }
 
@@ -300,6 +347,10 @@
 
         font-size:.9rem;
 
+    }
+
+    .utility-nav{
+        display:none;
     }
 
 }

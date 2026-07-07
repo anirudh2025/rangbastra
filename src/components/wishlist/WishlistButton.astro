@@ -1,0 +1,154 @@
+---
+import Icon from "../primitives/Icon.astro";
+
+interface Props {
+  slug: string;
+  name: string;
+  variant?: "floating" | "inline";
+}
+
+const { slug, name, variant = "floating" } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={["wishlist-toggle", `wishlist-toggle--${variant}`]}
+  data-wishlist-toggle
+  data-slug={slug}
+  aria-label={`Save ${name} to wishlist`}
+  aria-pressed="false"
+>
+  <Icon name="heart" size={variant === "floating" ? 18 : 16} />
+  <span>{variant === "floating" ? "Save" : "Save Inspiration"}</span>
+</button>
+
+<script>
+  const wishlistKey = "rangbastraWishlist";
+
+  const readWishlist = () => {
+    try {
+      return JSON.parse(window.localStorage.getItem(wishlistKey) || "[]");
+    } catch {
+      return [];
+    }
+  };
+
+  const writeWishlist = (items) => {
+    window.localStorage.setItem(wishlistKey, JSON.stringify(items));
+    window.dispatchEvent(new CustomEvent("rangbastra:wishlist-updated"));
+  };
+
+  const syncButtons = () => {
+    const saved = new Set(readWishlist());
+
+    document.querySelectorAll("[data-wishlist-toggle]").forEach((button) => {
+      const slug = button.getAttribute("data-slug");
+      const active = Boolean(slug && saved.has(slug));
+      button.classList.toggle("is-saved", active);
+      button.setAttribute("aria-pressed", String(active));
+      button.setAttribute(
+        "aria-label",
+        `${active ? "Remove" : "Save"} ${slug ?? "piece"} ${active ? "from" : "to"} wishlist`,
+      );
+    });
+  };
+
+  document.querySelectorAll("[data-wishlist-toggle]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const slug = button.getAttribute("data-slug");
+      if (!slug) return;
+
+      const saved = new Set(readWishlist());
+      if (saved.has(slug)) {
+        saved.delete(slug);
+      } else {
+        saved.add(slug);
+      }
+
+      writeWishlist([...saved]);
+      syncButtons();
+    });
+  });
+
+  syncButtons();
+  window.addEventListener("storage", syncButtons);
+</script>
+
+<style>
+  .wishlist-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    background: rgba(0, 0, 0, .5);
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: var(--shadow-inset);
+    backdrop-filter: blur(16px);
+    transition:
+      background var(--motion-button) var(--ease-luxury),
+      border-color var(--motion-button) var(--ease-luxury),
+      color var(--motion-button) var(--ease-luxury),
+      transform var(--motion-button) var(--ease-luxury);
+  }
+
+  .wishlist-toggle--floating {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 3;
+    width: 2.75rem;
+    padding: 0;
+  }
+
+  .wishlist-toggle--floating span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .wishlist-toggle--inline {
+    padding-inline: var(--space-4);
+  }
+
+  .wishlist-toggle:hover,
+  .wishlist-toggle:focus-visible,
+  .wishlist-toggle.is-saved {
+    border-color: rgba(198, 169, 114, .46);
+    background: rgba(106, 78, 66, .55);
+    color: var(--ivory-50);
+    transform: translate3d(0, var(--motion-button-lift), 0);
+  }
+
+  .wishlist-toggle.is-saved {
+    color: var(--sand-200);
+  }
+
+  .wishlist-toggle:focus-visible {
+    outline: 1px solid var(--focus-ring);
+    outline-offset: var(--space-1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wishlist-toggle,
+    .wishlist-toggle:hover,
+    .wishlist-toggle:focus-visible {
+      transform: none;
+    }
+  }
+</style>

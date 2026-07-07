@@ -1,48 +1,54 @@
 ---
-import Sparkles from "../icons/journey/Sparkles.astro";
-import Needle from "../icons/journey/Needle.astro";
-import Thread from "../icons/journey/Thread.astro";
-import Crown from "../icons/journey/Crown.astro";
-import Calendar from "../icons/navigation/Calendar.astro";
-import Instagram from "../icons/navigation/Instagram.astro";
-import Whatsapp from "../icons/navigation/Whatsapp.astro";
+import {
+  luxuryIconAliases,
+  luxuryIconPaths,
+  type LuxuryIconName,
+} from "../icons/luxury/iconPaths";
+import Sparkle from "../icons/journey/Sparkle.astro";
 
-interface Props{
-    name:string;
-    size?:number;
-    color?:string;
-    class?:string;
-    strokeWidth?:number;
+interface Props {
+  name: string;
+  size?: number;
+  color?: string;
+  class?: string;
+  strokeWidth?: number;
 }
 
-const{
-    name,
-    size=28,
-    color="currentColor",
-    class:className="",
-    strokeWidth=1.8
-}=Astro.props;
+const {
+  name,
+  size = 28,
+  color = "currentColor",
+  class: className = "",
+  strokeWidth = 1.72,
+} = Astro.props;
 
-const icons={
-    sparkles:Sparkles,
-    needle:Needle,
-    thread:Thread,
-    crown:Crown,
-    calendar:Calendar,
-    instagram:Instagram,
-    whatsapp:Whatsapp
-};
-
-const SelectedIcon=icons[name as keyof typeof icons];
+const iconName = (luxuryIconAliases[name] ?? name) as LuxuryIconName;
+const paths = luxuryIconPaths[iconName] ?? luxuryIconPaths.sparkle;
+const useDedicatedSparkle = iconName === "sparkle";
 ---
 
-{
-SelectedIcon && (
-    <SelectedIcon
-        size={size}
-        color={color}
-        class={className}
-        strokeWidth={strokeWidth}
-    />
-)
-}
+{useDedicatedSparkle ? (
+  <Sparkle
+    size={size}
+    color={color}
+    class={className}
+    strokeWidth={strokeWidth}
+  />
+) : (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    fill="none"
+    stroke={color}
+    stroke-width={strokeWidth}
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class={className}
+    aria-hidden="true"
+    focusable="false"
+  >
+    {paths.map((path) => <path d={path} />)}
+  </svg>
+)}

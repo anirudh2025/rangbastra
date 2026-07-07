@@ -1,0 +1,93 @@
+---
+import OurStoryHeader from "./OurStoryHeader.astro";
+import { ourStoryImages } from "../../data/ourStory";
+---
+
+<section class="philosophy-section" id="philosophy" aria-labelledby="story-philosophy-heading">
+  <div class="philosophy-panel">
+    <OurStoryHeader
+      eyebrow="Our Philosophy"
+      intro="Clothing Is An Art"
+      statement="Crafted Around You"
+      copy="It should belong to the person wearing it. Not loosely, not politely, but with the certainty that the silhouette, fabric and detail have been shaped around her life."
+      align="center"
+    />
+
+    <p>
+      Rangbastra believes couture becomes meaningful when it carries the
+      individual. A garment can be beautiful on a hanger, but it becomes
+      unforgettable only when it understands posture, ritual, memory and ease.
+    </p>
+  </div>
+
+  <figure style={`--story-image: url("${ourStoryImages.philosophy}")`}>
+    <img
+      src={ourStoryImages.philosophy}
+      alt="Fabric and detail expressing Rangbastra's crafted around you philosophy"
+      width="1200"
+      height="800"
+      loading="eager"
+      decoding="async"
+    />
+  </figure>
+</section>
+
+<style>
+  .philosophy-section {
+    display: grid;
+    gap: clamp(var(--space-7), 7vw, var(--space-10));
+  }
+
+  .philosophy-panel {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-6);
+    max-width: min(100%, 68rem);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  p {
+    max-width: var(--measure-md);
+    color: var(--text-secondary);
+    font-size: clamp(var(--body-md), 1.5vw, var(--body-lg));
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  figure {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 7;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      var(--story-image) center / cover no-repeat,
+      var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, transparent 34%, rgba(0, 0, 0, .54)),
+      var(--gradient-glass);
+    opacity: .72;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 720px) {
+    figure {
+      aspect-ratio: 4 / 5;
+      border-radius: var(--radius-lg);
+    }
+  }
+</style>

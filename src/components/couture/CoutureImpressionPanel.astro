@@ -1,0 +1,89 @@
+---
+import type { CouturePiece } from "../../data/couture";
+
+interface Props {
+  product: CouturePiece;
+}
+
+const { product } = Astro.props;
+const rating = product.editorialImpression.rating;
+const fullStars = Math.floor(rating);
+const ratingClass = rating === 4.5 ? "stars--four-half" : "stars--five";
+const stars = "★★★★★";
+---
+
+<aside class="impression-panel" aria-label={`${product.name} editorial impression`}>
+  <span>{product.editorialImpression.label}</span>
+  <div class:list={["stars", ratingClass]} aria-label={`${rating} out of 5 editorial rating`}>
+    <span aria-hidden="true">{stars}</span>
+    <span class="stars__fill" aria-hidden="true">
+      {stars}
+    </span>
+  </div>
+  <p>{product.editorialImpression.text}</p>
+  <small>{fullStars === 5 ? "Curated by the atelier" : "Editorial atelier impression"}</small>
+</aside>
+
+<style>
+  .impression-panel {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 34rem;
+    padding: clamp(var(--space-5), 3vw, var(--space-6));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .01)),
+      rgba(255, 255, 255, .02);
+    box-shadow: var(--shadow-inset), var(--glow-soft);
+  }
+
+  span,
+  small {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .stars {
+    position: relative;
+    width: fit-content;
+    color: rgba(255, 255, 255, .18);
+    font-size: var(--body-sm);
+    letter-spacing: .08em;
+    line-height: 1;
+  }
+
+  .stars--four-half .stars__fill {
+    width: 90%;
+  }
+
+  .stars--five .stars__fill {
+    width: 100%;
+  }
+
+  .stars__fill {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    color: var(--sand-200);
+    white-space: nowrap;
+  }
+
+  p {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.55rem, 2.35vw, 2.35rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-title);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  small {
+    opacity: .72;
+  }
+</style>

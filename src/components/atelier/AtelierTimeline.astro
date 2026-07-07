@@ -26,7 +26,7 @@ import AtelierCard from "./AtelierCard.astro";
   .atelier-timeline {
     position: relative;
     display: grid;
-    gap: clamp(var(--space-8), 8vw, var(--space-13));
+    gap: clamp(var(--space-8), 7vw, var(--space-12));
   }
 
   .atelier-timeline::before {
@@ -43,7 +43,7 @@ import AtelierCard from "./AtelierCard.astro";
       rgba(106, 78, 66, .52) 82%,
       transparent
     );
-    box-shadow: var(--glow-medium);
+    box-shadow: 0 0 24px rgba(181, 147, 130, .13);
     transform: translateX(-50%);
   }
 
@@ -82,12 +82,9 @@ import AtelierCard from "./AtelierCard.astro";
   }
 
   @media (min-width: 1024px) {
-    .timeline-item--left {
-      transform: translateY(var(--space-2));
-    }
-
+    .timeline-item--left,
     .timeline-item--right {
-      transform: translateY(calc(var(--space-2) * -1));
+      transform: none;
     }
   }
 

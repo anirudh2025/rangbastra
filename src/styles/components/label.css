@@ -131,4 +131,16 @@
 
     }
 
+    .button:hover .label__icon,
+    .button:focus-visible .label__icon,
+    .nav-link:hover .label__icon,
+    .nav-link:focus-visible .label__icon,
+    .mobile-nav__social a:hover .label__icon,
+    .mobile-nav__social a:focus-visible .label__icon{
+
+        transform:
+            translateY(-50%);
+
+    }
+
 }

@@ -1,16 +1,16 @@
 ---
 import Button from "../primitives/Button.astro";
-import Sparkles from "../icons/journey/Sparkles.astro";
+import Icon from "../primitives/Icon.astro";
 ---
 
 <div class="hero-actions">
 
     <Button
-        href="/consultation"
+        href="/design-your-outfit"
         class="hero-primary"
     >
 
-        Book Consultation
+        Design Your Outfit
 
     </Button>
 
@@ -21,7 +21,7 @@ import Sparkles from "../icons/journey/Sparkles.astro";
 
         <span class="hero-secondary-icon">
 
-            <Sparkles />
+            <Icon name="sparkle" size={16} />
 
         </span>
 
@@ -45,33 +45,10 @@ import Sparkles from "../icons/journey/Sparkles.astro";
 
 }
 
-:global(.hero-primary)::after{
+:global(.hero-primary:hover),
+:global(.hero-primary:focus-visible){
 
-    content:"";
-
-    position:absolute;
-
-    inset:-8px;
-
-    border:1px solid rgba(148,115,100,.55);
-
-    border-radius:calc(var(--button-radius) + 8px);
-
-    opacity:0;
-
-    transform:scale(.96);
-
-    transition:
-        opacity .35s var(--ease-luxury),
-        transform .35s var(--ease-luxury);
-
-}
-
-:global(.hero-primary:hover)::after{
-
-    opacity:1;
-
-    transform:scale(1);
+    background:var(--button-primary-background-hover);
 
 }
 
@@ -162,11 +139,13 @@ import Sparkles from "../icons/journey/Sparkles.astro";
 
 .hero-actions{
 
+    flex-direction:column;
+
     justify-content:center;
 
     width:100%;
 
-    gap:.75rem 1rem;
+    gap:var(--space-3);
 
 }
 

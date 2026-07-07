@@ -1,0 +1,142 @@
+---
+import Button from "../primitives/Button.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import Label from "../primitives/Label.astro";
+import { getWhatsAppHref } from "../../data/contact";
+---
+
+<section class="lookbook-invitation" aria-labelledby="lookbook-invitation-heading">
+  <div class="invitation-panel">
+    <Eyebrow>Continue The Story</Eyebrow>
+
+    <h2 id="lookbook-invitation-heading">
+      <span class="title-intro">Let The Next Frame</span>
+      <span class="title-statement">Begin With You</span>
+    </h2>
+
+    <p>
+      If a look, mood or detail stayed with you, begin a custom design journey
+      shaped around your celebration.
+    </p>
+
+    <div class="invitation-actions" aria-label="Continue from the lookbook">
+      <Button href="/design-your-outfit">
+        <Label icon="designer">Create A Similar Look</Label>
+      </Button>
+
+      <Button href={getWhatsAppHref("lookbook")} target="_blank">
+        <Label icon="whatsapp">WhatsApp</Label>
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lookbook-invitation {
+    display: grid;
+  }
+
+  .invitation-panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: clamp(var(--space-5), 4vw, var(--space-8));
+    overflow: hidden;
+    padding: clamp(var(--space-9), 10vw, var(--space-13)) clamp(var(--space-5), 6vw, var(--space-10));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(circle at 50% 24%, rgba(106, 78, 66, .22), transparent 38%),
+      radial-gradient(circle at 18% 88%, rgba(181, 147, 130, .08), transparent 30%),
+      var(--surface-canvas);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+    text-align: center;
+  }
+
+  .invitation-panel::before {
+    content: "";
+    position: absolute;
+    inset: 8% -12% auto;
+    height: min(24rem, 34vw);
+    pointer-events: none;
+    background: var(--gradient-satin-fold);
+    opacity: .32;
+    transform: rotate(-5deg);
+  }
+
+  h2,
+  p,
+  .invitation-actions,
+  :global(.eyebrow) {
+    position: relative;
+    z-index: 1;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 17ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: var(--section-heading-intro);
+    line-height: 1.18;
+  }
+
+  .title-statement {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: var(--section-heading-statement);
+    line-height: 1.12;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .invitation-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+  }
+
+  @media (max-width: 560px) {
+    .invitation-panel {
+      border-radius: var(--radius-lg);
+    }
+
+    .title-intro {
+      font-size: var(--section-heading-intro-mobile);
+    }
+
+    .title-statement {
+      font-size: var(--section-heading-statement-mobile);
+    }
+
+    p {
+      font-size: var(--body-md);
+    }
+
+    .invitation-actions {
+      align-items: stretch;
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+</style>

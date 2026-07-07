@@ -1,0 +1,60 @@
+---
+import { lookbookExperienceImages } from "../../data/lookbookExperience";
+---
+
+<section
+  class="lookbook-quote"
+  aria-label="Editorial lookbook quote"
+  style={`--quote-image: url("${lookbookExperienceImages.quote}")`}
+>
+  <blockquote>
+    <p>The most memorable photographs capture emotion before fashion.</p>
+  </blockquote>
+</section>
+
+<style>
+  .lookbook-quote {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    min-height: clamp(24rem, 42vw, 42rem);
+    border: 1px solid rgba(255, 255, 255, .1);
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, .86), rgba(0, 0, 0, .38)),
+      var(--quote-image) center / cover no-repeat;
+    isolation: isolate;
+  }
+
+  .lookbook-quote::after {
+    content: "";
+    position: absolute;
+    inset: 8%;
+    border: 1px solid rgba(255, 255, 255, .12);
+    pointer-events: none;
+  }
+
+  blockquote {
+    position: relative;
+    z-index: 1;
+    max-width: 15ch;
+    margin: 0;
+    text-align: center;
+  }
+
+  p {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2.7rem, 6.8vw, 7rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: .98;
+    text-wrap: balance;
+  }
+
+  @media (max-width: 560px) {
+    .lookbook-quote {
+      min-height: 28rem;
+    }
+  }
+</style>

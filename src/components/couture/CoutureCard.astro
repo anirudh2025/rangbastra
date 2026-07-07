@@ -1,0 +1,307 @@
+---
+import Label from "../primitives/Label.astro";
+import Icon from "../primitives/Icon.astro";
+import WishlistButton from "../wishlist/WishlistButton.astro";
+import type { CouturePiece } from "../../data/couture";
+
+interface Props {
+  product: CouturePiece;
+  index: number;
+}
+
+const { product, index } = Astro.props;
+const loading = index < 4 ? "eager" : "lazy";
+---
+
+<article
+  class:list={["product-card", product.featured && "product-card--featured"]}
+  data-category={product.category}
+  style={`--product-card-delay: ${Math.min(index, 8) * 55}ms`}
+>
+  <WishlistButton slug={product.slug} name={product.name} />
+
+  <a href={`/products/${product.slug}`} class="product-link">
+    <figure class="product-media">
+      <img
+        src={product.image}
+        alt={`${product.name} by Rangbastra`}
+        width="900"
+        height="1200"
+        loading={loading}
+        decoding="async"
+      />
+    </figure>
+
+    <div class="product-copy">
+      <div class="product-kicker">
+        <span>{product.category}</span>
+        <span>{product.occasion}</span>
+      </div>
+
+      <h2>
+        <span>{product.name}</span>
+        <Icon name="sparkle" size={16} class="card-title-sparkle" />
+      </h2>
+
+      <p>{product.shortDescription}</p>
+
+      <div class="product-meta">
+        <span>{product.priceLabel}</span>
+        <span>{product.colorFamily}</span>
+      </div>
+
+      <ul class="craft-tags" aria-label={`${product.name} craft details`}>
+        {
+          product.craftTags.slice(0, 3).map((tag) => (
+            <li>{tag}</li>
+          ))
+        }
+      </ul>
+
+      <span class="product-action">
+        <Label icon="sparkle" iconPosition="left" iconSize={14}>Explore Piece</Label>
+      </span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .product-card {
+    --product-card-radius: var(--radius-xl);
+    --product-card-image-ratio: 4 / 5;
+
+    position: relative;
+
+    opacity: 0;
+    transform: translateY(var(--distance-md));
+    animation: product-card-reveal var(--motion-reveal) var(--ease-luxury) forwards;
+    animation-delay: var(--product-card-delay);
+  }
+
+  .product-link {
+    display: grid;
+    gap: var(--space-5);
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .product-media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--product-card-image-ratio);
+    border: 1px solid var(--border-default);
+    border-radius: var(--product-card-radius);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+    transition:
+      transform var(--motion-medium) var(--ease-luxury),
+      border-color var(--motion-medium) var(--ease-luxury),
+      box-shadow var(--motion-medium) var(--ease-luxury);
+  }
+
+  .product-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, transparent 46%, rgba(0, 0, 0, .7)),
+      var(--gradient-glass);
+    opacity: .72;
+    transition: opacity var(--motion-medium) var(--ease-luxury);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.015);
+    transition: transform var(--motion-image) var(--ease-luxury);
+  }
+
+  .product-copy {
+    display: grid;
+    gap: var(--space-3);
+    padding-inline: var(--space-1);
+  }
+
+  .product-kicker,
+  .product-meta,
+  .craft-tags {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    line-height: var(--leading-caption);
+  }
+
+  .product-kicker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .product-kicker span + span::before {
+    content: "/";
+    margin-right: var(--space-3);
+    color: var(--border-strong);
+  }
+
+  h2 {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: 13ch;
+    color: var(--text-primary);
+    font-family: var(--font-signature);
+    font-size: clamp(1.85rem, 2.35vw, 2.85rem);
+    font-weight: var(--weight-regular);
+    letter-spacing: var(--tracking-title);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+    transition: color var(--motion-medium) var(--ease-luxury);
+  }
+
+  h2 :global(.card-title-sparkle) {
+    flex: 0 0 auto;
+    color: var(--sand-200);
+    opacity: .72;
+    transform: translateY(.08em);
+  }
+
+  p {
+    max-width: var(--measure-xs);
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .product-meta {
+    display: grid;
+    gap: var(--space-1);
+    padding-top: var(--space-1);
+  }
+
+  .craft-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .craft-tags li {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    padding: .25rem .65rem;
+    background: rgba(255, 255, 255, .025);
+  }
+
+  .product-action {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--space-2);
+    padding-inline: var(--space-4);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, .02);
+    color: var(--sand-200);
+    font-size: var(--label-md);
+    font-weight: var(--weight-semibold);
+    opacity: .9;
+    transition:
+      background var(--motion-medium) var(--ease-luxury),
+      border-color var(--motion-medium) var(--ease-luxury),
+      color var(--motion-medium) var(--ease-luxury),
+      opacity var(--motion-medium) var(--ease-luxury),
+      transform var(--motion-medium) var(--ease-luxury);
+  }
+
+  .product-link:hover .product-media,
+  .product-link:focus-visible .product-media {
+    transform: translate3d(0, var(--motion-card-lift), 0);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-premium), var(--glow-soft), var(--shadow-inset-strong);
+  }
+
+  .product-link:hover .product-media::after,
+  .product-link:focus-visible .product-media::after {
+    opacity: .5;
+  }
+
+  .product-link:hover img,
+  .product-link:focus-visible img {
+    transform: scale(var(--motion-image-scale-subtle));
+  }
+
+  .product-link:hover h2,
+  .product-link:focus-visible h2 {
+    color: var(--ivory-50);
+  }
+
+  .product-link:hover .product-action,
+  .product-link:focus-visible .product-action {
+    border-color: var(--border-strong);
+    background: rgba(255, 255, 255, .045);
+    color: var(--ivory-100);
+    opacity: 1;
+    transform: translate3d(var(--motion-distance-xs), 0, 0);
+  }
+
+  .product-link:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: var(--space-3);
+    border-radius: var(--product-card-radius);
+  }
+
+  @keyframes product-card-reveal {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .product-card {
+      --product-card-radius: var(--radius-lg);
+    }
+
+    .product-link {
+      gap: var(--space-4);
+    }
+
+    .product-copy {
+      gap: var(--space-2);
+    }
+
+    h2 {
+      font-size: clamp(1.45rem, 8vw, 2.15rem);
+    }
+
+    p {
+      font-size: .86rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-card {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+
+    .product-link:hover .product-media,
+    .product-link:focus-visible .product-media,
+    .product-link:hover img,
+    .product-link:focus-visible img,
+    .product-link:hover .product-action,
+    .product-link:focus-visible .product-action {
+      transform: none;
+    }
+  }
+</style>

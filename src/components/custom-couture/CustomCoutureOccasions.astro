@@ -1,0 +1,87 @@
+---
+import Icon from "../primitives/Icon.astro";
+import CustomCoutureHeader from "./CustomCoutureHeader.astro";
+import { occasions } from "../../data/customCouture";
+---
+
+<section class="occasions-section" aria-labelledby="occasions-heading">
+  <CustomCoutureHeader
+    eyebrow="Choose Your Occasion"
+    intro="Every Celebration"
+    statement="Carries A Different Mood"
+    copy="The atelier does not force one couture language onto every ceremony. Each occasion is given its own rhythm, movement and emotional weight."
+  />
+
+  <div class="occasion-grid">
+    {
+      occasions.map((occasion) => (
+        <article class="occasion-card">
+          <Icon name={occasion.icon} size={24} class="occasion-icon" />
+          <h3>{occasion.title}</h3>
+          <p>{occasion.mood}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .occasions-section {
+    display: grid;
+    gap: clamp(var(--space-7), 7vw, var(--space-10));
+  }
+
+  .occasion-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .occasion-card {
+    display: grid;
+    gap: var(--space-3);
+    min-height: 12.5rem;
+    padding: clamp(var(--space-5), 3vw, var(--space-6));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 12% 0%, rgba(181, 147, 130, .08), transparent 48%),
+      rgba(255, 255, 255, .018);
+    box-shadow: var(--shadow-inset);
+  }
+
+  .occasion-card :global(.occasion-icon) {
+    color: var(--sand-200);
+    opacity: .76;
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.65rem, 2.6vw, 2.6rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+  }
+
+  @media (max-width: 900px) {
+    .occasion-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 520px) {
+    .occasion-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .occasion-card {
+      min-height: auto;
+    }
+  }
+</style>

@@ -3,12 +3,12 @@ import Button from "../primitives/Button.astro";
 import Label from "../primitives/Label.astro";
 
 interface Props{
-    href:string;
+    href?:string;
     class?:string;
 }
 
 const{
-    href,
+    href="/design-your-outfit",
     class:className=""
 }=Astro.props;
 ---
@@ -22,10 +22,10 @@ const{
 >
 
     <Label
-        icon="calendar"
-        iconSize={14}
+        icon="handcraftedPlanning"
+        iconSize={16}
     >
-        Book Consultation
+        Create Yours
     </Label>
 
 </Button>

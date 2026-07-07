@@ -1,0 +1,243 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Button from "../primitives/Button.astro";
+import Container from "../primitives/Container.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import Icon from "../primitives/Icon.astro";
+import Section from "../primitives/Section.astro";
+import Footer from "../../sections/home/Footer.astro";
+
+interface InfoBlock {
+  title: string;
+  body: string[];
+}
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  eyebrow: string;
+  heading: string;
+  intro: string;
+  updated?: string;
+  blocks: InfoBlock[];
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  eyebrow,
+  heading,
+  intro,
+  updated = "Last updated: July 2026",
+  blocks,
+  ctaLabel = "Design Your Outfit",
+  ctaHref = "/design-your-outfit",
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} canonical={canonical}>
+  <Section class="info-section">
+    <Container class="info-container">
+      <article class="info-page">
+        <header class="info-hero">
+          <div class="info-mark" aria-hidden="true">
+            <Icon name="signature" size={32} />
+            <span>Rangbastra</span>
+          </div>
+
+          <div class="info-heading">
+            <Eyebrow>{eyebrow}</Eyebrow>
+            <h1>{heading}</h1>
+            <p>{intro}</p>
+          </div>
+
+          <aside class="info-note">
+            <span>{updated}</span>
+            <p>
+              Rangbastra is a custom couture boutique experience. These notes
+              are written to make the inquiry, design and communication process
+              clear before a private conversation begins.
+            </p>
+          </aside>
+        </header>
+
+        <div class="info-body">
+          {blocks.map((block, index) => (
+            <section class="info-block" aria-labelledby={`info-block-${index}`}>
+              <span>0{index + 1}</span>
+              <div>
+                <h2 id={`info-block-${index}`}>{block.title}</h2>
+                {block.body.map((paragraph) => <p>{paragraph}</p>)}
+              </div>
+            </section>
+          ))}
+        </div>
+
+        <footer class="info-cta">
+          <p>For anything specific to your celebration, our atelier can guide you personally.</p>
+          <Button href={ctaHref}>{ctaLabel}</Button>
+        </footer>
+      </article>
+    </Container>
+  </Section>
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.info-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
+    overflow: hidden;
+    background:
+      linear-gradient(90deg, rgba(198, 169, 114, .07) 0 1px, transparent 1px 12rem),
+      radial-gradient(circle at 78% 18%, rgba(106, 78, 66, .18), transparent 34%),
+      var(--surface-canvas);
+  }
+
+  :global(.info-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+  }
+
+  .info-page {
+    padding-top: clamp(var(--space-12), 14vw, var(--space-14));
+  }
+
+  .info-hero {
+    display: grid;
+    grid-template-columns: minmax(8rem, .16fr) minmax(0, .54fr) minmax(16rem, .3fr);
+    gap: clamp(var(--space-5), 6vw, var(--space-10));
+    align-items: center;
+    min-height: min(42rem, calc(100svh - var(--navbar-height)));
+  }
+
+  .info-mark {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-4);
+    min-height: 24rem;
+    padding: var(--space-5);
+    border-inline: 1px solid rgba(198, 169, 114, .2);
+    color: var(--sand-200);
+  }
+
+  .info-mark span {
+    writing-mode: vertical-rl;
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .info-heading {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  h1,
+  h2 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  h1 {
+    max-width: 11ch;
+    font-size: clamp(3.4rem, 7vw, 7.6rem);
+    line-height: .96;
+  }
+
+  .info-heading p,
+  .info-note p,
+  .info-block p,
+  .info-cta p {
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+  }
+
+  .info-heading p {
+    max-width: var(--measure-sm);
+    font-size: var(--body-lg);
+  }
+
+  .info-note {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border: 1px solid rgba(198, 169, 114, .18);
+    background: rgba(255, 255, 255, .025);
+  }
+
+  .info-note span,
+  .info-block > span {
+    color: var(--sand-200);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .info-body {
+    display: grid;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  .info-block {
+    display: grid;
+    grid-template-columns: minmax(5rem, .18fr) minmax(0, .72fr);
+    gap: clamp(var(--space-5), 6vw, var(--space-10));
+    padding-block: clamp(var(--space-6), 6vw, var(--space-9));
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  .info-block div {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 62rem;
+  }
+
+  .info-block h2 {
+    font-size: clamp(2rem, 3.6vw, 3.8rem);
+    line-height: 1.05;
+  }
+
+  .info-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-block: clamp(var(--space-8), 9vw, var(--space-12));
+  }
+
+  .info-cta p {
+    max-width: 32rem;
+  }
+
+  @media (max-width: 1024px) {
+    .info-hero,
+    .info-block {
+      grid-template-columns: 1fr;
+    }
+
+    .info-mark {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .info-page {
+      padding-top: clamp(var(--space-11), 28vw, var(--space-13));
+    }
+
+    .info-cta {
+      display: grid;
+      justify-items: start;
+    }
+  }
+</style>

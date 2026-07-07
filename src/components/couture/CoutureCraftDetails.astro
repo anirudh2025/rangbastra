@@ -1,0 +1,122 @@
+---
+import type { CouturePiece } from "../../data/couture";
+
+interface Props {
+  product: CouturePiece;
+}
+
+const { product } = Astro.props;
+const details = [
+  ["Fabric", product.fabric],
+  ["Handwork", product.handwork],
+  ["Style", product.style],
+  ["Motif", product.motif],
+  ["Type", product.type],
+  ["Flare", product.flare],
+  ["Making Time", product.makingTime],
+  ["History", product.history],
+].filter((detail): detail is [string, string] => Boolean(detail[1]));
+---
+
+<section class="craft-details" aria-labelledby="craft-details-heading">
+  <div class="details-header">
+    <span>Craft Details</span>
+    <h2 id="craft-details-heading">The Quietly <span>Hidden</span></h2>
+  </div>
+
+  <dl class="details-grid">
+    {
+      details.map(([label, value]) => (
+        <div>
+          <dt>{label}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  .craft-details {
+    display: grid;
+    gap: clamp(var(--space-5), 4vw, var(--space-7));
+  }
+
+  .details-header {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 58rem;
+  }
+
+  .details-header span,
+  dt {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2.15rem, 4vw, 4.55rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .details-header h2 span {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-transform: none;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .details-grid div {
+    display: grid;
+    gap: var(--space-2);
+    min-height: 0;
+    padding: clamp(var(--space-4), 2vw, var(--space-5));
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, .02);
+    box-shadow: var(--shadow-inset);
+  }
+
+  dd {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 1120px) {
+    .details-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 620px) {
+    .details-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .details-grid div {
+      min-height: auto;
+    }
+  }
+</style>

@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/primitives/Section.astro";
+import Container from "../components/primitives/Container.astro";
+import OurStoryHero from "../components/our-story/OurStoryHero.astro";
+import OurStoryBeginning from "../components/our-story/OurStoryBeginning.astro";
+import OurStoryFounder from "../components/our-story/OurStoryFounder.astro";
+import OurStoryPhilosophy from "../components/our-story/OurStoryPhilosophy.astro";
+import OurStoryPrinciples from "../components/our-story/OurStoryPrinciples.astro";
+import OurStoryJourney from "../components/our-story/OurStoryJourney.astro";
+import OurStoryPromise from "../components/our-story/OurStoryPromise.astro";
+import OurStoryFuture from "../components/our-story/OurStoryFuture.astro";
+import OurStoryInvitation from "../components/our-story/OurStoryInvitation.astro";
+import Footer from "../sections/home/Footer.astro";
+import { ourStoryImages } from "../data/ourStory";
+---
+
+<BaseLayout
+  title="Our Story | Rangbastra"
+  description="Discover why Rangbastra exists, the founder story of Bhagirathi Patel, and the belief that every couture piece should be crafted around the wearer."
+  canonical="/our-story"
+  image={ourStoryImages.hero}
+>
+  <Section class="our-story-section">
+    <Container class="our-story-container">
+      <OurStoryHero />
+      <OurStoryBeginning />
+      <OurStoryFounder />
+      <OurStoryPhilosophy />
+      <OurStoryPrinciples />
+      <OurStoryJourney />
+      <OurStoryPromise />
+      <OurStoryFuture />
+      <OurStoryInvitation />
+    </Container>
+  </Section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.our-story-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 11vw, var(--space-14));
+
+    overflow: hidden;
+    background:
+      linear-gradient(90deg, transparent 0 7%, rgba(198, 169, 114, .08) 7.08% 7.16%, transparent 7.24%),
+      radial-gradient(circle at 76% 10%, rgba(106, 78, 66, .14), transparent 34%),
+      radial-gradient(circle at 18% 48%, rgba(198, 169, 114, .055), transparent 30%),
+      linear-gradient(180deg, rgba(0, 0, 0, .97), transparent 24%),
+      var(--surface-canvas);
+    isolation: isolate;
+  }
+
+  :global(.our-story-section)::before,
+  :global(.our-story-section)::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  :global(.our-story-section)::before {
+    top: 12%;
+    right: -18%;
+    width: min(64rem, 70vw);
+    height: min(34rem, 42vw);
+    background: var(--gradient-satin-fold);
+    opacity: .2;
+    transform: rotate(-8deg);
+  }
+
+  :global(.our-story-section)::after {
+    left: -16%;
+    bottom: 16%;
+    width: min(54rem, 66vw);
+    height: min(34rem, 42vw);
+    background: var(--gradient-satin-fold);
+    opacity: .14;
+    transform: rotate(12deg);
+  }
+
+  :global(.our-story-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    gap: clamp(var(--space-10), 11vw, var(--space-14));
+  }
+
+  @media (max-width: 767px) {
+    :global(.our-story-section) {
+      --section-padding-block: 0 clamp(var(--space-9), 20vw, var(--space-12));
+    }
+
+    :global(.our-story-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      gap: clamp(var(--space-9), 18vw, var(--space-12));
+    }
+  }
+</style>

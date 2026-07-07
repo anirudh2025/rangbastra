@@ -2,7 +2,10 @@
 import Container from "../../components/primitives/Container.astro";
 import Button from "../../components/primitives/Button.astro";
 import Label from "../../components/primitives/Label.astro";
+import Eyebrow from "../../components/primitives/Eyebrow.astro";
 import { footerNavigation } from "../../data/footerNavigation";
+import { contact, getWhatsAppHref } from "../../data/contact";
+import rangbastraLogo from "../../assets/branding/Rangbastra Web Logo.svg";
 
 const currentYear = new Date().getFullYear();
 ---
@@ -10,7 +13,7 @@ const currentYear = new Date().getFullYear();
 <footer class="site-footer">
   <Container class="footer-container">
     <section class="footer-invitation" aria-labelledby="footer-heading">
-      <span class="eyebrow">Rangbastra Atelier</span>
+      <Eyebrow>Rangbastra Signature</Eyebrow>
 
       <h2 id="footer-heading">
         <span class="title-intro">Every Celebration Deserves</span>
@@ -23,16 +26,16 @@ const currentYear = new Date().getFullYear();
       </p>
 
       <div class="footer-actions" aria-label="Connect with Rangbastra">
-        <Button href="/consultation" class="footer-primary">
-          <Label icon="calendar" iconSize={14}>Schedule Consultation</Label>
+        <Button href="/design-your-outfit" class="footer-primary">
+          <Label icon="designer" iconSize={14}>Design Your Outfit</Label>
         </Button>
 
-        <Button href="https://instagram.com/rangbastra" class="footer-secondary">
-          <Label icon="instagram" iconSize={14}>Instagram</Label>
+        <Button href={contact.instagramUrl} target="_blank" class="footer-secondary">
+          <Label icon="instagram" iconSize={14}>Visit Instagram</Label>
         </Button>
 
-        <Button href="https://wa.me/" class="footer-secondary">
-          <Label icon="whatsapp" iconSize={14}>WhatsApp</Label>
+        <Button href={getWhatsAppHref("homepage")} target="_blank" class="footer-secondary">
+          <Label icon="whatsapp" iconSize={14}>Message WhatsApp</Label>
         </Button>
       </div>
     </section>
@@ -66,35 +69,45 @@ const currentYear = new Date().getFullYear();
     </nav>
 
     <div class="brand-signature">
-      <div class="brand-mark">RANGBASTRA</div>
+      <img
+        class="brand-logo"
+        src={rangbastraLogo.src}
+        alt="Rangbastra"
+        width="360"
+        height="80"
+        loading="eager"
+        decoding="async"
+      />
 
       <div class="brand-copy">
         <p>Crafted in India. Made to be remembered.</p>
         <p>Handcrafted for timeless celebrations.</p>
       </div>
 
-      <p class="copyright">© {currentYear}</p>
+      <p class="copyright">&copy; {currentYear}</p>
     </div>
+
+    <p class="footer-credit">Digital Experience by Cloutora</p>
   </Container>
 </footer>
 
 <style>
   .site-footer {
-    --footer-padding-block: clamp(var(--space-11), 13vw, var(--space-14));
+    --footer-padding-block: clamp(var(--space-7), 7vw, var(--space-10));
     --footer-background: var(--surface-canvas);
     --footer-glow-opacity: .16;
     --footer-satin-opacity: .28;
-    --footer-content-gap: clamp(var(--space-9), 9vw, var(--space-13));
-    --footer-invitation-width: min(100%, 70rem);
-    --footer-copy-width: var(--measure-md);
+    --footer-content-gap: clamp(var(--space-6), 5vw, var(--space-8));
+    --footer-invitation-width: min(100%, 64rem);
+    --footer-copy-width: var(--measure-sm);
     --footer-action-gap: var(--space-3);
-    --footer-nav-gap: clamp(var(--space-7), 7vw, var(--space-11));
-    --footer-link-gap: var(--space-4);
+    --footer-nav-gap: clamp(var(--space-5), 5vw, var(--space-8));
+    --footer-link-gap: var(--space-3);
     --footer-signature-gap: var(--space-5);
 
     position: relative;
     overflow: hidden;
-    padding-block: var(--footer-padding-block) clamp(var(--space-8), 8vw, var(--space-11));
+    padding-block: var(--footer-padding-block) var(--space-5);
     background:
       radial-gradient(
         circle at 50% 16%,
@@ -150,19 +163,10 @@ const currentYear = new Date().getFullYear();
   .footer-invitation {
     display: grid;
     justify-items: center;
-    gap: clamp(var(--space-5), 4vw, var(--space-8));
+    gap: clamp(var(--space-4), 3vw, var(--space-6));
     max-width: var(--footer-invitation-width);
     margin-inline: auto;
     text-align: center;
-  }
-
-  .eyebrow {
-    color: var(--cocoa-400);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    text-transform: uppercase;
   }
 
   h2 {
@@ -223,30 +227,10 @@ const currentYear = new Date().getFullYear();
     isolation: isolate;
   }
 
-  :global(.footer-primary)::after {
-    content: "";
-    position: absolute;
-    inset: -7px;
-    z-index: -1;
-    border: 1px solid rgba(181, 147, 130, .36);
-    border-radius: calc(var(--button-radius) + 7px);
-    opacity: 0;
-    transform: scale(.98);
-    transition:
-      opacity var(--motion-medium) var(--ease-luxury),
-      transform var(--motion-medium) var(--ease-luxury);
-  }
-
   :global(.footer-primary:hover),
   :global(.footer-primary:focus-visible) {
-    background: var(--gradient-primary);
+    background: var(--button-primary-gradient-hover);
     box-shadow: var(--glow-medium), var(--button-shadow-hover), var(--shadow-inset-strong);
-  }
-
-  :global(.footer-primary:hover)::after,
-  :global(.footer-primary:focus-visible)::after {
-    opacity: 1;
-    transform: scale(1);
   }
 
   :global(.footer-secondary) {
@@ -261,7 +245,7 @@ const currentYear = new Date().getFullYear();
     border-color: var(--border-strong);
     background: rgba(255, 255, 255, .045);
     color: var(--text-primary);
-    box-shadow: var(--glow-soft), var(--shadow-inset-strong);
+    box-shadow: var(--shadow-inset-strong);
   }
 
   .footer-divider {
@@ -280,7 +264,7 @@ const currentYear = new Date().getFullYear();
 
   .footer-navigation {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--footer-nav-gap);
     align-items: start;
   }
@@ -312,10 +296,11 @@ const currentYear = new Date().getFullYear();
     display: inline-flex;
     width: fit-content;
     color: var(--text-secondary);
-    font-family: var(--font-display);
-    font-size: clamp(1.45rem, 2.2vw, 2.35rem);
-    font-weight: var(--weight-light);
-    line-height: var(--leading-title);
+    font-family: var(--font-body);
+    font-size: clamp(.82rem, .86vw, .98rem);
+    font-weight: var(--weight-medium);
+    letter-spacing:.02em;
+    line-height: var(--leading-caption);
     text-decoration: none;
     text-wrap: balance;
     transition:
@@ -342,7 +327,7 @@ const currentYear = new Date().getFullYear();
   .footer-nav-group a:focus-visible {
     color: var(--text-primary);
     text-shadow: var(--glow-soft);
-    transform: translateY(var(--hover-lift-soft));
+    transform: translate3d(0, var(--motion-card-lift), 0);
   }
 
   .footer-nav-group a:hover::after,
@@ -363,14 +348,12 @@ const currentYear = new Date().getFullYear();
     color: var(--text-muted);
   }
 
-  .brand-mark {
-    color: var(--text-primary);
-    font-family: var(--font-display);
-    font-size: clamp(2.6rem, 7vw, 8.5rem);
-    font-weight: var(--weight-light);
-    letter-spacing: var(--tracking-heading);
-    line-height: .9;
-    text-shadow: var(--glow-soft);
+  .brand-logo {
+    display: block;
+    width: min(100%, clamp(16rem, 32vw, 29rem));
+    height: auto;
+    opacity: .92;
+    filter: drop-shadow(0 0 18px rgba(181, 147, 130, .16));
   }
 
   .brand-copy {
@@ -397,9 +380,20 @@ const currentYear = new Date().getFullYear();
     white-space: nowrap;
   }
 
+  .footer-credit {
+    justify-self: end;
+    margin: calc(var(--footer-signature-gap) * -0.5) 0 0;
+    color: var(--text-muted);
+    font-size: clamp(.65rem, .55vw, .78rem);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    opacity: .56;
+    text-transform: uppercase;
+  }
+
   @media (max-width: 1023px) {
     .footer-navigation {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--space-7);
     }
 
@@ -415,10 +409,10 @@ const currentYear = new Date().getFullYear();
 
   @media (max-width: 767px) {
     .site-footer {
-      --footer-padding-block: clamp(var(--space-10), 22vw, var(--space-13));
+      --footer-padding-block: clamp(var(--space-8), 18vw, var(--space-11));
       --footer-glow-opacity: .13;
       --footer-satin-opacity: .2;
-      --footer-content-gap: var(--space-8);
+      --footer-content-gap: var(--space-7);
       --footer-nav-gap: var(--space-7);
       --footer-link-gap: var(--space-3);
     }
@@ -477,8 +471,22 @@ const currentYear = new Date().getFullYear();
       gap: var(--space-4);
     }
 
-    .brand-mark {
-      font-size: clamp(2.45rem, 14vw, 4.75rem);
+    .footer-credit {
+      justify-self: start;
+      margin-top: calc(var(--space-2) * -1);
+    }
+
+    .brand-logo {
+      width: min(100%, 18rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer-nav-group a:hover,
+    .footer-nav-group a:focus-visible,
+    .footer-nav-group a:hover::after,
+    .footer-nav-group a:focus-visible::after {
+      transform: none;
     }
   }
 </style>

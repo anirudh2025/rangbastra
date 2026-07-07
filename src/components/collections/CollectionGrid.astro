@@ -21,6 +21,8 @@ import CollectionCard from "./CollectionCard.astro";
     --collection-columns: 4;
     --collection-rail-padding: var(--space-1);
 
+    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
@@ -29,7 +31,8 @@ import CollectionCard from "./CollectionCard.astro";
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-inline: contain;
     padding-inline: var(--collection-rail-padding);
-    padding-block: var(--space-3) var(--space-8);
+    padding-block: var(--space-2) var(--space-7);
+    contain: inline-size;
   }
 
   .collection-rail::-webkit-scrollbar {
@@ -40,7 +43,7 @@ import CollectionCard from "./CollectionCard.astro";
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: calc(
-      (100% - (var(--collection-gap) * (var(--collection-columns) - 1))) /
+      (100% - (var(--collection-gap) * (var(--collection-columns) - 0))) /
         var(--collection-columns)
     );
     gap: var(--collection-gap);
@@ -55,17 +58,17 @@ import CollectionCard from "./CollectionCard.astro";
 
   @media (max-width: 767px) {
     .collection-rail {
-      --collection-columns: 2;
-      --collection-gap: var(--space-3);
+      --collection-columns: 1.18;
+      --collection-gap: var(--space-5);
       --collection-rail-padding: 0;
 
-      padding-block: var(--space-2) var(--space-7);
+      padding-block: var(--space-2) var(--space-6);
     }
   }
 
   @media (min-width: 768px) and (max-width: 1023px) {
     .collection-rail {
-      --collection-columns: 4;
+      --collection-columns: 2.35;
       --collection-gap: var(--space-4);
     }
   }

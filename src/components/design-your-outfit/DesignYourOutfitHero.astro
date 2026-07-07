@@ -1,0 +1,230 @@
+---
+import Button from "../primitives/Button.astro";
+import Label from "../primitives/Label.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import {
+  designYourOutfitImages,
+  designYourOutfitWhatsappHref,
+} from "../../data/designYourOutfit";
+---
+
+<section class="private-hero" aria-labelledby="design-your-outfit-heading">
+  <figure class="hero-media">
+    <img
+      src={designYourOutfitImages.hero}
+      alt="Rangbastra couture portrait for custom outfit design"
+      width="1200"
+      height="1500"
+      loading="eager"
+      decoding="async"
+    />
+  </figure>
+
+  <div class="hero-copy">
+    <Eyebrow>Design Your Outfit</Eyebrow>
+
+    <h1 id="design-your-outfit-heading">
+      <span class="title-intro">Your Story,</span>
+      <span class="title-statement">Our Design.</span>
+    </h1>
+
+    <p>
+      Begin with the details that matter to you. The occasion, the feeling,
+      the colours, the references, the memories. Rangbastra begins there.
+    </p>
+
+    <aside class="designer-note" aria-label="Designer note">
+      <span>Designer Note</span>
+      <p>Bring a reference, a ritual, a colour, or only a feeling. The first conversation can begin from any of them.</p>
+    </aside>
+
+    <div class="hero-actions" aria-label="Begin your custom design enquiry">
+      <Button href="#design-enquiry" class="private-hero-primary">
+        <Label icon="sparkle">Begin Your Custom Journey</Label>
+      </Button>
+
+      <Button href={designYourOutfitWhatsappHref} target="_blank" class="private-hero-secondary">
+        <Label icon="whatsapp" iconSize={14}>WhatsApp</Label>
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .private-hero {
+    display: grid;
+    grid-template-columns: minmax(0, .86fr) minmax(22rem, .72fr);
+    gap: clamp(var(--space-7), 7vw, var(--space-12));
+    align-items: center;
+    min-height: min(54rem, calc(100svh - var(--navbar-height)));
+    padding-top: clamp(var(--space-11), 12vw, var(--space-13));
+  }
+
+  .hero-media {
+    position: relative;
+    overflow: hidden;
+    min-height: clamp(34rem, 58vw, 48rem);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  .hero-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, .04), rgba(0, 0, 0, .58)),
+      var(--gradient-glass);
+    opacity: .72;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+  }
+
+  .hero-copy {
+    display: grid;
+    gap: clamp(var(--space-4), 3vw, var(--space-6));
+    max-width: 40rem;
+  }
+
+  .designer-note {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 31rem;
+    padding: var(--space-4) 0 var(--space-4) var(--space-5);
+    border-left: 1px solid rgba(198, 169, 114, .38);
+  }
+
+  .designer-note span {
+    color: var(--sand-200);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .designer-note p {
+    color: var(--text-secondary);
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+    line-height: 1.34;
+  }
+
+  h1 {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: clamp(2.35rem, 4vw, 5rem);
+    line-height: 1.08;
+  }
+
+  .title-statement {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: clamp(3rem, 6.2vw, 7.4rem);
+    font-weight: var(--weight-medium);
+    line-height: .94;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: clamp(var(--body-md), 1.4vw, var(--body-lg));
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+  }
+
+  :global(.private-hero-primary),
+  :global(.private-hero-secondary) {
+    min-height: var(--button-height);
+    box-shadow: var(--glow-soft), var(--shadow-inset);
+  }
+
+  :global(.private-hero-primary) {
+    background: var(--gradient-primary);
+  }
+
+  :global(.private-hero-primary:hover),
+  :global(.private-hero-primary:focus-visible) {
+    background: var(--button-primary-gradient-hover);
+    box-shadow: var(--glow-medium), var(--button-shadow-hover), var(--shadow-inset-strong);
+  }
+
+  :global(.private-hero-secondary) {
+    border: 1px solid var(--border-default);
+    background: rgba(255, 255, 255, .025);
+    color: var(--text-secondary);
+  }
+
+  :global(.private-hero-secondary:hover),
+  :global(.private-hero-secondary:focus-visible) {
+    border-color: var(--border-strong);
+    background: rgba(255, 255, 255, .045);
+    color: var(--text-primary);
+  }
+
+  @media (max-width: 1023px) {
+    .private-hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .hero-copy {
+      max-width: 48rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .private-hero {
+      gap: var(--space-7);
+      padding-top: clamp(var(--space-10), 28vw, var(--space-12));
+    }
+
+    .hero-media {
+      min-height: clamp(20rem, 82vw, 28rem);
+      border-radius: var(--radius-lg);
+    }
+
+    .title-intro {
+      font-size: clamp(2.15rem, 10vw, 3.1rem);
+    }
+
+    .title-statement {
+      font-size: clamp(3rem, 16vw, 4.6rem);
+    }
+
+    .hero-actions,
+    :global(.private-hero-primary),
+    :global(.private-hero-secondary) {
+      width: 100%;
+    }
+  }
+</style>

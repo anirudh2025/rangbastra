@@ -1,0 +1,93 @@
+---
+import { campaignTimeline } from "../../data/lookbookExperience";
+import LookbookExperienceHeader from "./LookbookExperienceHeader.astro";
+---
+
+<section class="campaign-timeline" aria-labelledby="campaign-timeline-heading">
+  <LookbookExperienceHeader
+    id="campaign-timeline-heading"
+    eyebrow="Collections Timeline"
+    intro="Campaigns"
+    statement="In Reverse Chronology"
+    copy="A quiet record of how the Rangbastra visual world has moved toward more personal, emotionally led couture storytelling."
+  />
+
+  <div class="timeline-list">
+    {
+      campaignTimeline.map((item) => (
+        <article class="timeline-item">
+          <span>{item.year}</span>
+          <div>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .campaign-timeline {
+    display: grid;
+    grid-template-columns: minmax(0, .62fr) minmax(19rem, .6fr);
+    gap: clamp(var(--space-6), 7vw, var(--space-11));
+    align-items: start;
+  }
+
+  .timeline-list {
+    display: grid;
+    border-top: 1px solid var(--border-default);
+  }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--space-5);
+    padding-block: clamp(var(--space-5), 4vw, var(--space-7));
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .timeline-item > span {
+    color: var(--sand-200);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .timeline-item div {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.4vw, 2.7rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+    text-wrap: balance;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 900px) {
+    .campaign-timeline {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .timeline-item {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+</style>

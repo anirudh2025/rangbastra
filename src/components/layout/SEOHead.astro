@@ -1,14 +1,53 @@
 ---
+import logo from "../../assets/branding/RB Web Logo.svg";
+
+import { contact } from "../../data/contact";
+
 interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
+  image?: string;
+  keywords?: string;
+  robots?: string;
 }
 
+const SITE_URL = "https://www.rangbastra.luxury";
+const SITE_NAME = "Rangbastra";
+const DEFAULT_IMAGE =
+  "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782614896/Hero_Desktop_klovjb.webp";
+const DEFAULT_KEYWORDS =
+  "Rangbastra, luxury couture India, custom bridal lehenga, designer bridal wear Gujarat, couture boutique Anand, handcrafted occasion wear";
+
 const {
-  title = "Rangbastra | Luxury Couture",
+  title = "Rangbastra | Luxury Custom Couture",
   description =
-    "Luxury customized couture crafted with elegance and timeless artistry."
+    "Luxury custom bridal and occasion couture in Anand, Gujarat, crafted with personal attention, elegance and timeless artistry.",
+  canonical,
+  image = DEFAULT_IMAGE,
+  keywords = DEFAULT_KEYWORDS,
+  robots = "index, follow"
 } = Astro.props;
+
+const canonicalUrl = new URL(canonical ?? Astro.url.pathname, SITE_URL).toString();
+const logoUrl = new URL(logo.src, SITE_URL).toString();
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: SITE_URL,
+    inLanguage: "en-IN"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: logoUrl,
+    sameAs: [contact.instagramUrl]
+  }
+];
 ---
 
 <meta charset="UTF-8" />
@@ -23,6 +62,37 @@ const {
 <meta
   name="description"
   content={description}
+/>
+
+<meta
+  name="robots"
+  content={robots}
+/>
+
+<meta
+  name="keywords"
+  content={keywords}
+/>
+
+<link
+  rel="canonical"
+  href={canonicalUrl}
+/>
+
+<link
+  rel="icon"
+  type="image/svg+xml"
+  href={logo.src}
+/>
+
+<link
+  rel="shortcut icon"
+  href={logo.src}
+/>
+
+<link
+  rel="manifest"
+  href="/site.webmanifest"
 />
 
 <meta
@@ -85,8 +155,23 @@ const {
 />
 
 <meta
+  property="og:url"
+  content={canonicalUrl}
+/>
+
+<meta
+  property="og:image"
+  content={image}
+/>
+
+<meta
+  property="og:image:alt"
+  content="Rangbastra luxury custom couture"
+/>
+
+<meta
   property="og:site_name"
-  content="Rangbastra"
+  content={SITE_NAME}
 />
 
 <meta
@@ -107,4 +192,14 @@ const {
 <meta
   name="twitter:description"
   content={description}
+/>
+
+<meta
+  name="twitter:image"
+  content={image}
+/>
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(structuredData)}
 />

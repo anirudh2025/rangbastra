@@ -1,6 +1,7 @@
 ---
 import NavLink from "./NavLink.astro";
 import type { NavigationItem } from "../../data/navigation";
+import { contact, getWhatsAppHref } from "../../data/contact";
 
 interface Props {
   items: NavigationItem[];
@@ -33,6 +34,18 @@ const { items } = Astro.props;
         ))
       }
 
+      <li class="mobile-nav__item">
+        <a href="/search" class="nav-link">Search</a>
+      </li>
+
+      <li class="mobile-nav__item">
+        <a href="/wishlist" class="nav-link">Wishlist</a>
+      </li>
+
+      <li class="mobile-nav__item">
+        <a href="/account" class="nav-link">Account</a>
+      </li>
+
     </ul>
 
     <div class="mobile-nav__footer">
@@ -52,7 +65,7 @@ const { items } = Astro.props;
       >
 
         <a
-          href="https://instagram.com/rangbastra"
+          href={contact.instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -60,7 +73,7 @@ const { items } = Astro.props;
         </a>
 
         <a
-          href="https://wa.me/"
+          href={getWhatsAppHref("homepage")}
           target="_blank"
           rel="noopener noreferrer"
         >

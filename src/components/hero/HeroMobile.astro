@@ -102,7 +102,7 @@ const mobileHero =
 
     margin-inline:auto;
 
-    padding-top:clamp(16.25rem,14vh,10.5rem);
+    padding-top:clamp(15.5rem,14vh,16.25rem);
 
 }
 
@@ -114,7 +114,7 @@ const mobileHero =
 
     width:min(100% - 2rem,32rem);
 
-    padding-top:clamp(12.5rem,13vh,9.25rem);
+    padding-top:clamp(9.25rem,13vh,12.5rem);
 
 }
 
@@ -126,7 +126,7 @@ const mobileHero =
 
     width:min(100% - 1.5rem,28rem);
 
-    padding-top:clamp(11.25rem,15vh,15.25rem);
+    padding-top:clamp(9.75rem,15vh,12rem);
 
 }
 
@@ -138,38 +138,38 @@ const mobileHero =
 
     width:min(100% - 1.25rem,24rem);
 
-    padding-top:9.85rem;
+    padding-top:8.75rem;
 
 }
 
 }
 
-/* Mobile overrides: allow signature title to wrap and scale down so it doesn't overflow */
-.hero-shell .title-line,
-.hero-shell .title-highlight {
-        white-space: normal;
-        display: block;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-        hyphens: auto;
-        max-width: 100%;
+/* Mobile overrides: keep the signature headline balanced without forced word breaks. */
+:global(.hero-shell .title-line),
+:global(.hero-shell .title-highlight) {
+    display:block;
+    max-width:100%;
+    white-space:normal;
+    overflow-wrap:normal;
+    word-break:normal;
+    text-wrap:balance;
 }
 
 @media (max-width:640px){
-    .hero-shell .title-line{
-        font-size: clamp(.6rem,5vw,1.2rem);
-        line-height: 1.12;
+    :global(.hero-shell .title-line){
+        font-size:clamp(1.2rem,5vw,2rem);
+        line-height:1.12;
     }
 
-    .hero-shell .title-highlight{
-        font-size: clamp(.6rem,4.5vw,1.4rem);
+    :global(.hero-shell .title-highlight){
+        font-size:clamp(1.85rem,7.6vw,2.45rem);
     }
 }
 
 @media (max-width:380px){
-    .hero-shell .title-line,
-    .hero-shell .title-highlight{
-        font-size: clamp(1.4rem,7.5vw,1.9rem);
+    :global(.hero-shell .title-line),
+    :global(.hero-shell .title-highlight){
+        font-size:clamp(1.55rem,7.25vw,1.95rem);
     }
 }
 </style>

@@ -89,7 +89,7 @@ ACCENT
 var(--cocoa-700);
 
 --accent-hover:
-var(--cocoa-600);
+var(--cocoa-800);
 
 --accent-active:
 var(--cocoa-800);
@@ -152,6 +152,14 @@ linear-gradient(
 #29160f 0%,
 #6A4E42 42%,
 #3d2318 100%
+);
+
+--gradient-primary-hover:
+linear-gradient(
+135deg,
+#1f100b 0%,
+var(--cocoa-800) 44%,
+#26130d 100%
 );
 
 --gradient-brand-text:

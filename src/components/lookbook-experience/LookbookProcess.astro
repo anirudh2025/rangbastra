@@ -1,0 +1,114 @@
+---
+import Icon from "../primitives/Icon.astro";
+import { creativeProcess } from "../../data/lookbookExperience";
+import LookbookExperienceHeader from "./LookbookExperienceHeader.astro";
+---
+
+<section class="lookbook-process" aria-labelledby="lookbook-process-heading">
+  <LookbookExperienceHeader
+    id="lookbook-process-heading"
+    eyebrow="Creative Process"
+    intro="From Concept"
+    statement="To Final Story"
+    copy="The lookbook is created through a slow editorial sequence, with every styling decision serving the collection's emotional center."
+    align="center"
+  />
+
+  <div class="process-rail">
+    {
+      creativeProcess.map((step, index) => (
+        <article class="process-step">
+          <span class="process-number">{String(index + 1).padStart(2, "0")}</span>
+          <Icon name={step.icon} size={30} class="process-icon" />
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .lookbook-process {
+    display: grid;
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+  }
+
+  .process-rail {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(var(--space-3), 2vw, var(--space-5));
+  }
+
+  .process-rail::before {
+    content: "";
+    position: absolute;
+    top: 3.55rem;
+    right: 5%;
+    left: 5%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    opacity: .62;
+  }
+
+  .process-step {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: clamp(var(--space-5), 4vw, var(--space-7)) var(--space-4);
+    border: 1px solid rgba(255, 255, 255, .1);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .012)),
+      rgba(0, 0, 0, .42);
+    box-shadow: var(--shadow-inset);
+    text-align: center;
+  }
+
+  .process-number {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+  }
+
+  .process-step :global(.process-icon) {
+    color: var(--sand-200);
+    opacity: .86;
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.2vw, 2.5rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+    text-wrap: balance;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1023px) {
+    .process-rail {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .process-rail::before {
+      display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .process-rail {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

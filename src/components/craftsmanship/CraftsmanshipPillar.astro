@@ -48,7 +48,7 @@ const { index, title, description, icon } = Astro.props;
 
   .craftsmanship-pillar:hover {
     border-color: var(--border-strong);
-    transform: translateX(var(--motion-distance-xs));
+    transform: translate3d(var(--motion-distance-xs), 0, 0);
   }
 
   .number {
@@ -112,15 +112,18 @@ const { index, title, description, icon } = Astro.props;
   }
 
   .craftsmanship-pillar:hover .icon {
-    transform: scale(var(--scale-hover));
+    transform: scale(var(--motion-icon-scale));
     border-color: var(--border-strong);
     color: var(--ivory-100);
-    box-shadow: var(--glow-soft), var(--shadow-inset-strong);
+    box-shadow: var(--shadow-inset-strong);
   }
 
-  .craftsmanship-pillar:hover h3,
-  .craftsmanship-pillar:hover p {
+  .craftsmanship-pillar:hover h3 {
     color: var(--ivory-100);
+  }
+
+  .craftsmanship-pillar:hover p {
+    color: var(--text-primary);
   }
 
   @media (max-width: 1023px) {
@@ -144,6 +147,13 @@ const { index, title, description, icon } = Astro.props;
 
     .content {
       padding-left: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .craftsmanship-pillar:hover,
+    .craftsmanship-pillar:hover .icon {
+      transform: none;
     }
   }
 </style>

@@ -1,0 +1,78 @@
+---
+import OurStoryHeader from "./OurStoryHeader.astro";
+---
+
+<section class="promise-section" aria-labelledby="promise-heading">
+  <div class="promise-panel">
+    <OurStoryHeader
+      eyebrow="Our Promise"
+      intro="Never Borrowed"
+      statement="Always Belonging"
+      copy="Your outfit should not feel like a beautiful idea placed onto you. It should feel as though it had been waiting for your story to give it form."
+      align="center"
+    />
+
+    <p>
+      Every bride deserves the quiet assurance that her garment understands her
+      before the celebration begins.
+    </p>
+  </div>
+</section>
+
+<style>
+  .promise-section {
+    display: grid;
+  }
+
+  .promise-panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-6);
+    overflow: hidden;
+    padding: clamp(var(--space-9), 10vw, var(--space-13)) clamp(var(--space-5), 6vw, var(--space-10));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(circle at 50% 24%, rgba(106, 78, 66, .18), transparent 38%),
+      radial-gradient(circle at 18% 88%, rgba(181, 147, 130, .08), transparent 30%),
+      var(--surface-canvas);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+    text-align: center;
+  }
+
+  .promise-panel::before {
+    content: "";
+    position: absolute;
+    inset: 8% -12% auto;
+    height: min(24rem, 34vw);
+    pointer-events: none;
+    background: var(--gradient-satin-fold);
+    opacity: .28;
+    transform: rotate(-5deg);
+  }
+
+  :global(.story-section-header),
+  p {
+    position: relative;
+    z-index: 1;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 560px) {
+    .promise-panel {
+      border-radius: var(--radius-lg);
+    }
+
+    p {
+      font-size: var(--body-md);
+    }
+  }
+</style>

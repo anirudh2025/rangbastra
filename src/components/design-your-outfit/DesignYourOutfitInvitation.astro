@@ -1,0 +1,169 @@
+---
+import Button from "../primitives/Button.astro";
+import Label from "../primitives/Label.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import { designYourOutfitWhatsappHref } from "../../data/designYourOutfit";
+---
+
+<section class="invitation-section" aria-labelledby="private-invitation-heading">
+  <div class="invitation-panel">
+    <Eyebrow>Private Invitation</Eyebrow>
+
+    <h2 id="private-invitation-heading">
+      <span class="title-intro">The Most Beautiful Couture Stories</span>
+      <span class="title-statement">Begin With A Conversation</span>
+    </h2>
+
+    <p>
+      Not with a purchase. Not with pressure. With a quiet exchange between a
+      woman and a design team ready to understand what this celebration means.
+    </p>
+
+    <div class="invitation-actions" aria-label="Begin your custom design">
+      <Button href="#design-enquiry" class="private-invitation-primary">
+        <Label icon="designer" iconSize={14}>Begin Your Custom Journey</Label>
+      </Button>
+
+      <Button href={designYourOutfitWhatsappHref} target="_blank" class="private-invitation-secondary">
+        <Label icon="whatsapp" iconSize={14}>Chat on WhatsApp</Label>
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .invitation-panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: clamp(var(--space-5), 4vw, var(--space-8));
+    overflow: hidden;
+    padding: clamp(var(--space-9), 10vw, var(--space-13)) clamp(var(--space-5), 6vw, var(--space-10));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(circle at 50% 24%, rgba(106, 78, 66, .2), transparent 38%),
+      radial-gradient(circle at 18% 88%, rgba(181, 147, 130, .08), transparent 30%),
+      var(--surface-canvas);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+    text-align: center;
+  }
+
+  .invitation-panel::before {
+    content: "";
+    position: absolute;
+    inset: 8% -12% auto;
+    height: min(24rem, 34vw);
+    pointer-events: none;
+    background: var(--gradient-satin-fold);
+    opacity: .34;
+    transform: rotate(-5deg);
+  }
+
+  h2,
+  p,
+  .invitation-actions,
+  :global(.eyebrow) {
+    position: relative;
+    z-index: 1;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: var(--section-heading-intro);
+    line-height: 1.18;
+  }
+
+  .title-statement {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: var(--section-heading-statement);
+    line-height: 1.12;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .invitation-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  :global(.private-invitation-primary),
+  :global(.private-invitation-secondary) {
+    min-height: var(--button-height);
+    box-shadow: var(--glow-soft), var(--shadow-inset);
+  }
+
+  :global(.private-invitation-primary) {
+    background: var(--gradient-primary);
+  }
+
+  :global(.private-invitation-primary:hover),
+  :global(.private-invitation-primary:focus-visible) {
+    background: var(--button-primary-gradient-hover);
+    box-shadow: var(--glow-medium), var(--button-shadow-hover), var(--shadow-inset-strong);
+  }
+
+  :global(.private-invitation-secondary) {
+    border: 1px solid var(--border-default);
+    background: rgba(255, 255, 255, .025);
+    color: var(--text-secondary);
+  }
+
+  :global(.private-invitation-secondary:hover),
+  :global(.private-invitation-secondary:focus-visible) {
+    border-color: var(--border-strong);
+    background: rgba(255, 255, 255, .045);
+    color: var(--text-primary);
+  }
+
+  @media (max-width: 767px) {
+    .invitation-panel {
+      align-items: start;
+      justify-items: start;
+      border-radius: var(--radius-lg);
+      text-align: left;
+    }
+
+    .title-intro {
+      font-size: var(--section-heading-intro-mobile);
+    }
+
+    .title-statement {
+      font-size: var(--section-heading-statement-mobile);
+    }
+
+    p {
+      font-size: var(--body-md);
+    }
+
+    .invitation-actions,
+    :global(.private-invitation-primary),
+    :global(.private-invitation-secondary) {
+      width: 100%;
+    }
+  }
+</style>

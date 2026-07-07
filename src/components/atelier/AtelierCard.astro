@@ -37,21 +37,6 @@ const { step, title, description } = Astro.props;
     isolation: isolate;
   }
 
-  .atelier-card::before {
-    content: "";
-    position: absolute;
-    inset: -18% -8%;
-    z-index: -1;
-    background: radial-gradient(
-      circle at center,
-      rgba(129, 99, 84, .18),
-      transparent 64%
-    );
-    opacity: .62;
-    filter: blur(18px);
-    transition: opacity var(--motion-medium) var(--ease-luxury);
-  }
-
   .number-wrap {
     position: relative;
     display: grid;
@@ -61,20 +46,7 @@ const { step, title, description } = Astro.props;
   }
 
   .number-wrap::before {
-    content: "";
-    position: absolute;
-    inset: 8% 48%;
-    width: 1px;
-    background: linear-gradient(
-      180deg,
-      transparent,
-      rgba(181, 147, 130, .66),
-      transparent
-    );
-    box-shadow: var(--glow-soft);
-    transition:
-      background var(--motion-medium) var(--ease-luxury),
-      box-shadow var(--motion-medium) var(--ease-luxury);
+    content: none;
   }
 
   .number {
@@ -85,8 +57,7 @@ const { step, title, description } = Astro.props;
     font-size: var(--atelier-number-size);
     font-weight: var(--weight-light);
     line-height: 1;
-    text-shadow: var(--glow-cocoa-neon);
-    animation: atelier-number-pulse 4200ms var(--ease-luxury) infinite;
+    text-shadow: var(--glow-soft);
     transition:
       color var(--motion-medium) var(--ease-luxury),
       text-shadow var(--motion-medium) var(--ease-luxury),
@@ -107,10 +78,11 @@ const { step, title, description } = Astro.props;
       linear-gradient(135deg, rgba(255, 255, 255, .07), transparent 34%),
       var(--gradient-obsidian);
     box-shadow: var(--shadow-premium), var(--shadow-inset);
+    contain: paint;
     transition:
-      transform var(--motion-medium) var(--ease-luxury),
-      border-color var(--motion-medium) var(--ease-luxury),
-      box-shadow var(--motion-medium) var(--ease-luxury);
+      transform var(--motion-hover) var(--ease-luxury),
+      border-color var(--motion-hover) var(--ease-luxury),
+      box-shadow var(--motion-hover) var(--ease-luxury);
   }
 
   .card-surface::before,
@@ -187,45 +159,29 @@ const { step, title, description } = Astro.props;
     transition: color var(--motion-medium) var(--ease-luxury);
   }
 
-  .atelier-card:hover::before,
-  .atelier-card:focus-within::before {
-    opacity: .92;
-  }
-
   .atelier-card:hover .card-surface,
   .atelier-card:focus-within .card-surface {
-    transform: translateY(var(--hover-lift-soft));
+    transform: translate3d(0, var(--motion-card-lift), 0);
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-premium), var(--glow-strong), var(--shadow-inset-strong);
+    box-shadow: var(--shadow-premium), var(--glow-soft), var(--shadow-inset-strong);
   }
 
   .atelier-card:hover .card-surface::before,
   .atelier-card:focus-within .card-surface::before {
-    opacity: .96;
-  }
-
-  .atelier-card:hover .number-wrap::before,
-  .atelier-card:focus-within .number-wrap::before {
-    background: linear-gradient(
-      180deg,
-      transparent,
-      rgba(221, 208, 198, .88),
-      transparent
-    );
-    box-shadow: var(--glow-cocoa-neon);
+    opacity: .82;
   }
 
   .atelier-card:hover .number,
   .atelier-card:focus-within .number {
     color: var(--ivory-100);
-    text-shadow: var(--glow-cocoa-neon), var(--glow-gold);
-    transform: translateY(-2px);
+    text-shadow: var(--glow-cocoa-neon);
+    transform: translate3d(0, var(--motion-card-lift), 0);
   }
 
   .atelier-card:hover .divider,
   .atelier-card:focus-within .divider {
     transform: scaleX(1.28);
-    box-shadow: var(--glow-medium);
+    box-shadow: var(--glow-soft);
   }
 
   .atelier-card:hover p,
@@ -233,22 +189,14 @@ const { step, title, description } = Astro.props;
     color: var(--text-primary);
   }
 
-  @keyframes atelier-number-pulse {
-    0%,
-    100% {
-      opacity: .86;
-      text-shadow: var(--glow-soft);
-    }
-
-    48% {
-      opacity: 1;
-      text-shadow: var(--glow-cocoa-neon);
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .number {
-      animation: none;
+    .atelier-card:hover .card-surface,
+    .atelier-card:focus-within .card-surface,
+    .atelier-card:hover .number,
+    .atelier-card:focus-within .number,
+    .atelier-card:hover .divider,
+    .atelier-card:focus-within .divider {
+      transform: none;
     }
   }
 
@@ -266,12 +214,6 @@ const { step, title, description } = Astro.props;
       width: auto;
       min-height: 100%;
       padding-top: var(--space-2);
-    }
-
-    .number-wrap::before {
-      inset: 0 auto;
-      left: 50%;
-      height: 100%;
     }
 
     .card-surface {

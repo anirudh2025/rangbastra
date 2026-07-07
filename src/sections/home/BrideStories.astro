@@ -5,7 +5,7 @@ import BrideStoriesHeader from "../../components/bride-stories/BrideStoriesHeade
 import BrideStoriesList from "../../components/bride-stories/BrideStoriesList.astro";
 ---
 
-<Section class="bride-stories-section">
+<Section id="bride-stories" class="bride-stories-section">
   <Container class="bride-stories-container">
     <BrideStoriesHeader />
 
@@ -15,11 +15,11 @@ import BrideStoriesList from "../../components/bride-stories/BrideStoriesList.as
 
 <style>
   :global(.bride-stories-section) {
-    --section-padding-block: clamp(var(--space-11), 12vw, var(--space-14));
+    --section-padding-block: clamp(var(--space-10), 10vw, var(--space-13));
     --bride-stories-background: #000000;
     --bride-stories-cocoa-glow-opacity: .18;
     --bride-stories-satin-opacity: .42;
-    --bride-stories-container-gap: clamp(var(--space-9), 9vw, var(--space-13));
+    --bride-stories-container-gap: clamp(var(--space-8), 7vw, var(--space-12));
 
     overflow: hidden;
     background:

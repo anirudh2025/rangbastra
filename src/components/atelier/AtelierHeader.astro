@@ -1,5 +1,9 @@
+---
+import Eyebrow from "../primitives/Eyebrow.astro";
+---
+
 <header class="atelier-header">
-  <span class="eyebrow">Atelier Experience</span>
+  <Eyebrow>Atelier Experience</Eyebrow>
 
   <h2>
     <span class="title-intro">Every Masterpiece Begins With</span>
@@ -21,15 +25,6 @@
     max-width: var(--measure-md);
     margin-inline: auto;
     text-align: center;
-  }
-
-  .eyebrow {
-    color: var(--cocoa-400);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    text-transform: uppercase;
   }
 
   h2 {

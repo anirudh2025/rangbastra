@@ -33,9 +33,9 @@ const { index, title, statement, icon } = Astro.props;
   .principle {
     position: relative;
     display: grid;
-    min-height: clamp(22rem, 30vw, 31rem);
+    min-height: clamp(20rem, 27vw, 28rem);
     align-content: space-between;
-    gap: var(--space-9);
+    gap: var(--space-8);
     padding: clamp(var(--space-5), 3vw, var(--space-8));
     border: 1px solid var(--border-default);
     border-radius: var(--radius-2xl);
@@ -55,21 +55,21 @@ const { index, title, statement, icon } = Astro.props;
     height: 48%;
     background: var(--gradient-overlay);
     opacity: .36;
-    transform: translateY(22%);
+    transform: translate3d(0, 22%, 0);
     transition:
       opacity var(--motion-medium) var(--ease-luxury),
       transform var(--motion-medium) var(--ease-luxury);
   }
 
   .principle:hover {
-    transform: translateY(var(--hover-lift-soft));
+    transform: translate3d(0, var(--motion-card-lift), 0);
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-premium), var(--glow-soft), var(--shadow-inset-strong);
+    box-shadow: var(--shadow-premium), var(--shadow-inset-strong);
   }
 
   .principle:hover::before {
     opacity: .5;
-    transform: translateY(8%);
+    transform: translate3d(0, 8%, 0);
   }
 
   .principle-number {
@@ -140,7 +140,7 @@ const { index, title, statement, icon } = Astro.props;
   }
 
   .principle:hover .principle-icon {
-    transform: scale(var(--scale-hover));
+    transform: scale(var(--motion-icon-scale));
     border-color: var(--border-strong);
     color: var(--ivory-100);
     box-shadow: var(--glow-soft), var(--shadow-inset-strong);
@@ -153,8 +153,16 @@ const { index, title, statement, icon } = Astro.props;
 
   @media (max-width: 767px) {
     .principle {
-      min-height: 24rem;
+      min-height: 21rem;
       border-radius: var(--radius-xl);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .principle:hover,
+    .principle:hover::before,
+    .principle:hover .principle-icon {
+      transform: none;
     }
   }
 </style>

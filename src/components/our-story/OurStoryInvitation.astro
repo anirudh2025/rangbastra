@@ -1,0 +1,141 @@
+---
+import Button from "../primitives/Button.astro";
+import Label from "../primitives/Label.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+---
+
+<section class="story-invitation" aria-labelledby="story-invitation-heading">
+  <div class="invitation-panel">
+    <Eyebrow>Begin Your Story</Eyebrow>
+
+    <h2 id="story-invitation-heading">
+      <span class="title-intro">The Most Meaningful Creations</span>
+      <span class="title-statement">Begin With Understanding</span>
+    </h2>
+
+    <p>
+      Before fabric, before embroidery, before the final silhouette, there is a
+      person. Rangbastra begins there.
+    </p>
+
+    <div class="invitation-actions" aria-label="Continue from Our Story">
+      <Button href="/design-your-outfit">
+        <Label icon="designer">Craft Your Story</Label>
+      </Button>
+
+      <Button href="/collections">
+        <Label icon="sparkle">Explore Collections</Label>
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .story-invitation {
+    display: grid;
+  }
+
+  .invitation-panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: clamp(var(--space-5), 4vw, var(--space-8));
+    overflow: hidden;
+    padding: clamp(var(--space-9), 10vw, var(--space-13)) clamp(var(--space-5), 6vw, var(--space-10));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(circle at 50% 24%, rgba(106, 78, 66, .2), transparent 38%),
+      radial-gradient(circle at 18% 88%, rgba(181, 147, 130, .08), transparent 30%),
+      var(--surface-canvas);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+    text-align: center;
+  }
+
+  .invitation-panel::before {
+    content: "";
+    position: absolute;
+    inset: 8% -12% auto;
+    height: min(24rem, 34vw);
+    pointer-events: none;
+    background: var(--gradient-satin-fold);
+    opacity: .32;
+    transform: rotate(-5deg);
+  }
+
+  h2,
+  p,
+  .invitation-actions,
+  :global(.eyebrow) {
+    position: relative;
+    z-index: 1;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 18ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: var(--section-heading-intro);
+    line-height: 1.18;
+  }
+
+  .title-statement {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: var(--section-heading-statement);
+    line-height: 1.12;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .invitation-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+  }
+
+  @media (max-width: 560px) {
+    .invitation-panel {
+      border-radius: var(--radius-lg);
+    }
+
+    .title-intro {
+      font-size: var(--section-heading-intro-mobile);
+    }
+
+    .title-statement {
+      font-size: var(--section-heading-statement-mobile);
+    }
+
+    p {
+      font-size: var(--body-md);
+    }
+
+    .invitation-actions {
+      align-items: stretch;
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+</style>

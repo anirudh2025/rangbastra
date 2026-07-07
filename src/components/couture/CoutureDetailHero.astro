@@ -1,0 +1,326 @@
+---
+import Button from "../primitives/Button.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import Icon from "../primitives/Icon.astro";
+import WishlistButton from "../wishlist/WishlistButton.astro";
+import type { CouturePiece } from "../../data/couture";
+import { getLiveInterest } from "../../lib/couture";
+import { getWhatsAppHref } from "../../data/contact";
+
+interface Props {
+  product: CouturePiece;
+}
+
+const { product } = Astro.props;
+const liveInterest = getLiveInterest(product);
+const inquiryHref = `/design-your-outfit?piece=${product.slug}`;
+const whatsappHref = getWhatsAppHref(
+  `Hello Rangbastra, I am interested in ${product.name} and would like to know more about customization.`,
+);
+const priceValue = product.priceLabel
+  .replace(/^From\s+/i, "");
+---
+
+<section class="product-detail-hero" aria-labelledby="product-title">
+  <figure class="hero-media">
+    <WishlistButton slug={product.slug} name={product.name} />
+
+    <img
+      src={product.featuredImage}
+      alt={`${product.name} couture piece by Rangbastra`}
+      width="900"
+      height="1200"
+      loading="eager"
+      decoding="async"
+    />
+
+    <figcaption class="live-interest" aria-label="Recent couture interest">
+      <span class="live-interest__dot" aria-hidden="true"></span>
+      <span>{liveInterest.text}</span>
+    </figcaption>
+  </figure>
+
+  <div class="hero-summary">
+    <Eyebrow>{product.collection}</Eyebrow>
+
+    <div class="hero-title-group">
+      <p>{product.category}</p>
+      <h1 id="product-title">
+        <span>{product.name}</span>
+        <Icon name="sparkle" size={22} class="title-sparkle" />
+      </h1>
+    </div>
+
+    <p class="hero-description">{product.shortDescription}</p>
+
+    <dl class="summary-list" aria-label={`${product.name} summary`}>
+      <div class="price-note">
+        <dt>Starting From</dt>
+        <dd>{priceValue}</dd>
+      </div>
+
+      {
+        product.makingTime && (
+          <div>
+            <dt>Making Time</dt>
+            <dd>{product.makingTime}</dd>
+          </div>
+        )
+      }
+
+      <div>
+        <dt>Palette</dt>
+        <dd>{product.shade ?? product.colorFamily}</dd>
+      </div>
+    </dl>
+
+    <div class="hero-actions" aria-label={`${product.name} actions`}>
+      <Button href={inquiryHref}>Start This Story</Button>
+      <WishlistButton slug={product.slug} name={product.name} variant="inline" />
+      <Button href={whatsappHref} target="_blank">Ask On WhatsApp</Button>
+      <a href="/collections" class="secondary-link">Return to Collections</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .product-detail-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.04fr) minmax(22rem, .68fr);
+    gap: clamp(var(--space-6), 5.5vw, var(--space-10));
+    align-items: center;
+    min-height: min(48rem, calc(100svh - var(--navbar-height)));
+    padding-top: clamp(var(--space-9), 7.5vw, var(--space-11));
+  }
+
+  .hero-media {
+    position: relative;
+    overflow: hidden;
+    min-height: clamp(30rem, 58vw, 43.5rem);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  .hero-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, transparent 52%, rgba(0, 0, 0, .7)),
+      var(--gradient-glass);
+    opacity: .68;
+    pointer-events: none;
+  }
+
+  .hero-media img {
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+  }
+
+  .live-interest {
+    position: absolute;
+    right: clamp(var(--space-4), 4vw, var(--space-6));
+    bottom: clamp(var(--space-4), 4vw, var(--space-6));
+    z-index: 1;
+    display: inline-flex;
+    max-width: min(18rem, calc(100% - var(--space-8)));
+    align-items: center;
+    gap: var(--space-2);
+    padding: .55rem .8rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    background: rgba(8, 8, 9, .72);
+    color: var(--text-secondary);
+    font-size: var(--caption);
+    line-height: var(--leading-caption);
+    backdrop-filter: blur(16px);
+  }
+
+  .live-interest__dot {
+    width: .38rem;
+    height: .38rem;
+    flex: 0 0 auto;
+    border-radius: var(--radius-pill);
+    background: var(--sand-200);
+    box-shadow: 0 0 18px rgba(198, 169, 114, .4);
+  }
+
+  .hero-summary {
+    display: grid;
+    gap: clamp(var(--space-4), 3vw, var(--space-6));
+    align-content: center;
+    max-width: 38rem;
+  }
+
+  .hero-title-group {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .hero-title-group p,
+  dt {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  h1 {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(var(--space-2), 1vw, var(--space-3));
+    color: var(--text-primary);
+    font-family: var(--font-signature);
+    font-size: clamp(3.35rem, 6.3vw, 7rem);
+    font-weight: var(--weight-regular);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+
+  h1 :global(.title-sparkle) {
+    flex: 0 0 auto;
+    color: var(--sand-200);
+    opacity: .78;
+    transform: translateY(.08em);
+  }
+
+  .hero-description {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: clamp(var(--body-md), 1.55vw, var(--body-lg));
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .summary-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, .9fr));
+    gap: var(--space-4);
+  }
+
+  .summary-list div {
+    display: grid;
+    gap: var(--space-2);
+    min-width: 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .summary-list .price-note {
+    padding: var(--space-4);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .012)),
+      rgba(255, 255, 255, .02);
+    box-shadow: var(--shadow-inset);
+  }
+
+  .price-note dt {
+    color: var(--sand-200);
+  }
+
+  dd {
+    color: var(--text-primary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+  }
+
+  .price-note dd {
+    width: fit-content;
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-family: var(--font-display);
+    font-size: clamp(1.55rem, 2.2vw, 2.35rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-title);
+    line-height: var(--leading-title);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .secondary-link {
+    color: var(--text-secondary);
+    font-size: var(--label-md);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+    transition: color var(--motion-button) var(--ease-luxury);
+  }
+
+  .secondary-link:hover,
+  .secondary-link:focus-visible {
+    color: var(--text-primary);
+  }
+
+  .secondary-link:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: var(--space-2);
+    border-radius: var(--radius-sm);
+  }
+
+  @media (max-width: 1023px) {
+    .product-detail-hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .hero-summary {
+      max-width: 44rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .product-detail-hero {
+      gap: var(--space-7);
+      padding-top: clamp(var(--space-7), 17vw, var(--space-10));
+    }
+
+    .hero-media {
+      min-height: clamp(26rem, 116vw, 35rem);
+      border-radius: var(--radius-lg);
+    }
+
+    .live-interest {
+      left: var(--space-4);
+      right: var(--space-4);
+      justify-content: center;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: clamp(3.25rem, 16vw, 5rem);
+    }
+
+    .summary-list {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .hero-actions :global(.button),
+    .secondary-link {
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+</style>

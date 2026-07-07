@@ -1,0 +1,173 @@
+---
+import Button from "../primitives/Button.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import { lookbookExperienceImages } from "../../data/lookbookExperience";
+---
+
+<section class="lookbook-hero" aria-labelledby="lookbook-hero-heading">
+  <div class="lookbook-hero-copy">
+    <Eyebrow>Editorial Lookbook</Eyebrow>
+
+    <h1 id="lookbook-hero-heading">
+      <span>Stories</span>
+      <span>Woven Into Style</span>
+    </h1>
+
+    <p>
+      A cinematic archive of Rangbastra couture, photographed as emotion,
+      celebration and craft before it becomes fashion.
+    </p>
+
+    <div class="lookbook-hero-actions" aria-label="Lookbook actions">
+      <Button href="/collections">Explore Collections</Button>
+      <Button href="/design-your-outfit" class="lookbook-secondary">
+        Create A Similar Look
+      </Button>
+    </div>
+  </div>
+
+  <figure
+    class="lookbook-hero-media"
+    style={`--lookbook-hero-image: url("${lookbookExperienceImages.hero}")`}
+  >
+    <img
+      src={lookbookExperienceImages.hero}
+      alt="Rangbastra couture editorial lookbook cover"
+      loading="eager"
+      decoding="async"
+    />
+  </figure>
+</section>
+
+<style>
+  .lookbook-hero {
+    display: grid;
+    grid-template-columns: minmax(0, .72fr) minmax(20rem, 1fr);
+    align-items: center;
+    gap: clamp(var(--space-7), 6vw, var(--space-12));
+    min-height: min(46rem, calc(100svh - var(--navbar-height)));
+    padding-block: clamp(var(--space-8), 8vw, var(--space-13)) var(--space-4);
+  }
+
+  .lookbook-hero-copy {
+    display: grid;
+    gap: clamp(var(--space-5), 3vw, var(--space-7));
+    max-width: 38rem;
+  }
+
+  h1 {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: .98;
+    text-wrap: balance;
+  }
+
+  h1 span:first-child {
+    font-size: clamp(2.7rem, 6vw, 5.9rem);
+  }
+
+  h1 span:last-child {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: clamp(3.15rem, 7.8vw, 7.4rem);
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-xs);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .lookbook-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  :global(.lookbook-secondary) {
+    background: rgba(255, 255, 255, .03);
+    color: var(--text-primary);
+  }
+
+  .lookbook-hero-media {
+    position: relative;
+    overflow: hidden;
+    min-height: clamp(32rem, 58vw, 48rem);
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, .1);
+    background:
+      linear-gradient(180deg, transparent, rgba(0, 0, 0, .24)),
+      var(--lookbook-hero-image) center / cover no-repeat,
+      var(--surface-raised);
+    box-shadow: 0 34px 90px rgba(0, 0, 0, .42);
+  }
+
+  .lookbook-hero-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(120deg, rgba(255, 255, 255, .1), transparent 34%),
+      linear-gradient(0deg, rgba(0, 0, 0, .3), transparent 48%);
+    pointer-events: none;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+    display: block;
+  }
+
+  @media (max-width: 1023px) {
+    .lookbook-hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .lookbook-hero-copy {
+      max-width: 46rem;
+    }
+
+    .lookbook-hero-media {
+      min-height: clamp(25rem, 74vw, 42rem);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .lookbook-hero {
+      gap: var(--space-7);
+      padding-block: clamp(var(--space-7), 18vw, var(--space-10)) 0;
+    }
+
+    h1 span:first-child {
+      font-size: clamp(2.35rem, 15vw, 4rem);
+    }
+
+    h1 span:last-child {
+      font-size: clamp(2.8rem, 17vw, 4.7rem);
+    }
+
+    p {
+      max-width: 24rem;
+      font-size: var(--body-md);
+    }
+
+    .lookbook-hero-actions {
+      align-items: stretch;
+      flex-direction: column;
+      max-width: 22rem;
+    }
+  }
+</style>

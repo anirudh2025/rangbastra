@@ -1,5 +1,9 @@
+---
+import Eyebrow from "../primitives/Eyebrow.astro";
+---
+
 <header class="craftsmanship-header">
-  <span class="eyebrow">Craftsmanship</span>
+  <Eyebrow>Craftsmanship</Eyebrow>
 
   <h2>
     <span class="title-intro">Made With The</span>
@@ -19,19 +23,10 @@
     max-width: var(--measure-md);
   }
 
-  .eyebrow {
-    color: var(--cocoa-400);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    text-transform: uppercase;
-  }
-
   h2 {
     display: grid;
     gap: var(--space-2);
-    max-width: min(100%, 50rem);
+    max-width: min(100%, 54rem);
     color: var(--text-primary);
     font-family: var(--font-display);
     font-weight: var(--weight-light);

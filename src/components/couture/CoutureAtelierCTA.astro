@@ -1,0 +1,103 @@
+---
+import Button from "../primitives/Button.astro";
+import type { CouturePiece } from "../../data/couture";
+import { getWhatsAppHref } from "../../data/contact";
+
+interface Props {
+  product: CouturePiece;
+}
+
+const { product } = Astro.props;
+const whatsappHref = getWhatsAppHref(
+  `Hello Rangbastra, I am interested in ${product.name} and would like to know more about customization.`,
+);
+---
+
+<section class="product-atelier-cta" aria-labelledby="product-atelier-heading">
+  <span>Custom Design Session</span>
+  <h2 id="product-atelier-heading">
+    <span class="heading-soft">Begin Your</span>
+    <span class="heading-strong">Couture Journey</span>
+    <span class="heading-soft">Around {product.name}.</span>
+  </h2>
+  <p>
+    Share your ceremony, palette, measurements, and the feeling you want this piece to carry.
+    Your designer will guide fabric, fit, and personalization with calm attention.
+  </p>
+  <div class="product-atelier-actions">
+    <Button href={`/design-your-outfit?piece=${product.slug}`}>Start This Story</Button>
+    <Button href={whatsappHref} target="_blank">Ask On WhatsApp</Button>
+  </div>
+</section>
+
+<style>
+  .product-atelier-cta {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-5);
+    padding-block: clamp(var(--space-7), 7vw, var(--space-10));
+    text-align: center;
+  }
+
+  span {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--space-1);
+    max-width: 18ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .heading-soft {
+    color: var(--text-primary);
+    font-size: clamp(1.8rem, 3.2vw, 3.2rem);
+    line-height: 1.05;
+  }
+
+  .product-atelier-cta h2 .heading-strong {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font-size: clamp(3rem, 6vw, 6.8rem);
+    font-weight: var(--weight-medium);
+    letter-spacing: inherit;
+    line-height: .92;
+    text-transform: none;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .product-atelier-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  @media (max-width: 560px) {
+    .product-atelier-actions,
+    .product-atelier-actions :global(.button) {
+      width: 100%;
+    }
+  }
+</style>

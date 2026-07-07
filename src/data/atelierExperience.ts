@@ -7,26 +7,26 @@ export interface AtelierExperienceStep {
 export const atelierExperience: AtelierExperienceStep[] = [
   {
     id: 1,
-    title: "The Consultation",
+    title: "She Arrives With A Memory",
     description:
-      "Every couture journey begins with a conversation where dreams, traditions and personal style come together.",
+      "The first conversation is quiet and personal, gathering the colours, rituals and emotions her celebration must carry.",
   },
   {
     id: 2,
-    title: "The Design Vision",
+    title: "A Silhouette Begins To Belong",
     description:
-      "Our designers transform inspiration into exclusive sketches crafted uniquely for you.",
+      "Her story is translated into proportion, fabric and detail until the design feels less selected and more recognized.",
   },
   {
     id: 3,
-    title: "The Artisan's Touch",
+    title: "Hands Give It Permanence",
     description:
-      "Every stitch, embroidery and embellishment is handcrafted with extraordinary precision.",
+      "Embroidery, drape and finishing move slowly through the atelier, shaped around comfort, confidence and memory.",
   },
   {
     id: 4,
-    title: "The Final Reveal",
+    title: "She Steps Into Her Signature",
     description:
-      "The finished creation is presented after meticulous quality checks, ready to become part of your story.",
+      "At the final fitting, the piece no longer feels like an outfit. It feels like the celebration already knows her.",
   },
 ];

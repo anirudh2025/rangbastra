@@ -24,7 +24,7 @@ import { signatureCustomizationImage } from "../../data/signatureCustomization";
     position: relative;
     display: grid;
     gap: var(--space-4);
-    max-width: min(100%, 34rem);
+    max-width: min(100%, 40rem);
   }
 
   .signature-visual::before {
@@ -43,22 +43,28 @@ import { signatureCustomizationImage } from "../../data/signatureCustomization";
   .image-frame {
     overflow: hidden;
     border: 1px solid var(--border-default);
-    border-radius: var(--radius-3xl);
+    border-radius: var(--radius-2xl);
     background: var(--surface-raised);
     box-shadow: var(--shadow-floating), var(--shadow-inset);
   }
 
   img {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 1;
     height: auto;
     object-fit: cover;
     transform: scale(1.02);
-    transition: transform var(--motion-luxury) var(--ease-luxury);
+    transition: transform var(--motion-image) var(--ease-luxury);
   }
 
   .signature-visual:hover img {
     transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .signature-visual:hover img {
+      transform: none;
+    }
   }
 
   figcaption {
@@ -71,7 +77,7 @@ import { signatureCustomizationImage } from "../../data/signatureCustomization";
 
   @media (max-width: 1023px) {
     .signature-visual {
-      max-width: min(100%, 28rem);
+      max-width: min(100%, 32rem);
       justify-self: end;
     }
   }

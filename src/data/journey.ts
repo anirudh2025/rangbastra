@@ -36,7 +36,7 @@ title:"Share Your Vision",
 
 description:"Tell us about your occasion, inspiration and dream outfit.",
 
-icon:"sparkles",
+icon:"mirrorWork",
 
 image:journeyImages.vision
 
@@ -50,7 +50,7 @@ title:"Consult Our Designer",
 
 description:"Discuss fabrics, silhouettes, colours and handcrafted details.",
 
-icon:"needle",
+icon:"designer",
 
 image:journeyImages.consultation
 
@@ -64,7 +64,7 @@ title:"Crafted With Precision",
 
 description:"Every outfit is individually tailored with exceptional craftsmanship.",
 
-icon:"thread",
+icon:"fabric",
 
 image:journeyImages.craft
 
@@ -78,7 +78,7 @@ title:"Celebrate Beautifully",
 
 description:"Walk into your celebration wearing a piece created exclusively for you.",
 
-icon:"crown",
+icon:"sparkle",
 
 image:journeyImages.celebration
 

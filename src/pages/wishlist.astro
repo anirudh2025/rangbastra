@@ -1,0 +1,277 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/primitives/Button.astro";
+import Container from "../components/primitives/Container.astro";
+import Eyebrow from "../components/primitives/Eyebrow.astro";
+import Icon from "../components/primitives/Icon.astro";
+import Section from "../components/primitives/Section.astro";
+import Footer from "../sections/home/Footer.astro";
+import { getPublishedCouturePieces } from "../lib/couture";
+
+const products = getPublishedCouturePieces();
+---
+
+<BaseLayout
+  title="Private Wardrobe | Rangbastra Wishlist"
+  description="View your saved Rangbastra couture inspirations in a private wardrobe experience."
+  canonical="/wishlist"
+>
+  <Section class="wardrobe-section">
+    <Container class="wardrobe-container">
+      <section class="wardrobe-hero" aria-labelledby="wishlist-heading">
+        <div class="wardrobe-panel">
+          <Eyebrow>Private Wardrobe</Eyebrow>
+          <h1 id="wishlist-heading">Saved Couture Inspirations</h1>
+          <p>Your quiet room for pieces, moods and craft details you may want to return to before beginning a custom design.</p>
+        </div>
+        <div class="wardrobe-door" aria-hidden="true">
+          <span>RB</span>
+        </div>
+      </section>
+
+      <section class="wardrobe-content" aria-live="polite">
+        <div class="wardrobe-meta">
+          <span data-wishlist-count>Loading saved inspirations</span>
+          <Button href="/collections">Explore Collections</Button>
+        </div>
+
+        <div class="wardrobe-grid" data-wishlist-grid></div>
+
+        <div class="wardrobe-empty" data-wishlist-empty hidden>
+          <Icon name="heart" size={36} />
+          <h2>Your private wardrobe is waiting.</h2>
+          <p>Save pieces from the collections to build a quieter shortlist for your couture conversation.</p>
+          <Button href="/collections">Explore Collections</Button>
+        </div>
+      </section>
+    </Container>
+  </Section>
+
+  <Footer />
+
+  <script type="application/json" id="wishlist-products" set:html={JSON.stringify(products)} />
+  <script>
+    const wishlistKey = "rangbastraWishlist";
+    const products = JSON.parse(document.getElementById("wishlist-products")?.textContent || "[]");
+    const grid = document.querySelector("[data-wishlist-grid]");
+    const empty = document.querySelector("[data-wishlist-empty]");
+    const count = document.querySelector("[data-wishlist-count]");
+
+    const readWishlist = () => {
+      try {
+        return JSON.parse(window.localStorage.getItem(wishlistKey) || "[]");
+      } catch {
+        return [];
+      }
+    };
+
+    const removeItem = (slug) => {
+      const next = readWishlist().filter((item) => item !== slug);
+      window.localStorage.setItem(wishlistKey, JSON.stringify(next));
+      render();
+    };
+
+    const card = (product) => `
+      <article class="wardrobe-card">
+        <a href="/products/${product.slug}">
+          <img src="${product.featuredImage}" alt="${product.name} couture piece" loading="lazy" decoding="async" />
+          <span>${product.category}</span>
+          <h2>${product.name}</h2>
+          <p>${product.shortDescription}</p>
+        </a>
+        <button type="button" data-remove="${product.slug}">Remove from wardrobe</button>
+      </article>
+    `;
+
+    function render() {
+      const saved = new Set(readWishlist());
+      const selected = products.filter((product) => saved.has(product.slug));
+
+      if (grid) grid.innerHTML = selected.map(card).join("");
+      if (empty) empty.hidden = selected.length > 0;
+      if (count) count.textContent = `${selected.length} saved ${selected.length === 1 ? "inspiration" : "inspirations"}`;
+
+      document.querySelectorAll("[data-remove]").forEach((button) => {
+        button.addEventListener("click", () => removeItem(button.getAttribute("data-remove")));
+      });
+    }
+
+    render();
+    window.addEventListener("storage", render);
+    window.addEventListener("rangbastra:wishlist-updated", render);
+  </script>
+</BaseLayout>
+
+<style>
+  :global(.wardrobe-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
+    overflow: hidden;
+    background:
+      linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px) 50% 0 / 20% 100%,
+      radial-gradient(circle at 78% 18%, rgba(106, 78, 66, .2), transparent 34%),
+      var(--surface-canvas);
+  }
+
+  :global(.wardrobe-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+    display: grid;
+    gap: clamp(var(--space-8), 8vw, var(--space-12));
+  }
+
+  .wardrobe-hero {
+    display: grid;
+    grid-template-columns: minmax(0, .72fr) minmax(18rem, .38fr);
+    gap: clamp(var(--space-6), 7vw, var(--space-11));
+    align-items: stretch;
+    padding-top: clamp(var(--space-12), 15vw, var(--space-14));
+  }
+
+  .wardrobe-panel {
+    display: grid;
+    align-content: center;
+    gap: var(--space-5);
+    min-height: clamp(26rem, 42vw, 38rem);
+    padding: clamp(var(--space-6), 6vw, var(--space-10));
+    border: 1px solid var(--border-default);
+    background: rgba(255, 255, 255, .025);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  .wardrobe-door {
+    display: grid;
+    place-items: center;
+    min-height: 100%;
+    border: 1px solid rgba(198, 169, 114, .22);
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.06), transparent 18%, transparent 82%, rgba(255,255,255,.05)),
+      radial-gradient(circle at 50% 34%, rgba(198, 169, 114, .14), transparent 32%),
+      rgba(0, 0, 0, .55);
+  }
+
+  .wardrobe-door span {
+    color: rgba(255, 255, 255, .1);
+    font-family: var(--font-display);
+    font-size: clamp(7rem, 14vw, 16rem);
+    font-weight: var(--weight-light);
+  }
+
+  h1 {
+    max-width: 11ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 8rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: .95;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+  }
+
+  .wardrobe-content {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .wardrobe-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-4);
+    align-items: center;
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .wardrobe-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+
+  :global(.wardrobe-card) {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  :global(.wardrobe-card a) {
+    display: grid;
+    gap: var(--space-3);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  :global(.wardrobe-card img) {
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    object-fit: cover;
+    border: 1px solid var(--border-default);
+  }
+
+  :global(.wardrobe-card span),
+  :global(.wardrobe-card button) {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  :global(.wardrobe-card h2) {
+    color: var(--text-primary);
+    font-family: var(--font-signature);
+    font-size: clamp(1.8rem, 2.6vw, 3rem);
+    font-weight: var(--weight-regular);
+  }
+
+  :global(.wardrobe-card p) {
+    font-size: var(--body-sm);
+  }
+
+  :global(.wardrobe-card button) {
+    width: fit-content;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .wardrobe-empty {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-4);
+    padding: clamp(var(--space-8), 8vw, var(--space-11));
+    border: 1px solid var(--border-default);
+    text-align: center;
+  }
+
+  .wardrobe-empty[hidden] {
+    display: none;
+  }
+
+  .wardrobe-empty h2 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 4.5vw, 5.2rem);
+    font-weight: var(--weight-light);
+  }
+
+  @media (max-width: 900px) {
+    .wardrobe-hero,
+    .wardrobe-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .wardrobe-door {
+      display: none;
+    }
+  }
+</style>

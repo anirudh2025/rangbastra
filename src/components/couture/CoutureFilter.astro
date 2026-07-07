@@ -1,0 +1,144 @@
+---
+import type { CoutureCategory } from "../../data/couture";
+
+interface Props {
+  categories: Array<"All" | CoutureCategory>;
+}
+
+const { categories } = Astro.props;
+
+const normalize = (category: string) =>
+  category.toLowerCase().replace(/\s+/g, "-");
+---
+
+<fieldset class="product-filter" aria-label="Filter collections by category">
+  <legend>Filter collections</legend>
+
+  <div class="filter-track">
+    {
+      categories.map((category, index) => {
+        const value = normalize(category);
+
+        return (
+          <div class="filter-option">
+            <input
+              class="filter-input"
+              type="radio"
+              id={`product-filter-${value}`}
+              name="product-filter"
+              value={value}
+              checked={index === 0}
+            />
+
+            <label class="filter-pill" for={`product-filter-${value}`}>
+              {category}
+            </label>
+          </div>
+        );
+      })
+    }
+  </div>
+</fieldset>
+
+<style>
+  .product-filter {
+    display: grid;
+    gap: var(--space-4);
+    min-width: 0;
+    max-width: 100%;
+    border: 0;
+  }
+
+  legend {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .filter-track {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .filter-option {
+    position: relative;
+  }
+
+  .filter-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .filter-pill {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    padding-inline: clamp(var(--space-4), 2vw, var(--space-5));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, .025);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: var(--label-md);
+    font-weight: var(--weight-semibold);
+    line-height: 1;
+    transition:
+      background var(--motion-button) var(--ease-luxury),
+      border-color var(--motion-button) var(--ease-luxury),
+      color var(--motion-button) var(--ease-luxury),
+      box-shadow var(--motion-button) var(--ease-luxury),
+      transform var(--motion-button) var(--ease-luxury);
+  }
+
+  .filter-input:checked + .filter-pill {
+    border-color: var(--border-accent);
+    background: var(--accent-soft);
+    color: var(--ivory-100);
+    box-shadow: var(--glow-soft), var(--shadow-inset);
+  }
+
+  .filter-input:focus-visible + .filter-pill {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: var(--space-2);
+  }
+
+  .filter-pill:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    transform: translate3d(0, var(--motion-button-lift), 0);
+  }
+
+  @media (max-width: 767px) {
+    .filter-track {
+      flex-wrap: nowrap;
+      width: 100%;
+      overflow-x: auto;
+      padding-block: var(--space-1);
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .filter-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-pill {
+      white-space: nowrap;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .filter-pill:hover {
+      transform: none;
+    }
+  }
+</style>

@@ -11,16 +11,11 @@ REVEAL ANIMATIONS
     transform:
         translateY(var(--distance-md));
 
-    filter:
-        blur(var(--blur-start));
-
     transition:
 
-        opacity var(--motion-luxury) var(--ease-luxury),
+        opacity var(--motion-reveal) var(--ease-luxury),
 
-        transform var(--motion-luxury) var(--ease-luxury),
-
-        filter var(--motion-luxury) var(--ease-luxury);
+        transform var(--motion-reveal) var(--ease-luxury);
 
 }
 
@@ -29,8 +24,6 @@ REVEAL ANIMATIONS
     opacity:1;
 
     transform:none;
-
-    filter:none;
 
 }
 
@@ -55,9 +48,3 @@ REVEAL ANIMATIONS
 
 }
 
-.reveal-blur{
-
-    filter:
-        blur(24px);
-
-}

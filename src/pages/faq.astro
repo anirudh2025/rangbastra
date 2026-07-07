@@ -1,0 +1,217 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/primitives/Button.astro";
+import Container from "../components/primitives/Container.astro";
+import Eyebrow from "../components/primitives/Eyebrow.astro";
+import Icon from "../components/primitives/Icon.astro";
+import Section from "../components/primitives/Section.astro";
+import Footer from "../sections/home/Footer.astro";
+import { contact } from "../data/contact";
+
+const faqs = [
+  {
+    question: "How long does a custom couture outfit take?",
+    answer:
+      "Timelines depend on craft, fabric, embroidery, fittings and complexity. Many custom pieces require several weeks, and bridal couture should begin as early as possible so the atelier has time to refine the design properly.",
+  },
+  {
+    question: "Can I customize an existing Rangbastra piece?",
+    answer:
+      "Yes. Existing pieces can be used as references for silhouette, colour, embroidery, dupatta, blouse, neckline or mood. The final direction is confirmed through a design conversation.",
+  },
+  {
+    question: "Do you take appointments?",
+    answer:
+      "Yes. Rangbastra is an appointment-led couture experience. You can begin through Design Your Outfit, WhatsApp or email, and the team will guide the next step.",
+  },
+  {
+    question: "Why are prices not fixed for every custom outfit?",
+    answer:
+      "Couture investment depends on fabric, handwork, embroidery density, complexity, customization and timeline. Rangbastra confirms pricing after understanding the desired piece.",
+  },
+  {
+    question: "Are fittings required?",
+    answer:
+      "Some couture journeys require fittings, measurement reviews or alteration windows. The team will guide what is needed based on your city, timeline and garment structure.",
+  },
+  {
+    question: "Can I share reference images?",
+    answer:
+      "Yes. Reference images, jewellery, ceremony notes, colour ideas and family inspiration can help the atelier understand your taste. They are used as guidance, not copied blindly.",
+  },
+  {
+    question: "Do you ship outside Anand or Gujarat?",
+    answer:
+      "Delivery and shipping can be discussed based on destination, timeline and garment readiness. Shipping charges, customs or courier limits may apply depending on location.",
+  },
+  {
+    question: "Can I communicate on WhatsApp?",
+    answer:
+      `Yes. You can message Rangbastra on WhatsApp at ${contact.whatsappNumber} for couture inquiries, references and appointment guidance.`,
+  },
+];
+---
+
+<BaseLayout
+  title="FAQ | Rangbastra"
+  description="Answers to common Rangbastra custom couture questions about timelines, customization, appointments, pricing, fittings, shipping and WhatsApp communication."
+  canonical="/faq"
+>
+  <Section class="faq-section">
+    <Container class="faq-container">
+      <header class="faq-hero">
+        <div>
+          <Eyebrow>FAQ</Eyebrow>
+          <h1>Questions Before The First Sketch</h1>
+        </div>
+        <p>
+          Clear answers for brides and families preparing to begin a custom
+          couture conversation with Rangbastra.
+        </p>
+      </header>
+
+      <section class="faq-grid" aria-label="Frequently asked questions">
+        <aside class="faq-panel">
+          <Icon name="confidentialDiscussion" size={34} />
+          <h2>Still deciding?</h2>
+          <p>
+            Share your occasion, reference images and timeline. The atelier can
+            guide what is possible before you commit to a full design journey.
+          </p>
+          <Button href="/design-your-outfit">Design Your Outfit</Button>
+        </aside>
+
+        <div class="faq-list">
+          {faqs.map((item) => (
+            <details>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    </Container>
+  </Section>
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.faq-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 22% 18%, rgba(198, 169, 114, .12), transparent 32%),
+      linear-gradient(90deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 10rem),
+      var(--surface-canvas);
+  }
+
+  :global(.faq-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+  }
+
+  .faq-hero {
+    display: grid;
+    grid-template-columns: minmax(0, .62fr) minmax(18rem, .32fr);
+    gap: clamp(var(--space-5), 7vw, var(--space-10));
+    align-items: end;
+    padding-top: clamp(var(--space-12), 14vw, var(--space-14));
+    min-height: min(38rem, calc(100svh - var(--navbar-height)));
+  }
+
+  h1,
+  h2 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  h1 {
+    max-width: 10ch;
+    margin-top: var(--space-5);
+    font-size: clamp(3.4rem, 7vw, 7.4rem);
+    line-height: .96;
+  }
+
+  .faq-hero p,
+  .faq-panel p,
+  details p {
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: minmax(17rem, .32fr) minmax(0, .68fr);
+    gap: clamp(var(--space-6), 8vw, var(--space-12));
+    padding-block: clamp(var(--space-8), 9vw, var(--space-12));
+    border-top: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  .faq-panel {
+    position: sticky;
+    top: calc(var(--navbar-height) + var(--space-5));
+    display: grid;
+    gap: var(--space-4);
+    align-self: start;
+    padding: var(--space-6);
+    border: 1px solid rgba(198, 169, 114, .18);
+    background: rgba(255, 255, 255, .025);
+  }
+
+  .faq-panel h2 {
+    font-size: clamp(2.2rem, 4vw, 4rem);
+    line-height: 1;
+  }
+
+  .faq-list {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  details {
+    border: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(255, 255, 255, .025);
+  }
+
+  summary {
+    cursor: pointer;
+    padding: var(--space-5);
+    color: var(--text-primary);
+    font-size: var(--body-md);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-body);
+  }
+
+  summary::marker {
+    color: var(--sand-200);
+  }
+
+  details p {
+    padding: 0 var(--space-5) var(--space-5);
+  }
+
+  details[open] {
+    border-color: rgba(198, 169, 114, .28);
+  }
+
+  @media (max-width: 900px) {
+    .faq-hero,
+    .faq-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .faq-panel {
+      position: static;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .faq-hero {
+      min-height: auto;
+      padding-top: clamp(var(--space-11), 28vw, var(--space-13));
+    }
+  }
+</style>

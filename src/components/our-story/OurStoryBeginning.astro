@@ -1,0 +1,108 @@
+---
+import OurStoryHeader from "./OurStoryHeader.astro";
+import { ourStoryImages } from "../../data/ourStory";
+---
+
+<section class="story-beginning" aria-labelledby="beginning-heading">
+  <div class="story-beginning__copy">
+    <OurStoryHeader
+      eyebrow="The Beginning"
+      intro="Around 2015"
+      statement="A Passion Took Shape"
+      copy="Rangbastra did not begin as a business plan. It began as Bhagirathi Patel's creative instinct: to experiment, to combine ordinary ideas with unusual detail, and to make garments that felt deeply personal."
+    />
+
+    <div class="story-prose">
+      <p>
+        She was drawn to the moment when a simple thought became something more
+        expressive in the hand. A colour placed differently. A border imagined
+        again. A familiar silhouette softened until it belonged to one person.
+      </p>
+      <p>
+        That quiet curiosity became Rangbastra. Not a place for identical
+        outfits, but a space where a woman's celebration could enter the design
+        before the garment was made.
+      </p>
+    </div>
+  </div>
+
+  <figure style={`--story-image: url("${ourStoryImages.beginning}")`}>
+    <img
+      src={ourStoryImages.beginning}
+      alt="Rangbastra couture detail representing the beginning of the maison"
+      width="900"
+      height="1200"
+      loading="eager"
+      decoding="async"
+    />
+  </figure>
+</section>
+
+<style>
+  .story-beginning {
+    display: grid;
+    grid-template-columns: minmax(0, .72fr) minmax(20rem, .48fr);
+    gap: clamp(var(--space-7), 7vw, var(--space-11));
+    align-items: center;
+  }
+
+  .story-beginning__copy,
+  .story-prose {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .story-prose {
+    max-width: var(--measure-md);
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: clamp(var(--body-md), 1.5vw, var(--body-lg));
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  figure {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      var(--story-image) center / cover no-repeat,
+      var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--gradient-glass);
+    opacity: .62;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 900px) {
+    .story-beginning {
+      grid-template-columns: 1fr;
+    }
+
+    figure {
+      max-width: 34rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    figure {
+      border-radius: var(--radius-lg);
+    }
+  }
+</style>

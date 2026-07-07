@@ -1,0 +1,20 @@
+---
+import Icon from "../primitives/Icon.astro";
+
+const utilityLinks = [
+  { href: "/search", label: "Search", icon: "search" },
+  { href: "/wishlist", label: "Wishlist", icon: "heart" },
+  { href: "/account", label: "Account", icon: "account" },
+];
+---
+
+<nav class="utility-nav" aria-label="Utility navigation">
+  {
+    utilityLinks.map((link) => (
+      <a href={link.href} class="utility-nav__link" aria-label={link.label}>
+        <Icon name={link.icon} size={18} />
+        <span>{link.label}</span>
+      </a>
+    ))
+  }
+</nav>

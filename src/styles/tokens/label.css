@@ -20,8 +20,8 @@ LABEL TOKENS
 
     --label-icon-scale:.82;
 
-    --label-duration:var(--duration-normal);
+    --label-duration:var(--motion-button);
 
-    --label-easing:var(--ease-standard);
+    --label-easing:var(--ease-luxury);
 
 }

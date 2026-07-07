@@ -3,12 +3,13 @@ import Section from "../../components/primitives/Section.astro";
 import Container from "../../components/primitives/Container.astro";
 import Button from "../../components/primitives/Button.astro";
 import Label from "../../components/primitives/Label.astro";
+import Eyebrow from "../../components/primitives/Eyebrow.astro";
 ---
 
 <Section class="luxury-consultation-section">
   <Container class="luxury-consultation-container">
     <div class="invitation">
-      <span class="eyebrow">Private Atelier Invitation</span>
+      <Eyebrow>Design Your Outfit</Eyebrow>
 
       <h2>
         <span class="title-intro">Every Extraordinary Story</span>
@@ -22,12 +23,12 @@ import Label from "../../components/primitives/Label.astro";
       </p>
 
       <div class="actions" aria-label="Begin your Rangbastra couture journey">
-        <Button href="/consultation" class="consultation-primary">
-          <Label icon="sparkles">Schedule Your Consultation</Label>
+        <Button href="/design-your-outfit" class="consultation-primary">
+          <Label icon="sparkle">Design Your Outfit</Label>
         </Button>
 
         <Button href="/collections" class="consultation-secondary">
-          <Label icon="sparkles">Explore Collections</Label>
+          <Label icon="sparkle">Explore Collections</Label>
         </Button>
       </div>
     </div>
@@ -36,14 +37,14 @@ import Label from "../../components/primitives/Label.astro";
 
 <style>
   :global(.luxury-consultation-section) {
-    --section-padding-block: clamp(var(--space-12), 16vw, var(--space-14));
+    --section-padding-block: clamp(var(--space-10), 12vw, var(--space-13));
     --consultation-background: #000000;
     --consultation-glow-opacity: .18;
     --consultation-satin-opacity: .34;
-    --consultation-content-width: min(100%, 68rem);
-    --consultation-body-width: var(--measure-md);
+    --consultation-content-width: min(100%, 62rem);
+    --consultation-body-width: var(--measure-sm);
     --consultation-action-gap: var(--space-4);
-    --consultation-button-min-width: 15.5rem;
+    --consultation-button-min-width: 14.75rem;
 
     overflow: hidden;
     background:
@@ -101,15 +102,6 @@ import Label from "../../components/primitives/Label.astro";
     max-width: var(--consultation-content-width);
     margin-inline: auto;
     text-align: center;
-  }
-
-  .eyebrow {
-    color: var(--cocoa-400);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    text-transform: uppercase;
   }
 
   h2 {
@@ -170,32 +162,10 @@ import Label from "../../components/primitives/Label.astro";
     isolation: isolate;
   }
 
-  :global(.consultation-primary)::after {
-    content: "";
-    position: absolute;
-    inset: -7px;
-    z-index: -1;
-    border: 1px solid rgba(181, 147, 130, .38);
-    border-radius: calc(var(--button-radius) + 7px);
-    opacity: 0;
-    transform: scale(.98);
-    transition:
-      opacity var(--motion-medium) var(--ease-luxury),
-      transform var(--motion-medium) var(--ease-luxury),
-      box-shadow var(--motion-medium) var(--ease-luxury);
-  }
-
   :global(.consultation-primary:hover),
   :global(.consultation-primary:focus-visible) {
-    background: var(--gradient-primary);
+    background: var(--button-primary-gradient-hover);
     box-shadow: var(--glow-medium), var(--button-shadow-hover), var(--shadow-inset-strong);
-  }
-
-  :global(.consultation-primary:hover)::after,
-  :global(.consultation-primary:focus-visible)::after {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: var(--glow-soft);
   }
 
   :global(.consultation-secondary) {
@@ -209,7 +179,7 @@ import Label from "../../components/primitives/Label.astro";
     border-color: var(--border-strong);
     background: rgba(255, 255, 255, .045);
     color: var(--text-primary);
-    box-shadow: var(--glow-soft), var(--shadow-inset-strong);
+    box-shadow: var(--shadow-inset-strong);
   }
 
   @media (max-width: 767px) {
@@ -260,4 +230,5 @@ import Label from "../../components/primitives/Label.astro";
       width: min(100%, 20rem);
     }
   }
+
 </style>

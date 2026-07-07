@@ -1,0 +1,108 @@
+---
+import Icon from "../primitives/Icon.astro";
+import OurStoryHeader from "./OurStoryHeader.astro";
+import { storyJourney } from "../../data/ourStory";
+---
+
+<section class="story-journey" aria-labelledby="story-journey-heading">
+  <OurStoryHeader
+    eyebrow="Our Design Journey"
+    intro="From First Feeling"
+    statement="To Final Celebration"
+    copy="The path is simple on purpose. Each step gives the next one its meaning."
+    align="center"
+  />
+
+  <div class="journey-line" aria-label="Rangbastra design journey">
+    {
+      storyJourney.map((step, index) => (
+        <article class="journey-step">
+          <span class="journey-index">{String(index + 1).padStart(2, "0")}</span>
+          <Icon name={step.icon} size={28} class="journey-icon" />
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .story-journey {
+    display: grid;
+    gap: clamp(var(--space-8), 8vw, var(--space-11));
+  }
+
+  .journey-line {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(var(--space-4), 2vw, var(--space-6));
+  }
+
+  .journey-line::before {
+    content: "";
+    position: absolute;
+    top: 4.8rem;
+    right: 4%;
+    left: 4%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    opacity: .65;
+  }
+
+  .journey-step {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    padding: clamp(var(--space-5), 2.4vw, var(--space-6));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: rgba(5, 5, 5, .7);
+    box-shadow: var(--shadow-inset);
+  }
+
+  .journey-index {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+  }
+
+  .journey-step :global(.journey-icon) {
+    color: var(--sand-200);
+    opacity: .8;
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.3vw, 2.45rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1180px) {
+    .journey-line {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .journey-line::before {
+      display: none;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .journey-line {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

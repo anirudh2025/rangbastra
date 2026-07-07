@@ -1,0 +1,109 @@
+---
+import { lookbookExperienceImages } from "../../data/lookbookExperience";
+import LookbookExperienceHeader from "./LookbookExperienceHeader.astro";
+---
+
+<section class="editors-note" aria-labelledby="editors-note-heading">
+  <LookbookExperienceHeader
+    id="editors-note-heading"
+    eyebrow="Editor's Note"
+    intro="Every collection"
+    statement="Begins As A Story"
+    copy="Rangbastra photographs couture as a lived moment: the stillness before a ceremony, the intimacy of craft, the confidence of a woman entering celebration on her own terms."
+  />
+
+  <div class="editors-note-layout">
+    <div class="editors-note-copy">
+      <p>
+        The lookbook is not a catalogue. It is a visual journal of how fabric,
+        handwork and personal presence come together when a piece is treated
+        with patience.
+      </p>
+      <p>
+        Each frame is edited with restraint, allowing silhouette, texture and
+        emotion to hold the page without shouting for attention.
+      </p>
+    </div>
+
+    <figure
+      style={`--editors-note-image: url("${lookbookExperienceImages.editorsNote}")`}
+    >
+      <img
+        src={lookbookExperienceImages.editorsNote}
+        alt="Editorial Rangbastra couture detail"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+  </div>
+</section>
+
+<style>
+  .editors-note {
+    display: grid;
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+  }
+
+  .editors-note-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .72fr) minmax(18rem, .5fr);
+    align-items: end;
+    gap: clamp(var(--space-6), 6vw, var(--space-10));
+  }
+
+  .editors-note-copy {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 52rem;
+    padding-block-end: clamp(var(--space-4), 4vw, var(--space-8));
+  }
+
+  .editors-note-copy p {
+    color: var(--text-secondary);
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.2vw, 2.35rem);
+    font-weight: var(--weight-light);
+    line-height: 1.32;
+    text-wrap: pretty;
+  }
+
+  .editors-note-copy p:first-child::first-letter {
+    color: var(--text-primary);
+    float: left;
+    font-size: 4.6em;
+    line-height: .78;
+    margin: .08em .16em 0 0;
+  }
+
+  figure {
+    overflow: hidden;
+    min-height: clamp(22rem, 36vw, 34rem);
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, .1);
+    background: var(--editors-note-image) center / cover no-repeat;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+    display: block;
+  }
+
+  @media (max-width: 900px) {
+    .editors-note-layout {
+      grid-template-columns: 1fr;
+    }
+
+    figure {
+      min-height: clamp(20rem, 70vw, 34rem);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .editors-note-copy p {
+      font-size: clamp(1.18rem, 7vw, 1.8rem);
+    }
+  }
+</style>

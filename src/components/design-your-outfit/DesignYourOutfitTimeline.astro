@@ -1,0 +1,108 @@
+---
+import Icon from "../primitives/Icon.astro";
+import DesignYourOutfitHeader from "./DesignYourOutfitHeader.astro";
+import { whatHappensNext } from "../../data/designYourOutfit";
+---
+
+<section class="next-section" aria-labelledby="next-heading">
+  <DesignYourOutfitHeader
+    eyebrow="What Happens Next"
+    intro="After You Share"
+    statement="We Begin With Care"
+    copy="Your enquiry does not enter a queue. It begins a private sequence designed to understand your story before any couture decision is made."
+    align="center"
+  />
+
+  <div class="next-timeline">
+    {
+      whatHappensNext.map((step, index) => (
+        <article class="next-step">
+          <span class="step-number">{String(index + 1).padStart(2, "0")}</span>
+          <Icon name={step.icon} size={26} class="step-icon" />
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .next-section {
+    display: grid;
+    gap: clamp(var(--space-7), 7vw, var(--space-10));
+  }
+
+  .next-timeline {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .next-step {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    min-height: 17rem;
+    padding: var(--space-5);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, .036), rgba(255, 255, 255, .01)),
+      rgba(255, 255, 255, .014);
+    box-shadow: var(--shadow-inset);
+  }
+
+
+  .step-number {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+  }
+
+  .next-step :global(.step-icon) {
+    color: var(--sand-200);
+    opacity: .78;
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 2.1vw, 2.25rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+    text-wrap: balance;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1280px) {
+    .next-timeline {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .next-step:nth-child(3n)::after {
+      display: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .next-timeline {
+      grid-template-columns: 1fr;
+    }
+
+    .next-step {
+      min-height: auto;
+    }
+
+    .next-step::after {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Container from "../../components/primitives/Container.astro";
+import Section from "../../components/primitives/Section.astro";
+import AccountShell from "../../components/account/AccountShell.astro";
+import Footer from "../../sections/home/Footer.astro";
+---
+
+<BaseLayout title="Client Login | Rangbastra" description="Access the Rangbastra private client room for couture inspirations, design journeys and personal atelier updates." canonical="/account/login">
+  <Section class="account-section">
+    <Container class="account-container">
+      <AccountShell mode="login" />
+    </Container>
+  </Section>
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.account-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 78% 16%, rgba(106, 78, 66, .2), transparent 34%),
+      linear-gradient(180deg, rgba(0, 0, 0, .98), transparent 34%),
+      var(--surface-canvas);
+  }
+
+  :global(.account-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+  }
+</style>

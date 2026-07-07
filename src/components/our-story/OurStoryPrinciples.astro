@@ -1,0 +1,99 @@
+---
+import Icon from "../primitives/Icon.astro";
+import OurStoryHeader from "./OurStoryHeader.astro";
+import { storyPrinciples } from "../../data/ourStory";
+---
+
+<section class="principles-section" aria-labelledby="principles-heading">
+  <OurStoryHeader
+    eyebrow="What Makes Rangbastra Different"
+    intro="Not A Formula"
+    statement="A Way Of Seeing"
+    copy="The difference is not in saying yes to every request. It is in understanding which details make the wearer feel most like herself."
+  />
+
+  <div class="principles-list">
+    {
+      storyPrinciples.map((principle, index) => (
+        <article class="principle">
+          <span class="principle-number">{String(index + 1).padStart(2, "0")}</span>
+          <Icon name={principle.icon} size={28} class="principle-icon" />
+          <h3>{principle.title}</h3>
+          <p>{principle.text}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .principles-section {
+    display: grid;
+    gap: clamp(var(--space-7), 7vw, var(--space-10));
+  }
+
+  .principles-list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(var(--space-4), 2vw, var(--space-6));
+  }
+
+  .principle {
+    display: grid;
+    gap: var(--space-4);
+    min-height: 20rem;
+    padding: clamp(var(--space-5), 3vw, var(--space-7));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, .042), rgba(255, 255, 255, .012)),
+      rgba(255, 255, 255, .016);
+    box-shadow: var(--shadow-inset);
+  }
+
+  .principle-number {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+  }
+
+  .principle :global(.principle-icon) {
+    color: var(--sand-200);
+    opacity: .78;
+  }
+
+  h3 {
+    max-width: 14ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 2.1vw, 2.2rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+    text-wrap: balance;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1180px) {
+    .principles-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .principles-list {
+      grid-template-columns: 1fr;
+    }
+
+    .principle {
+      min-height: auto;
+    }
+  }
+</style>

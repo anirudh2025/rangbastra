@@ -1,0 +1,98 @@
+---
+import OurStoryHeader from "./OurStoryHeader.astro";
+import { ourStoryImages } from "../../data/ourStory";
+---
+
+<section class="future-section" id="future" aria-labelledby="future-heading">
+  <div class="future-copy">
+    <OurStoryHeader
+      eyebrow="The Future"
+      intro="Still Learning"
+      statement="Still Creating"
+      copy="Rangbastra continues to grow because each person brings a new way of seeing. Fashion may change, but individuality asks for something more attentive."
+    />
+
+    <p>
+      Bhagirathi keeps experimenting not to chase novelty, but to stay open to
+      the woman in front of her. A new fabric, a different sleeve, a quieter
+      border, a colour remembered from childhood. The future of Rangbastra is
+      built from these intimate discoveries.
+    </p>
+  </div>
+
+  <figure style={`--story-image: url("${ourStoryImages.future}")`}>
+    <img
+      src={ourStoryImages.future}
+      alt="Rangbastra celebration imagery representing future creativity"
+      width="900"
+      height="1200"
+      loading="eager"
+      decoding="async"
+    />
+  </figure>
+</section>
+
+<style>
+  .future-section {
+    display: grid;
+    grid-template-columns: minmax(0, .66fr) minmax(20rem, .5fr);
+    gap: clamp(var(--space-7), 7vw, var(--space-11));
+    align-items: center;
+  }
+
+  .future-copy {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  p {
+    max-width: var(--measure-md);
+    color: var(--text-secondary);
+    font-size: clamp(var(--body-md), 1.5vw, var(--body-lg));
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  figure {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      var(--story-image) center / cover no-repeat,
+      var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--gradient-glass);
+    opacity: .64;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 900px) {
+    .future-section {
+      grid-template-columns: 1fr;
+    }
+
+    figure {
+      max-width: 34rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    figure {
+      border-radius: var(--radius-lg);
+    }
+  }
+</style>

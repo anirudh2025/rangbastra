@@ -14,7 +14,7 @@ HOVER SYSTEM
 .hover-lift:hover{
 
     transform:
-        translateY(-6px);
+        translate3d(0,var(--motion-card-lift),0);
 
 }
 
@@ -28,7 +28,7 @@ HOVER SYSTEM
 .hover-scale:hover{
 
     transform:
-        scale(var(--scale-hover));
+        scale(var(--motion-card-scale));
 
 }
 
@@ -42,7 +42,7 @@ HOVER SYSTEM
 
     transition:
         transform
-        var(--motion-luxury)
+        var(--motion-image)
         var(--ease-luxury);
 
 }
@@ -50,7 +50,7 @@ HOVER SYSTEM
 .hover-image:hover img{
 
     transform:
-        scale(var(--scale-image));
+        scale(var(--motion-image-scale-subtle));
 
 }
 
@@ -64,6 +64,6 @@ HOVER SYSTEM
 .hover-glow:hover{
 
     box-shadow:
-        var(--glow-medium);
+        var(--glow-soft);
 
 }

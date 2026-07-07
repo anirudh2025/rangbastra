@@ -1,0 +1,244 @@
+---
+import Button from "../primitives/Button.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import Icon from "../primitives/Icon.astro";
+
+interface Props {
+  mode: "dashboard" | "login" | "signup";
+}
+
+const { mode } = Astro.props;
+
+const copy = {
+  dashboard: {
+    eyebrow: "Private Client Room",
+    title: "A Quieter Place For Your Couture Story",
+    text: "A future home for saved inspirations, design notes, appointments and private responses from the Rangbastra team.",
+  },
+  login: {
+    eyebrow: "Client Room Access",
+    title: "Return To Your Private Room",
+    text: "A private doorway for returning clients to continue saved inspirations, references and atelier conversations.",
+  },
+  signup: {
+    eyebrow: "Begin A Client Room",
+    title: "Create Your Private Couture Space",
+    text: "A calm first step for future saved designs, references, measurements and conversation history.",
+  },
+}[mode];
+---
+
+<section class="account-room" aria-labelledby="account-heading">
+  <div class="account-room__statement">
+    <Eyebrow>{copy.eyebrow}</Eyebrow>
+    <h1 id="account-heading">{copy.title}</h1>
+    <p>{copy.text}</p>
+
+    <div class="account-room__keys" aria-hidden="true">
+      <span>Measurements</span>
+      <span>References</span>
+      <span>Appointments</span>
+    </div>
+  </div>
+
+  <div class="account-room__panel">
+    {
+      mode === "dashboard" ? (
+        <div class="dashboard-panel">
+          <Icon name="account" size={38} />
+          <h2>Your client room is reserved.</h2>
+          <p>This room is designed for saved inspirations, enquiry history and private atelier guidance as your journey grows.</p>
+          <div class="dashboard-actions">
+            <Button href="/wishlist">Open Wishlist</Button>
+            <Button href="/design-your-outfit">Design Your Outfit</Button>
+          </div>
+        </div>
+      ) : (
+        <form class="account-form" data-account-form>
+          {/* TODO: Connect this form to the future authentication provider. */}
+          <h2>{mode === "login" ? "Client Login" : "Create Access"}</h2>
+
+          {mode === "signup" && (
+            <label>
+              Name
+              <input name="name" autocomplete="name" required />
+            </label>
+          )}
+
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+
+          <label>
+            Password
+            <input
+              name="password"
+              type="password"
+              autocomplete={mode === "login" ? "current-password" : "new-password"}
+              required
+            />
+          </label>
+
+          {mode === "login" && <a class="forgot-link" href="/account/login#forgot">Forgot password?</a>}
+
+          <Button type="submit">{mode === "login" ? "Enter Client Room" : "Create Client Room"}</Button>
+
+          <p class="form-note" data-account-note>
+            {mode === "login" ? "Private access is not active yet." : "Private access will be confirmed by the atelier."}
+          </p>
+
+          <a class="switch-link" href={mode === "login" ? "/account/signup" : "/account/login"}>
+            {mode === "login" ? "Create private access" : "Already have access?"}
+          </a>
+        </form>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll("[data-account-form]").forEach((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const note = form.querySelector("[data-account-note]");
+      if (note) {
+        note.textContent = "Private access is reserved for the next atelier step.";
+      }
+    });
+  });
+</script>
+
+<style>
+  .account-room {
+    display: grid;
+    grid-template-columns: minmax(0, .72fr) minmax(20rem, .48fr);
+    gap: clamp(var(--space-6), 7vw, var(--space-11));
+    align-items: center;
+    min-height: min(52rem, calc(100svh - var(--navbar-height)));
+    padding-top: clamp(var(--space-12), 15vw, var(--space-14));
+  }
+
+  .account-room__statement {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 48rem;
+  }
+
+  h1 {
+    max-width: 12ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 8rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: .94;
+    text-wrap: balance;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+  }
+
+  .account-room__keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+  }
+
+  .account-room__keys span {
+    border-bottom: 1px solid rgba(198, 169, 114, .35);
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .account-room__panel {
+    min-height: clamp(28rem, 42vw, 38rem);
+    padding: clamp(var(--space-5), 5vw, var(--space-8));
+    border: 1px solid rgba(198, 169, 114, .18);
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.055), transparent 24%, rgba(106,78,66,.08)),
+      rgba(255,255,255,.025);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  .dashboard-panel,
+  .account-form {
+    display: grid;
+    align-content: center;
+    gap: var(--space-4);
+    height: 100%;
+  }
+
+  h2 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.5vw, 4rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+  }
+
+  .dashboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+  }
+
+  label {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  input {
+    min-height: 3.75rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: rgba(0,0,0,.32);
+    color: var(--text-primary);
+    font: inherit;
+    padding-inline: var(--space-4);
+  }
+
+  input:focus-visible {
+    border-color: rgba(198, 169, 114, .5);
+    outline: 1px solid var(--focus-ring);
+    outline-offset: var(--space-1);
+  }
+
+  .forgot-link,
+  .switch-link {
+    width: fit-content;
+    color: var(--sand-200);
+    font-size: var(--body-sm);
+    text-decoration: none;
+  }
+
+  .form-note {
+    font-size: var(--body-sm);
+  }
+
+  @media (max-width: 900px) {
+    .account-room {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .account-room__panel {
+      min-height: auto;
+    }
+  }
+</style>

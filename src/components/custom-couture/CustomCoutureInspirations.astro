@@ -1,0 +1,98 @@
+---
+import Icon from "../primitives/Icon.astro";
+import CustomCoutureHeader from "./CustomCoutureHeader.astro";
+import { designInspirations } from "../../data/customCouture";
+---
+
+<section class="inspirations-section" aria-labelledby="inspirations-heading">
+  <CustomCoutureHeader
+    eyebrow="Design Inspirations"
+    intro="What Can Be"
+    statement="Made Personal"
+    copy="Customization is not about adding more. It is about choosing the details that make the piece feel unmistakably yours."
+    align="center"
+  />
+
+  <div class="inspiration-grid">
+    {
+      designInspirations.map((item) => (
+        <article class="inspiration-card">
+          <Icon name={item.icon} size={22} class="inspiration-icon" />
+          <div>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .inspirations-section {
+    display: grid;
+    gap: clamp(var(--space-7), 7vw, var(--space-10));
+  }
+
+  .inspiration-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .inspiration-card {
+    display: grid;
+    gap: var(--space-4);
+    min-height: 15.5rem;
+    padding: var(--space-5);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .01)),
+      rgba(255, 255, 255, .014);
+    box-shadow: var(--shadow-inset);
+  }
+
+  .inspiration-card :global(.inspiration-icon) {
+    color: var(--sand-200);
+    opacity: .76;
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-size: var(--label-lg);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-title);
+    line-height: var(--leading-title);
+  }
+
+  p {
+    margin-top: var(--space-3);
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1280px) {
+    .inspiration-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .inspiration-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 460px) {
+    .inspiration-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .inspiration-card {
+      min-height: auto;
+    }
+  }
+</style>

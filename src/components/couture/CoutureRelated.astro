@@ -1,0 +1,100 @@
+---
+import type { CouturePiece } from "../../data/couture";
+import CoutureCard from "./CoutureCard.astro";
+
+interface Props {
+  products: CouturePiece[];
+}
+
+const { products } = Astro.props;
+---
+
+{
+  products.length > 0 && (
+    <section class="related-products" aria-labelledby="related-products-heading">
+      <div class="related-header">
+        <span>Related Pieces</span>
+        <h2 id="related-products-heading">
+          <span class="heading-soft">Continue the</span>
+          <span class="heading-strong">Atelier Story</span>
+        </h2>
+      </div>
+
+      <div class="related-grid">
+        {products.map((product, index) => (
+          <CoutureCard product={product} index={index} />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .related-products {
+    display: grid;
+    gap: clamp(var(--space-6), 5vw, var(--space-9));
+  }
+
+  .related-header {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 58rem;
+  }
+
+  .related-header span {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--space-1);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .heading-soft {
+    color: var(--text-primary);
+    font-size: clamp(1.85rem, 3vw, 3.2rem);
+    line-height: 1.05;
+  }
+
+  .related-header h2 .heading-strong {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font-size: clamp(2.8rem, 5.3vw, 5.9rem);
+    font-weight: var(--weight-medium);
+    letter-spacing: inherit;
+    line-height: .95;
+    text-transform: none;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(var(--space-5), 3vw, var(--space-7));
+  }
+
+  @media (max-width: 1120px) {
+    .related-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

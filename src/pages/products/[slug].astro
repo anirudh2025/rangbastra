@@ -1,0 +1,169 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import CoutureDetailHero from "../../components/couture/CoutureDetailHero.astro";
+import CoutureStory from "../../components/couture/CoutureStory.astro";
+import CoutureCraftDetails from "../../components/couture/CoutureCraftDetails.astro";
+import CoutureImpressionPanel from "../../components/couture/CoutureImpressionPanel.astro";
+import CoutureGallery from "../../components/couture/CoutureGallery.astro";
+import CoutureImpressionForm from "../../components/couture/CoutureImpressionForm.astro";
+import CoutureAtelierCTA from "../../components/couture/CoutureAtelierCTA.astro";
+import CoutureRelated from "../../components/couture/CoutureRelated.astro";
+import Footer from "../../sections/home/Footer.astro";
+import { getPublishedCouturePieces, getRelatedCouturePieces } from "../../lib/couture";
+import type { CouturePiece } from "../../data/couture";
+
+interface Props {
+  product: CouturePiece;
+}
+
+export function getStaticPaths() {
+  return getPublishedCouturePieces().map((product) => ({
+    params: { slug: product.slug },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+const relatedProducts = getRelatedCouturePieces(product, 4);
+const canonical = `/products/${product.slug}`;
+
+const productJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: product.name,
+  image: product.gallery,
+  description: product.shortDescription,
+  brand: {
+    "@type": "Brand",
+    name: "Rangbastra",
+  },
+  category: product.category,
+  material: product.fabric,
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: "https://www.rangbastra.luxury/",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Collections",
+      item: "https://www.rangbastra.luxury/collections",
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: product.name,
+      item: `https://www.rangbastra.luxury${canonical}`,
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={product.seo.title}
+  description={product.seo.description}
+  canonical={canonical}
+  image={product.featuredImage}
+>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify([productJsonLd, breadcrumbJsonLd])}
+  />
+
+  <Section class="product-page-section">
+    <Container class="product-page-container">
+      <CoutureDetailHero product={product} />
+
+      <div class="product-editorial-row">
+        <CoutureStory product={product} />
+        <CoutureImpressionPanel product={product} />
+      </div>
+
+      <CoutureCraftDetails product={product} />
+      <CoutureGallery product={product} />
+      <CoutureImpressionForm product={product} />
+      <CoutureAtelierCTA product={product} />
+      <CoutureRelated products={relatedProducts} />
+    </Container>
+  </Section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.product-page-section) {
+    --section-padding-block: 0 clamp(var(--space-9), 10vw, var(--space-13));
+
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 50% 18%, rgba(198, 169, 114, .11), transparent 36%),
+      radial-gradient(ellipse at 72% 20%, rgba(106, 78, 66, .2), transparent 38%),
+      linear-gradient(180deg, rgba(0, 0, 0, .98), transparent 28%),
+      var(--surface-canvas);
+  }
+
+  :global(.product-page-section)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    inset: clamp(var(--space-5), 5vw, var(--space-10));
+    border: 1px solid rgba(198, 169, 114, .1);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .055), transparent 18%, transparent 82%, rgba(198, 169, 114, .08)),
+      var(--gradient-satin-fold);
+    opacity: .2;
+    transform: scale(1.02);
+  }
+
+  :global(.product-page-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    gap: clamp(var(--space-9), 9vw, var(--space-13));
+  }
+
+  .product-editorial-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, .42fr);
+    gap: clamp(var(--space-6), 5vw, var(--space-9));
+    align-items: center;
+  }
+
+  .product-editorial-row :global(.impression-panel) {
+    justify-self: end;
+  }
+
+  @media (max-width: 860px) {
+    :global(.product-page-section) {
+      --section-padding-block: 0 clamp(var(--space-8), 18vw, var(--space-11));
+    }
+
+    :global(.product-page-container) {
+      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      gap: var(--space-10);
+    }
+
+    .product-editorial-row {
+      grid-template-columns: 1fr;
+    }
+
+    .product-editorial-row :global(.impression-panel) {
+      justify-self: stretch;
+    }
+  }
+</style>

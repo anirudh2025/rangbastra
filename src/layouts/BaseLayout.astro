@@ -7,11 +7,19 @@ import Navbar from "../components/navigation/Navbar.astro";
 interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
+  image?: string;
+  keywords?: string;
+  robots?: string;
 }
 
 const {
-  title = "Rangbastra | Luxury Couture",
-  description = "Luxury customized couture crafted with elegance and timeless artistry."
+  title = "Rangbastra | Luxury Custom Couture",
+  description = "Luxury custom bridal and occasion couture in Anand, Gujarat, crafted with personal attention, elegance and timeless artistry.",
+  canonical,
+  image,
+  keywords,
+  robots
 } = Astro.props;
 ---
 
@@ -21,6 +29,10 @@ const {
     <SEOHead
       title={title}
       description={description}
+      canonical={canonical}
+      image={image}
+      keywords={keywords}
+      robots={robots}
     />
   </head>
 
@@ -34,5 +46,72 @@ const {
 
 </main>
 
+    <div class="page-transition" aria-hidden="true">
+      <span>Rangbastra</span>
+    </div>
+
+    <script>
+      const transition = document.querySelector(".page-transition");
+
+      const settlePage = () => {
+        transition?.classList.add("page-transition--ready");
+        document.documentElement.classList.add("page-ready");
+      };
+
+      if (document.readyState === "complete") {
+        settlePage();
+      } else {
+        window.addEventListener("load", settlePage, { once: true });
+      }
+
+      window.setTimeout(settlePage, 900);
+    </script>
+
   </body>
 </html>
+
+<style is:global>
+  body {
+    opacity: 0;
+    animation: rangbastra-page-reveal 520ms var(--ease-luxury) forwards;
+  }
+
+  .page-transition {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--z-modal) + 20);
+    display: grid;
+    place-items: center;
+    background: var(--surface-canvas);
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 520ms var(--ease-luxury), visibility 520ms var(--ease-luxury);
+  }
+
+  .page-transition--ready {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  @keyframes rangbastra-page-reveal {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body {
+      opacity: 1;
+      animation: none;
+    }
+
+    .page-transition {
+      display: none;
+    }
+  }
+</style>

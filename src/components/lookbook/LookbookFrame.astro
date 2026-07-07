@@ -62,7 +62,7 @@ const { title, caption, image, variant } = Astro.props;
     height: 100%;
     object-fit: cover;
     transform: scale(1.02);
-    transition: transform var(--motion-luxury) var(--ease-luxury);
+    transition: transform var(--motion-image) var(--ease-luxury);
   }
 
   figcaption {
@@ -70,7 +70,7 @@ const { title, caption, image, variant } = Astro.props;
     gap: var(--space-3);
     max-width: 34ch;
     color: var(--text-muted);
-    font-size: var(--caption);
+    font-size: clamp(.68rem, .56vw, .78rem);
     line-height: var(--leading-caption);
     text-wrap: pretty;
     transition:
@@ -81,7 +81,7 @@ const { title, caption, image, variant } = Astro.props;
   figcaption span {
     color: var(--sand-200);
     font-family: var(--font-signature);
-    font-size: clamp(1.55rem, 2.5vw, 2.65rem);
+    font-size: clamp(1.35rem, 2.1vw, 2.25rem);
     font-weight: var(--weight-light);
     line-height: var(--leading-heading);
     text-shadow: var(--glow-soft);
@@ -89,9 +89,9 @@ const { title, caption, image, variant } = Astro.props;
   }
 
   .lookbook-frame:hover .media {
-    transform: translateY(var(--hover-lift-soft));
+    transform: translate3d(0, var(--motion-card-lift), 0);
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-premium), var(--glow-soft), var(--shadow-inset-strong);
+    box-shadow: var(--shadow-premium), var(--shadow-inset-strong);
   }
 
   .lookbook-frame:hover .media::after {
@@ -99,12 +99,12 @@ const { title, caption, image, variant } = Astro.props;
   }
 
   .lookbook-frame:hover img {
-    transform: scale(var(--scale-image));
+    transform: scale(var(--motion-image-scale-subtle));
   }
 
   .lookbook-frame:hover figcaption {
     color: var(--text-secondary);
-    transform: translateY(calc(var(--motion-distance-xs) * -1));
+    transform: translate3d(0, var(--motion-card-lift), 0);
   }
 
   .lookbook-frame--feature {
@@ -167,6 +167,14 @@ const { title, caption, image, variant } = Astro.props;
     .lookbook-frame--landscape .media,
     .lookbook-frame--tall .media {
       aspect-ratio: 4 / 5;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lookbook-frame:hover .media,
+    .lookbook-frame:hover img,
+    .lookbook-frame:hover figcaption {
+      transform: none;
     }
   }
 </style>

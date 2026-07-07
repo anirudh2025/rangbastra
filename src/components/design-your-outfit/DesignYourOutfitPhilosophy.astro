@@ -1,0 +1,120 @@
+---
+import Icon from "../primitives/Icon.astro";
+import DesignYourOutfitHeader from "./DesignYourOutfitHeader.astro";
+import { designYourOutfitImages } from "../../data/designYourOutfit";
+---
+
+<section class="philosophy-section" aria-labelledby="philosophy-heading">
+  <div class="philosophy-copy" id="philosophy-heading">
+    <DesignYourOutfitHeader
+      eyebrow="Design Philosophy"
+      intro="We Do Not Begin"
+      statement="By Selling"
+      copy="Rangbastra begins with conversation because couture cannot be understood from a cart, a catalogue or a single photograph."
+    />
+
+    <div class="philosophy-note">
+      <Icon name="signature" size={28} class="note-icon" />
+      <p>
+        The first conversation protects the integrity of the piece. It gives
+        space to your rituals, movement, jewellery, family references, comfort
+        and the emotion of the day. Only then can a garment become personal.
+      </p>
+    </div>
+  </div>
+
+  <figure>
+    <img
+      src={designYourOutfitImages.invitation}
+      alt="Rangbastra custom design discussion for couture planning"
+      width="900"
+      height="1200"
+      loading="lazy"
+      decoding="async"
+    />
+  </figure>
+</section>
+
+<style>
+  .philosophy-section {
+    display: grid;
+    grid-template-columns: minmax(0, .72fr) minmax(22rem, .48fr);
+    gap: clamp(var(--space-7), 7vw, var(--space-11));
+    align-items: center;
+  }
+
+  .philosophy-copy {
+    display: grid;
+    gap: clamp(var(--space-6), 5vw, var(--space-8));
+  }
+
+  .philosophy-note {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-4);
+    max-width: 48rem;
+    padding: clamp(var(--space-5), 4vw, var(--space-7));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, .016);
+    box-shadow: var(--shadow-inset);
+  }
+
+  .philosophy-note :global(.note-icon) {
+    color: var(--sand-200);
+    opacity: .78;
+    transform: translateY(.2rem);
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: clamp(var(--body-md), 1.5vw, var(--body-lg));
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  figure {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--gradient-glass);
+    opacity: .64;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 1023px) {
+    .philosophy-section {
+      grid-template-columns: 1fr;
+    }
+
+    figure {
+      max-width: 34rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .philosophy-note {
+      grid-template-columns: 1fr;
+    }
+
+    figure {
+      border-radius: var(--radius-lg);
+    }
+  }
+</style>

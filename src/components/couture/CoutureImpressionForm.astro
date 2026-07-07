@@ -1,0 +1,205 @@
+---
+import Button from "../primitives/Button.astro";
+import type { CouturePiece } from "../../data/couture";
+
+interface Props {
+  product: CouturePiece;
+}
+
+const { product } = Astro.props;
+---
+
+<section class="impression-form-section" aria-labelledby="impression-form-heading">
+  <div class="form-intro">
+    <span>Share Your Impression</span>
+    <h2 id="impression-form-heading">Share What This Piece Made You <span>Feel</span>.</h2>
+    <p id="impression-form-note">
+      These are private visitor impressions, not verified buyer reviews. They are not published automatically.
+    </p>
+  </div>
+
+  <!-- TODO: Wire to a Resend/API route with moderation and secure storage before public display. -->
+  <form class="impression-form" method="post" aria-describedby="impression-form-note" data-impression-form data-product-slug={product.slug}>
+    <input type="hidden" name="productSlug" value={product.slug} />
+
+    <label>
+      <span>Name</span>
+      <input name="name" type="text" autocomplete="name" required />
+    </label>
+
+    <label>
+      <span>Email</span>
+      <input name="email" type="email" autocomplete="email" required />
+    </label>
+
+    <label class="form-field-wide">
+      <span>Impression / Thought</span>
+      <textarea name="impression" rows="5" required></textarea>
+    </label>
+
+    <label>
+      <span>Optional rating</span>
+      <select name="rating">
+        <option value="">No rating</option>
+        <option value="5">5 - Loved the feeling</option>
+        <option value="4">4 - Beautifully admired</option>
+        <option value="3">3 - Softly considered</option>
+      </select>
+    </label>
+
+    <div class="form-action">
+      <Button type="submit">Share Impression</Button>
+      <small>Private impressions are reviewed before any future public display.</small>
+      <p class="form-status" aria-live="polite" data-impression-status></p>
+    </div>
+  </form>
+</section>
+
+<script>
+  const impressionForms = document.querySelectorAll<HTMLFormElement>("[data-impression-form]");
+
+  impressionForms.forEach((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const status = form.querySelector<HTMLElement>("[data-impression-status]");
+
+      if (status) {
+        status.textContent =
+          "Thank you. Your impression is ready for private atelier review.";
+      }
+
+      form.reset();
+    });
+  });
+</script>
+
+<style>
+  .impression-form-section {
+    display: grid;
+    grid-template-columns: minmax(0, .58fr) minmax(22rem, .82fr);
+    gap: clamp(var(--space-6), 7vw, var(--space-10));
+    align-items: start;
+  }
+
+  .form-intro {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .form-intro span,
+  label span {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 15ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 5rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .form-intro h2 span {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-transform: none;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .form-intro p,
+  .form-status,
+  small {
+    max-width: var(--measure-xs);
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+  }
+
+  .impression-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    padding: clamp(var(--space-5), 4vw, var(--space-7));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: rgba(255, 255, 255, .025);
+    box-shadow: var(--shadow-inset);
+  }
+
+  label,
+  .form-action {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .form-field-wide,
+  .form-action {
+    grid-column: 1 / -1;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    min-height: 3.5rem;
+    padding: 0 var(--space-4);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: rgba(0, 0, 0, .3);
+    color: var(--text-primary);
+    font: inherit;
+    line-height: var(--leading-body);
+    transition:
+      border-color var(--motion-button) var(--ease-luxury),
+      box-shadow var(--motion-button) var(--ease-luxury);
+  }
+
+  textarea {
+    min-height: 9rem;
+    padding-block: var(--space-4);
+    resize: vertical;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--border-accent);
+    box-shadow: var(--glow-soft);
+  }
+
+  .form-action {
+    align-items: start;
+    margin-top: var(--space-2);
+  }
+
+  .form-status {
+    min-height: 1.5rem;
+    color: var(--sand-200);
+  }
+
+  @media (max-width: 860px) {
+    .impression-form-section,
+    .impression-form {
+      grid-template-columns: 1fr;
+    }
+
+    h2 {
+      max-width: 13ch;
+    }
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+import Button from "../primitives/Button.astro";
+import Label from "../primitives/Label.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+---
+
+<section class="collection-cta" aria-labelledby="collection-cta-heading">
+  <Eyebrow>Design Your Outfit</Eyebrow>
+
+  <h2 id="collection-cta-heading">
+    <span class="title-intro">Found A Piece That Feels Close?</span>
+    <span class="title-statement">Begin With A Conversation</span>
+  </h2>
+
+  <p>
+    The catalogue is only the beginning. Inside the atelier, every silhouette,
+    colour and handcrafted detail is shaped around the woman who will wear it.
+  </p>
+
+  <div class="actions">
+    <Button href="/design-your-outfit" class="collection-cta-primary">
+      <Label icon="calendar" iconSize={14}>Create Your Couture</Label>
+    </Button>
+  </div>
+</section>
+
+<style>
+  .collection-cta {
+    display: grid;
+    justify-items: center;
+    gap: clamp(var(--space-5), 4vw, var(--space-8));
+    max-width: min(100%, 64rem);
+    margin-inline: auto;
+    padding-block: clamp(var(--space-9), 9vw, var(--space-12));
+    text-align: center;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: var(--section-heading-intro);
+    line-height: 1.18;
+  }
+
+  .title-statement {
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: var(--section-heading-statement);
+    line-height: 1.12;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  :global(.collection-cta-primary) {
+    min-height: var(--button-height);
+    background: var(--gradient-primary);
+    box-shadow: var(--glow-soft), var(--shadow-inset);
+  }
+
+  :global(.collection-cta-primary:hover),
+  :global(.collection-cta-primary:focus-visible) {
+    background: var(--button-primary-gradient-hover);
+    box-shadow: var(--glow-medium), var(--button-shadow-hover), var(--shadow-inset-strong);
+  }
+
+  @media (max-width: 767px) {
+    .collection-cta {
+      justify-items: start;
+      text-align: left;
+    }
+
+    .title-intro {
+      font-size: var(--section-heading-intro-mobile);
+    }
+
+    .title-statement {
+      font-size: var(--section-heading-statement-mobile);
+    }
+
+    p {
+      font-size: var(--body-md);
+    }
+  }
+</style>

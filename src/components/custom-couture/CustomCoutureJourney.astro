@@ -1,0 +1,185 @@
+---
+import Icon from "../primitives/Icon.astro";
+import CustomCoutureHeader from "./CustomCoutureHeader.astro";
+import { coutureJourney } from "../../data/customCouture";
+---
+
+<section class="journey-section" id="couture-journey" aria-labelledby="journey-heading">
+  <CustomCoutureHeader
+    eyebrow="Your Couture Journey"
+    intro="A Private Process"
+    statement="With Every Detail Considered"
+    copy="The journey is intentionally slow, intimate and precise, giving each decision enough room to become meaningful."
+    align="center"
+  />
+
+  <div class="journey-timeline">
+    {
+      coutureJourney.map((step, index) => (
+        <article class:list={["journey-step", index % 2 === 1 && "journey-step--reverse"]}>
+          <figure>
+            <img
+              src={step.image}
+              alt={`${step.title} in the Rangbastra custom couture journey`}
+              width="720"
+              height="900"
+              loading={index < 2 ? "eager" : "lazy"}
+              decoding="async"
+            />
+          </figure>
+
+          <div class="step-copy">
+            <span class="step-number">{String(index + 1).padStart(2, "0")}</span>
+            <Icon name={step.icon} size={28} class="step-icon" />
+            <h3>{step.title}</h3>
+            <p>{step.text}</p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .journey-section {
+    display: grid;
+    gap: clamp(var(--space-8), 8vw, var(--space-12));
+    scroll-margin-top: calc(var(--navbar-height) + var(--space-6));
+  }
+
+  .journey-timeline {
+    position: relative;
+    display: grid;
+    gap: clamp(var(--space-8), 8vw, var(--space-12));
+  }
+
+  .journey-timeline::before {
+    content: "";
+    position: absolute;
+    top: 1%;
+    bottom: 1%;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, var(--border-strong), transparent);
+    opacity: .7;
+    transform: translateX(-50%);
+  }
+
+  .journey-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, .72fr) minmax(19rem, .5fr);
+    gap: clamp(var(--space-6), 6vw, var(--space-10));
+    align-items: center;
+  }
+
+  .journey-step--reverse {
+    grid-template-columns: minmax(19rem, .5fr) minmax(0, .72fr);
+  }
+
+  .journey-step--reverse figure {
+    order: 2;
+  }
+
+  figure {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--gradient-glass);
+    opacity: .68;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .step-copy {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    max-width: 30rem;
+    padding: clamp(var(--space-5), 4vw, var(--space-7));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: rgba(5, 5, 5, .72);
+    box-shadow: var(--shadow-inset);
+    backdrop-filter: blur(18px);
+  }
+
+  .step-number {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+  }
+
+  .step-copy :global(.step-icon) {
+    color: var(--sand-200);
+    opacity: .8;
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.5vw, 4rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+    text-wrap: balance;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 900px) {
+    .journey-timeline::before {
+      left: var(--space-4);
+    }
+
+    .journey-step,
+    .journey-step--reverse {
+      grid-template-columns: 1fr;
+      padding-left: var(--space-7);
+    }
+
+    .journey-step--reverse figure {
+      order: 0;
+    }
+
+    .step-copy {
+      max-width: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .journey-timeline::before {
+      display: none;
+    }
+
+    .journey-step,
+    .journey-step--reverse {
+      padding-left: 0;
+    }
+
+    figure {
+      border-radius: var(--radius-lg);
+    }
+  }
+</style>

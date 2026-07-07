@@ -1,0 +1,90 @@
+---
+import Icon from "../primitives/Icon.astro";
+import CustomCoutureHeader from "./CustomCoutureHeader.astro";
+import { bespokeReasons } from "../../data/customCouture";
+---
+
+<section class="bespoke-section" aria-labelledby="bespoke-heading">
+  <CustomCoutureHeader
+    eyebrow="Why Bespoke?"
+    intro="Not Chosen From A Rack"
+    statement="Created Around You"
+    copy="Ready-made fashion begins with a finished garment. Bespoke couture begins with the woman, the memory, and the celebration still waiting to happen."
+  />
+
+  <div class="bespoke-grid">
+    {
+      bespokeReasons.map((item) => (
+        <article class="bespoke-card">
+          <Icon name={item.icon} size={26} class="card-icon" />
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .bespoke-section {
+    display: grid;
+    gap: clamp(var(--space-7), 7vw, var(--space-10));
+  }
+
+  .bespoke-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(var(--space-4), 2.5vw, var(--space-6));
+  }
+
+  .bespoke-card {
+    display: grid;
+    gap: var(--space-4);
+    min-height: 18rem;
+    padding: clamp(var(--space-5), 3vw, var(--space-7));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .012)),
+      rgba(255, 255, 255, .018);
+    box-shadow: var(--shadow-inset);
+  }
+
+  .bespoke-card :global(.card-icon) {
+    color: var(--sand-200);
+    opacity: .78;
+  }
+
+  h3 {
+    max-width: 14ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.55rem, 2.5vw, 2.35rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+    text-wrap: balance;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1180px) {
+    .bespoke-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .bespoke-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .bespoke-card {
+      min-height: auto;
+    }
+  }
+</style>

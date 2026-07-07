@@ -1,0 +1,97 @@
+---
+import { lookbookExperienceImages } from "../../data/lookbookExperience";
+import LookbookExperienceHeader from "./LookbookExperienceHeader.astro";
+---
+
+<section class="behind-frame" aria-labelledby="behind-frame-heading">
+  <figure
+    style={`--behind-frame-image: url("${lookbookExperienceImages.behindFrame}")`}
+  >
+    <img
+      src={lookbookExperienceImages.behindFrame}
+      alt="Rangbastra designer consultation behind the frame"
+      loading="lazy"
+      decoding="async"
+    />
+  </figure>
+
+  <div class="behind-frame-copy">
+    <LookbookExperienceHeader
+      id="behind-frame-heading"
+      eyebrow="Behind The Frame"
+      intro="Before The Photograph"
+      statement="There Is A Conversation"
+      copy="The most considered images begin before the camera arrives: in the drape, the fitting, the personal reference and the quiet decision to let the wearer lead."
+    />
+
+    <p>
+      Rangbastra's editorial process gives couture room to breathe. Every
+      photograph is shaped around proportion, mood and the private details that
+      make a garment feel personally held.
+    </p>
+  </div>
+</section>
+
+<style>
+  .behind-frame {
+    display: grid;
+    grid-template-columns: minmax(18rem, .54fr) minmax(0, .74fr);
+    align-items: center;
+    gap: clamp(var(--space-6), 7vw, var(--space-11));
+  }
+
+  figure {
+    position: relative;
+    overflow: hidden;
+    min-height: clamp(26rem, 48vw, 44rem);
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, .1);
+    background: var(--behind-frame-image) center / cover no-repeat;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, .38);
+  }
+
+  figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .24));
+    pointer-events: none;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+    display: block;
+  }
+
+  .behind-frame-copy {
+    display: grid;
+    gap: clamp(var(--space-5), 4vw, var(--space-7));
+  }
+
+  .behind-frame-copy > p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 900px) {
+    .behind-frame {
+      grid-template-columns: 1fr;
+    }
+
+    figure {
+      min-height: clamp(22rem, 78vw, 38rem);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .behind-frame-copy > p {
+      font-size: var(--body-md);
+    }
+  }
+</style>

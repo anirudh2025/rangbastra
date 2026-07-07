@@ -1,0 +1,589 @@
+---
+import Icon from "../primitives/Icon.astro";
+import Label from "../primitives/Label.astro";
+import DesignYourOutfitHeader from "./DesignYourOutfitHeader.astro";
+import {
+  appointmentPreferences,
+  designOccasions,
+  budgetPreferences,
+  communicationPreferences,
+  eventTypes,
+} from "../../data/designYourOutfit";
+---
+
+<section class="enquiry-section" id="design-enquiry" aria-labelledby="enquiry-heading">
+  <DesignYourOutfitHeader
+    eyebrow="Design Your Outfit"
+    intro="Share What This"
+    statement="Moment Means"
+    copy="This is not a contact form. It is the first note to Rangbastra, so we can understand the celebration before recommending the next step."
+  />
+
+  <form class="design-form" novalidate>
+    <div class="form-panel">
+      <div class="form-grid">
+        <label>
+          <span>First Name</span>
+          <input name="firstName" autocomplete="given-name" required />
+          <small data-error-for="firstName"></small>
+        </label>
+
+        <label>
+          <span>Last Name</span>
+          <input name="lastName" autocomplete="family-name" required />
+          <small data-error-for="lastName"></small>
+        </label>
+
+        <label>
+          <span>Email</span>
+          <input name="email" type="email" autocomplete="email" required />
+          <small data-error-for="email"></small>
+        </label>
+
+        <label>
+          <span>Phone</span>
+          <input name="phone" type="tel" autocomplete="tel" required />
+          <small data-error-for="phone"></small>
+        </label>
+
+        <label>
+          <span>WhatsApp</span>
+          <input name="whatsapp" type="tel" autocomplete="tel" />
+        </label>
+
+        <label>
+          <span>City</span>
+          <input name="city" autocomplete="address-level2" required />
+          <small data-error-for="city"></small>
+        </label>
+
+        <label>
+          <span>Country</span>
+          <input name="country" autocomplete="country-name" required />
+          <small data-error-for="country"></small>
+        </label>
+
+        <label>
+          <span>Event Type</span>
+          <select name="eventType" required>
+            <option value="">Select occasion</option>
+            {eventTypes.map((eventType) => <option value={eventType}>{eventType}</option>)}
+          </select>
+          <small data-error-for="eventType"></small>
+        </label>
+
+        <label>
+          <span>Preferred Date</span>
+          <input name="preferredDate" type="date" required />
+          <small data-error-for="preferredDate"></small>
+        </label>
+
+        <label>
+          <span>Preferred Communication</span>
+          <select name="preferredCommunication" required>
+            <option value="">Select preference</option>
+            {communicationPreferences.map((preference) => <option value={preference.value}>{preference.title}</option>)}
+          </select>
+          <small data-error-for="preferredCommunication"></small>
+        </label>
+
+        <label class="field-wide">
+          <span>Pinterest / Instagram Inspiration URL</span>
+          <input name="inspirationUrl" type="url" inputmode="url" placeholder="https://" />
+        </label>
+
+        <label>
+          <span>Budget Preference</span>
+          <select name="budgetPreference">
+            <option value="">Select privately</option>
+            {budgetPreferences.map((preference) => <option value={preference}>{preference}</option>)}
+          </select>
+        </label>
+
+        <label>
+          <span>Preferred Appointment</span>
+          <select name="preferredAppointment">
+            <option value="">Select appointment style</option>
+            {appointmentPreferences.map((preference) => <option value={preference}>{preference}</option>)}
+          </select>
+        </label>
+
+        <label class="field-wide">
+          <span>Message</span>
+          <textarea
+            name="message"
+            rows="5"
+            required
+            placeholder="Tell us about the celebration, mood, colours, jewellery, references or anything you want the designer to understand."
+          ></textarea>
+          <small data-error-for="message"></small>
+        </label>
+
+        <label class="field-wide upload-field">
+          <span>Optional Image Upload</span>
+          <input name="inspirationImage" type="file" accept="image/*" />
+          <em>For launch, please share image references as links or through WhatsApp after submitting your note.</em>
+        </label>
+      </div>
+    </div>
+
+    <fieldset class="choice-section">
+      <legend>Occasion Selector</legend>
+      <p>Choose the celebration closest to your couture story.</p>
+
+      <div class="choice-grid choice-grid--occasion">
+        {
+          designOccasions.map((occasion, index) => (
+            <label class="choice-card">
+              <input type="radio" name="selectedOccasion" value={occasion.value} required checked={index === 0} />
+              <span class="choice-card__surface">
+                <Icon name={occasion.icon} size={24} />
+                <strong>{occasion.title}</strong>
+                <span>{occasion.text}</span>
+              </span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="choice-section">
+      <legend>Communication Preference</legend>
+      <p>Select how you would like Rangbastra to begin the conversation.</p>
+
+      <div class="choice-grid">
+        {
+          communicationPreferences.map((preference, index) => (
+            <label class="choice-card">
+              <input type="radio" name="selectedCommunication" value={preference.value} required checked={index === 0} />
+              <span class="choice-card__surface">
+                <Icon name={preference.icon} size={24} />
+                <strong>{preference.title}</strong>
+                <span>{preference.text}</span>
+              </span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div class="submit-row">
+      <button type="submit" class="submit-button">
+        <Label icon="sparkle">Begin Your Custom Journey</Label>
+      </button>
+
+      <p class="form-note">
+        Your details are prepared for private design follow-up only. Nothing is
+        displayed publicly.
+      </p>
+    </div>
+
+    <p class="form-status" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<script>
+  const form = document.querySelector(".design-form");
+
+  if (form instanceof HTMLFormElement) {
+    const status = form.querySelector(".form-status");
+
+    const setError = (name, message) => {
+      const field = form.elements.namedItem(name);
+      const error = form.querySelector(`[data-error-for="${name}"]`);
+
+      if (field instanceof HTMLElement) {
+        field.setAttribute("aria-invalid", message ? "true" : "false");
+      }
+
+      if (error instanceof HTMLElement) {
+        error.textContent = message;
+      }
+    };
+
+    const getValue = (formData, name) => String(formData.get(name) ?? "").trim();
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const requiredFields = [
+        "firstName",
+        "lastName",
+        "email",
+        "phone",
+        "city",
+        "country",
+        "eventType",
+        "preferredDate",
+        "preferredCommunication",
+        "message",
+      ];
+
+      let isValid = true;
+
+      for (const fieldName of requiredFields) {
+        const value = getValue(formData, fieldName);
+        const message = value ? "" : "Please share this detail.";
+        setError(fieldName, message);
+
+        if (!value) {
+          isValid = false;
+        }
+      }
+
+      const email = getValue(formData, "email");
+
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setError("email", "Please enter a valid email.");
+        isValid = false;
+      }
+
+      if (!isValid) {
+        if (status instanceof HTMLElement) {
+          status.textContent = "Please complete the highlighted details before sending your design note.";
+        }
+
+        return;
+      }
+
+      const payload = {
+        source: "design-your-outfit",
+        submittedAt: new Date().toISOString(),
+        client: {
+          firstName: getValue(formData, "firstName"),
+          lastName: getValue(formData, "lastName"),
+          email,
+          phone: getValue(formData, "phone"),
+          whatsapp: getValue(formData, "whatsapp"),
+          city: getValue(formData, "city"),
+          country: getValue(formData, "country"),
+        },
+        couture: {
+          eventType: getValue(formData, "eventType"),
+          selectedOccasion: getValue(formData, "selectedOccasion"),
+          preferredDate: getValue(formData, "preferredDate"),
+          preferredCommunication: getValue(formData, "preferredCommunication"),
+          selectedCommunication: getValue(formData, "selectedCommunication"),
+          budgetPreference: getValue(formData, "budgetPreference"),
+          preferredAppointment: getValue(formData, "preferredAppointment"),
+          inspirationUrl: getValue(formData, "inspirationUrl"),
+          message: getValue(formData, "message"),
+        },
+        files: {
+          inspirationImageName:
+            formData.get("inspirationImage") instanceof File
+              ? formData.get("inspirationImage").name
+              : "",
+        },
+      };
+
+      // TODO: Connect payload to Resend or an email API.
+      // TODO: Add moderation/storage through Supabase, Firebase, CRM or webhook.
+      // TODO: Upload inspirationImage only after secure storage is configured.
+      console.info("Design your outfit enquiry prepared", payload);
+
+      form.reset();
+
+      if (status instanceof HTMLElement) {
+        status.textContent = "Your design note is ready for private atelier follow-up.";
+      }
+    });
+  }
+</script>
+
+<style>
+  .enquiry-section {
+    display: grid;
+    gap: clamp(var(--space-7), 7vw, var(--space-10));
+    scroll-margin-top: calc(var(--navbar-height) + var(--space-6));
+  }
+
+  .design-form,
+  .form-panel,
+  .choice-section {
+    display: grid;
+    gap: clamp(var(--space-5), 4vw, var(--space-7));
+  }
+
+  .form-panel,
+  .choice-section {
+    padding: clamp(var(--space-5), 4vw, var(--space-8));
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .012)),
+      rgba(255, 255, 255, .014);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  label,
+  .field-wide {
+    display: grid;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .field-wide {
+    grid-column: 1 / -1;
+  }
+
+  label span,
+  legend {
+    color: var(--text-muted);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 3.25rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, .28);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    padding: .95rem var(--space-4);
+  }
+
+  textarea {
+    min-height: 10rem;
+    resize: vertical;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--border-strong);
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  input[aria-invalid="true"],
+  select[aria-invalid="true"],
+  textarea[aria-invalid="true"] {
+    border-color: rgba(255, 203, 100, .58);
+  }
+
+  small {
+    min-height: 1rem;
+    color: var(--sand-200);
+    font-size: var(--caption);
+    line-height: var(--leading-caption);
+  }
+
+  .upload-field em,
+  .choice-section p,
+  .form-note,
+  .form-status {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    font-style: normal;
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .choice-grid--occasion {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .choice-card {
+    position: relative;
+  }
+
+  .choice-card input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .choice-card__surface {
+    display: grid;
+    gap: var(--space-3);
+    min-height: 12rem;
+    padding: var(--space-5);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, .016);
+    color: var(--text-secondary);
+    cursor: pointer;
+    box-shadow: var(--shadow-inset);
+    transition:
+      background var(--motion-button) var(--ease-luxury),
+      border-color var(--motion-button) var(--ease-luxury),
+      color var(--motion-button) var(--ease-luxury),
+      transform var(--motion-button) var(--ease-luxury);
+  }
+
+  .choice-card__surface :global(svg) {
+    color: var(--sand-200);
+    opacity: .78;
+  }
+
+  .choice-card__surface strong {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 2.4vw, 2.2rem);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-title);
+  }
+
+  .choice-card__surface span:last-child {
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+  }
+
+  .choice-card input:checked + .choice-card__surface {
+    border-color: var(--border-accent);
+    background:
+      radial-gradient(circle at 20% 0%, rgba(181, 147, 130, .12), transparent 48%),
+      rgba(255, 255, 255, .028);
+    color: var(--text-primary);
+    box-shadow: var(--glow-soft), var(--shadow-inset);
+  }
+
+  .choice-card input:focus-visible + .choice-card__surface {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: var(--space-2);
+  }
+
+  .choice-card__surface:hover {
+    border-color: var(--border-strong);
+    transform: translate3d(0, var(--motion-button-lift), 0);
+  }
+
+  .submit-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .submit-button {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    min-height: var(--button-height);
+    align-items: center;
+    justify-content: center;
+    padding: var(--button-padding-y) var(--button-padding-x);
+    border: 1px solid rgba(181, 147, 130, .22);
+    border-radius: var(--button-radius);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .12), transparent 26%),
+      linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(0, 0, 0, .12)),
+      var(--gradient-primary);
+    color: var(--ivory-50);
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--label-md);
+    font-weight: var(--weight-semibold);
+    line-height: 1;
+    box-shadow:
+      0 1.1rem 2.6rem rgba(0, 0, 0, .24),
+      0 .2rem .8rem rgba(181, 147, 130, .14),
+      var(--shadow-inset);
+    transition:
+      background var(--motion-button) var(--ease-luxury),
+      border-color var(--motion-button) var(--ease-luxury),
+      transform var(--motion-button) var(--ease-luxury),
+      box-shadow var(--motion-button) var(--ease-luxury);
+  }
+
+  .submit-button::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .16), transparent 48%);
+    opacity: .72;
+    pointer-events: none;
+  }
+
+  .submit-button:hover,
+  .submit-button:focus-visible {
+    border-color: rgba(226, 205, 188, .36);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .16), transparent 28%),
+      linear-gradient(180deg, rgba(255, 255, 255, .1), rgba(0, 0, 0, .1)),
+      var(--button-primary-gradient-hover);
+    box-shadow:
+      var(--glow-medium),
+      var(--button-shadow-hover),
+      var(--shadow-inset-strong);
+    transform: translate3d(0, var(--motion-button-lift), 0);
+  }
+
+  .submit-button:focus-visible {
+    outline: 1px solid var(--sand-200);
+    outline-offset: var(--space-2);
+    box-shadow:
+      0 0 0 4px rgba(181, 147, 130, .12),
+      var(--glow-medium),
+      var(--button-shadow-hover),
+      var(--shadow-inset-strong);
+  }
+
+  .form-note {
+    max-width: var(--measure-xs);
+  }
+
+  @media (max-width: 1180px) {
+    .choice-grid,
+    .choice-grid--occasion {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 720px) {
+    .form-grid,
+    .choice-grid,
+    .choice-grid--occasion {
+      grid-template-columns: 1fr;
+    }
+
+    .form-panel,
+    .choice-section {
+      border-radius: var(--radius-lg);
+    }
+
+    .choice-card__surface {
+      min-height: auto;
+    }
+
+    .submit-button,
+    .submit-row {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .choice-card__surface:hover,
+    .submit-button:hover,
+    .submit-button:focus-visible {
+      transform: none;
+    }
+  }
+</style>

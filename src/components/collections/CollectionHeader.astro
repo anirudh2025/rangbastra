@@ -1,8 +1,9 @@
 ---
+import Eyebrow from "../primitives/Eyebrow.astro";
 ---
 
 <header class="header">
-  <span class="eyebrow">Featured Collections</span>
+  <Eyebrow>Featured Collections</Eyebrow>
 
   <h2>
     <span class="title-intro">Crafted For</span>
@@ -23,19 +24,6 @@
     max-width: var(--measure-md);
     margin: 0 auto clamp(var(--space-8), 6vw, var(--space-11));
     text-align: center;
-  }
-
-  .eyebrow {
-    display: inline-block;
-    color: #000;
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    background: var(--gradient-primary);
-    padding: var(--space-1) var(--space-2);
-    justify-self: center;
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    text-transform: uppercase;
   }
 
   h2 {

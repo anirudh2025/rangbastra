@@ -1,4 +1,5 @@
 ---
+import Eyebrow from "../primitives/Eyebrow.astro";
 import HeroActions from "./HeroActions.astro";
 ---
 
@@ -124,7 +125,6 @@ import HeroActions from "./HeroActions.astro";
     );
 
 }
-
 /* ====================================================== */
 /* TITLE */
 
@@ -191,7 +191,7 @@ import HeroActions from "./HeroActions.astro";
 
     max-width:34rem;
 
-    margin-block:.2rem 1.5rem;
+    margin-block:.8rem 3.5rem;
 
     color:var(--text-secondary);
 
@@ -318,6 +318,8 @@ import HeroActions from "./HeroActions.astro";
 
     line-height:1.12;
 
+    white-space:normal;
+
 }
 
 .hero-description{
@@ -367,17 +369,46 @@ import HeroActions from "./HeroActions.astro";
 
 .hero-title{
 
-    font-size:clamp(1.95rem,8.2vw,2.85rem);
+    display:grid;
+
+    justify-items:center;
+
+    width:100%;
+
+    max-width:min(100%,18rem);
+
+    font-size:clamp(1.8rem,7.2vw,2.35rem);
 
     line-height:1.14;
 
 }
 
+.title-line,
+.title-highlight{
+
+    max-width:12ch;
+
+    white-space:normal;
+
+    overflow-wrap:normal;
+
+    word-break:normal;
+
+    text-wrap:balance;
+
+}
+
+.title-highlight{
+
+    max-width:11ch;
+
+}
+
 .hero-description{
 
-    max-width:28rem;
+    max-width:18rem;
 
-    font-size:.9rem;
+    font-size:.82rem;
 
     line-height:1.58;
 
@@ -389,13 +420,17 @@ import HeroActions from "./HeroActions.astro";
 
 .hero-title{
 
-    font-size:clamp(1.82rem,7.9vw,2.2rem);
+    max-width:min(100%,16.5rem);
+
+    font-size:clamp(1.7rem,7.4vw,2.05rem);
 
 }
 
 .hero-description{
 
-    font-size:.84rem;
+    max-width:17.5rem;
+
+    font-size:.8rem;
 
 }
 

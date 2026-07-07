@@ -1,0 +1,43 @@
+---
+import EditorialInfoPage from "../components/support/EditorialInfoPage.astro";
+
+const blocks = [
+  {
+    title: "Delivery Is Confirmed Per Piece",
+    body: [
+      "Rangbastra creates custom and boutique couture, so delivery timelines depend on design complexity, fabric sourcing, embroidery detail, fittings, finishing and destination.",
+      "Any timeline shared on the website is only a guide. Final delivery expectations are confirmed during the design and order discussion.",
+    ],
+  },
+  {
+    title: "Local, Domestic And Worldwide Requests",
+    body: [
+      "Delivery or pickup options may vary by location. Rangbastra is based in Anand, Gujarat and can discuss domestic or worldwide shipping where feasible.",
+      "Shipping charges, customs duties, local taxes or courier limitations may apply depending on destination and are discussed before dispatch.",
+    ],
+  },
+  {
+    title: "Fittings And Final Checks",
+    body: [
+      "Custom couture may require fitting sessions, measurement reviews or alteration windows before final handover. Clients should allow enough time before the celebration date.",
+      "Final dispatch happens after finishing checks and agreed payment/order formalities are completed through official communication.",
+    ],
+  },
+  {
+    title: "Communication",
+    body: [
+      "Delivery questions can be discussed through WhatsApp or email. Please share your city, event date and outfit requirement so the atelier can respond meaningfully.",
+    ],
+  },
+];
+---
+
+<EditorialInfoPage
+  title="Shipping And Delivery | Rangbastra"
+  description="Shipping and delivery guidance for Rangbastra custom couture, including fittings, timelines, local handover and destination-based delivery discussion."
+  canonical="/shipping-and-delivery"
+  eyebrow="Shipping And Delivery"
+  heading="Delivery Guided By The Making"
+  intro="Because couture is made through craft, delivery is planned around the garment, the occasion and the destination."
+  blocks={blocks}
+/>

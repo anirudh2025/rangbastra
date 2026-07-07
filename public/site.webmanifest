@@ -1,0 +1,13 @@
+{
+  "name": "Rangbastra",
+  "short_name": "Rangbastra",
+  "description": "Luxury custom bridal and occasion couture in Anand, Gujarat.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "lang": "en-IN",
+  "orientation": "portrait-primary",
+  "icons": []
+}

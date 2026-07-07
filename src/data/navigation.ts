@@ -8,21 +8,21 @@ export const navigation: NavigationItem[] = [
     {
         label: "Collections",
         href: "/collections",
-        icon: "sparkles"
+        icon: "sparkle"
     },
     {
         label: "Custom Couture",
         href: "/custom-couture",
-        icon: "needle"
+        icon: "customCouture"
     },
     {
         label: "Lookbook",
         href: "/lookbook",
-        icon: "crown"
+        icon: "mirrorWork"
     },
     {
         label: "Our Story",
-        href: "/story",
-        icon: "thread"
+        href: "/our-story",
+        icon: "signature"
     }
 ];

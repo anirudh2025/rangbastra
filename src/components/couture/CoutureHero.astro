@@ -1,0 +1,134 @@
+---
+import Eyebrow from "../primitives/Eyebrow.astro";
+---
+
+<header class="product-hero">
+  <Eyebrow>Rangbastra Collections</Eyebrow>
+
+  <div class="exhibition-line" aria-hidden="true">
+    <span>Curated Exhibition</span>
+    <span>01</span>
+  </div>
+
+  <h1>
+    <span class="title-intro">Couture Stories</span>
+    <span class="title-statement">Made Personal</span>
+  </h1>
+
+  <p>
+    Explore bridal and occasion pieces shaped through personal design attention,
+    handcrafted detail and the quiet confidence of couture made for one woman.
+  </p>
+</header>
+
+<style>
+  .product-hero {
+    position: relative;
+    display: grid;
+    gap: var(--space-5);
+    max-width: min(100%, 68rem);
+    padding-top: clamp(var(--space-12), 15vw, var(--space-14));
+  }
+
+  .product-hero::after {
+    content: "";
+    position: absolute;
+    top: clamp(var(--space-11), 13vw, var(--space-13));
+    right: 0;
+    width: min(24rem, 42vw);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(198, 169, 114, .5));
+    opacity: .75;
+  }
+
+  .exhibition-line {
+    display: flex;
+    width: min(100%, 30rem);
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    color: var(--sand-200);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+
+  .exhibition-line::before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    order: 2;
+    background: linear-gradient(90deg, rgba(198, 169, 114, .42), transparent);
+  }
+
+  .exhibition-line span:last-child {
+    order: 3;
+    color: var(--text-muted);
+  }
+
+  h1 {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    display: block;
+    color: var(--text-primary);
+    font-size: var(--section-heading-intro);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.18;
+  }
+
+  .title-statement {
+    display: block;
+    max-width: 11ch;
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: var(--section-heading-statement);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.12;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 900px) {
+    .product-hero {
+      gap: var(--space-4);
+      padding-top: clamp(var(--space-11), 30vw, var(--space-13));
+    }
+
+    .product-hero::after {
+      display: none;
+    }
+
+    .title-intro {
+      font-size: var(--section-heading-intro-mobile);
+    }
+
+    .title-statement {
+      font-size: clamp(2rem, 10vw, 3rem);
+    }
+
+    p {
+      max-width: min(100%, 34ch);
+      font-size: var(--body-md);
+      overflow-wrap: break-word;
+    }
+  }
+</style>

@@ -1,0 +1,92 @@
+---
+import Eyebrow from "../primitives/Eyebrow.astro";
+
+interface Props {
+  eyebrow: string;
+  intro: string;
+  statement: string;
+  copy?: string;
+  align?: "left" | "center";
+}
+
+const { eyebrow, intro, statement, copy, align = "left" } = Astro.props;
+---
+
+<header class:list={["design-section-header", `design-section-header--${align}`]}>
+  <Eyebrow>{eyebrow}</Eyebrow>
+
+  <h2>
+    <span class="title-intro">{intro}</span>
+    <span class="title-statement">{statement}</span>
+  </h2>
+
+  {copy && <p>{copy}</p>}
+</header>
+
+<style>
+  .design-section-header {
+    display: grid;
+    gap: clamp(var(--space-4), 3vw, var(--space-6));
+    max-width: min(100%, 64rem);
+  }
+
+  .design-section-header--center {
+    justify-items: center;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  h2 {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  .title-intro {
+    color: var(--text-primary);
+    font-size: var(--section-heading-intro);
+    line-height: 1.18;
+  }
+
+  .title-statement {
+    background: var(--gradient-brand-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: var(--section-heading-statement);
+    line-height: 1.12;
+    padding-bottom: .08em;
+  }
+
+  p {
+    max-width: var(--measure-sm);
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  .design-section-header--center p {
+    margin-inline: auto;
+  }
+
+  @media (max-width: 767px) {
+    .title-intro {
+      font-size: var(--section-heading-intro-mobile);
+    }
+
+    .title-statement {
+      font-size: var(--section-heading-statement-mobile);
+    }
+
+    p {
+      font-size: var(--body-md);
+    }
+  }
+</style>

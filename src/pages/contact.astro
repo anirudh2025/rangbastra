@@ -1,0 +1,246 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/primitives/Button.astro";
+import Container from "../components/primitives/Container.astro";
+import Eyebrow from "../components/primitives/Eyebrow.astro";
+import Icon from "../components/primitives/Icon.astro";
+import Section from "../components/primitives/Section.astro";
+import Footer from "../sections/home/Footer.astro";
+import { contact, getMailtoHref, getWhatsAppHref } from "../data/contact";
+
+const contactMethods = [
+  {
+    label: "WhatsApp",
+    value: contact.whatsappNumber,
+    href: getWhatsAppHref("designYourOutfit"),
+    icon: "whatsapp",
+  },
+  {
+    label: "Email",
+    value: contact.email,
+    href: getMailtoHref("Rangbastra couture enquiry"),
+    icon: "email",
+  },
+  {
+    label: "Instagram",
+    value: "@rangbastra",
+    href: contact.instagramUrl,
+    icon: "instagram",
+  },
+];
+---
+
+<BaseLayout
+  title="Contact | Rangbastra"
+  description="Contact Rangbastra for custom couture inquiries through WhatsApp, email, Instagram or the Design Your Outfit experience."
+  canonical="/contact"
+>
+  <Section class="contact-section">
+    <Container class="contact-container">
+      <section class="contact-hero" aria-labelledby="contact-heading">
+        <div class="contact-copy">
+          <Eyebrow>Contact</Eyebrow>
+          <h1 id="contact-heading">Begin With A Quiet Note</h1>
+          <p>
+            Tell us the celebration, the mood and the detail you cannot stop
+            thinking about. Rangbastra will guide the next couture step.
+          </p>
+          <Button href="/design-your-outfit">Send A Couture Note</Button>
+        </div>
+
+        <div class="contact-card" aria-label="Rangbastra contact details">
+          <span>Rangbastra Atelier</span>
+          <p>{contact.address}</p>
+          <p>No online payment or checkout is currently processed on this website. Couture inquiries continue through direct atelier communication.</p>
+        </div>
+      </section>
+
+      <section class="contact-methods" aria-label="Contact methods">
+        {contactMethods.map((method) => (
+          <a href={method.href} class="contact-method" target={method.label === "Instagram" ? "_blank" : undefined} rel={method.label === "Instagram" ? "noopener noreferrer" : undefined}>
+            <Icon name={method.icon} size={30} />
+            <span>{method.label}</span>
+            <strong>{method.value}</strong>
+          </a>
+        ))}
+      </section>
+
+      <aside class="contact-guidance">
+        <div>
+          <Eyebrow>What To Share</Eyebrow>
+          <h2>A Few Details Help The Atelier Respond Beautifully</h2>
+        </div>
+        <ul>
+          <li>Occasion and expected date</li>
+          <li>City or delivery location</li>
+          <li>Reference images or existing Rangbastra pieces you liked</li>
+          <li>Preferred colour, silhouette, embroidery or fabric direction</li>
+        </ul>
+      </aside>
+    </Container>
+  </Section>
+  <Footer />
+</BaseLayout>
+
+<style>
+  :global(.contact-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 78% 24%, rgba(106, 78, 66, .24), transparent 34%),
+      radial-gradient(circle at 20% 70%, rgba(198, 169, 114, .11), transparent 28%),
+      var(--surface-canvas);
+  }
+
+  :global(.contact-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+  }
+
+  .contact-hero {
+    display: grid;
+    grid-template-columns: minmax(0, .58fr) minmax(18rem, .34fr);
+    gap: clamp(var(--space-6), 8vw, var(--space-12));
+    align-items: center;
+    min-height: min(48rem, calc(100svh - var(--navbar-height)));
+    padding-top: clamp(var(--space-12), 14vw, var(--space-14));
+  }
+
+  .contact-copy {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+
+  h1,
+  h2 {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  h1 {
+    max-width: 10ch;
+    font-size: clamp(3.6rem, 8vw, 8rem);
+    line-height: .94;
+  }
+
+  .contact-copy p,
+  .contact-card p,
+  .contact-guidance li {
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+  }
+
+  .contact-copy p {
+    max-width: var(--measure-sm);
+    font-size: var(--body-lg);
+  }
+
+  .contact-card {
+    display: grid;
+    gap: var(--space-4);
+    padding: clamp(var(--space-5), 5vw, var(--space-8));
+    min-height: 24rem;
+    align-content: end;
+    border: 1px solid rgba(198, 169, 114, .2);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .04), transparent),
+      rgba(255, 255, 255, .025);
+  }
+
+  .contact-card span,
+  .contact-method span {
+    color: var(--sand-200);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .contact-methods {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    padding-block: clamp(var(--space-8), 9vw, var(--space-12));
+    border-top: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  .contact-method {
+    display: grid;
+    gap: var(--space-4);
+    min-height: 18rem;
+    padding: var(--space-5);
+    align-content: end;
+    color: inherit;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(255, 255, 255, .025);
+    transition: border-color 420ms var(--ease-luxury), transform 420ms var(--ease-luxury);
+  }
+
+  .contact-method:hover {
+    border-color: rgba(198, 169, 114, .35);
+    transform: translate3d(0, -.35rem, 0);
+  }
+
+  .contact-method strong {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 2.8vw, 2.8rem);
+    font-weight: var(--weight-light);
+    line-height: 1.05;
+    word-break: break-word;
+  }
+
+  .contact-guidance {
+    display: grid;
+    grid-template-columns: minmax(0, .44fr) minmax(0, .5fr);
+    gap: clamp(var(--space-6), 7vw, var(--space-10));
+    padding: clamp(var(--space-6), 6vw, var(--space-9));
+    border: 1px solid rgba(198, 169, 114, .18);
+  }
+
+  .contact-guidance h2 {
+    max-width: 12ch;
+    margin-top: var(--space-4);
+    font-size: clamp(2.4rem, 5vw, 5.2rem);
+    line-height: 1;
+  }
+
+  .contact-guidance ul {
+    display: grid;
+    gap: var(--space-3);
+    padding-left: var(--space-5);
+  }
+
+  @media (max-width: 900px) {
+    .contact-hero,
+    .contact-guidance {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-methods {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .contact-hero {
+      min-height: auto;
+      padding-top: clamp(var(--space-11), 28vw, var(--space-13));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-method {
+      transition: none;
+    }
+
+    .contact-method:hover {
+      transform: none;
+    }
+  }
+</style>

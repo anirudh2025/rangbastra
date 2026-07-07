@@ -1,0 +1,138 @@
+---
+import Icon from "../primitives/Icon.astro";
+import CustomCoutureHeader from "./CustomCoutureHeader.astro";
+import { craftPhilosophy, customCoutureImages } from "../../data/customCouture";
+---
+
+<section class="craft-section" aria-labelledby="craft-heading">
+  <div class="craft-layout">
+    <div class="craft-copy">
+      <CustomCoutureHeader
+        eyebrow="Craft Philosophy"
+        intro="Measured By"
+        statement="Attention, Not Speed"
+        copy="Rangbastra custom couture is shaped through patient handwork, considered fabric, thoughtful fittings and a quiet relationship between wearer and atelier."
+      />
+
+      <div class="craft-grid">
+        {
+          craftPhilosophy.map((item) => (
+            <article class="craft-item">
+              <Icon name={item.icon} size={22} class="craft-icon" />
+              <div>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+    <figure>
+      <img
+        src={customCoutureImages.craft}
+        alt="Rangbastra handwork and craft detail"
+        width="900"
+        height="1200"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+  </div>
+</section>
+
+<style>
+  .craft-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .82fr) minmax(22rem, .48fr);
+    gap: clamp(var(--space-7), 7vw, var(--space-11));
+    align-items: center;
+  }
+
+  .craft-copy {
+    display: grid;
+    gap: clamp(var(--space-7), 6vw, var(--space-9));
+  }
+
+  .craft-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .craft-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .craft-item :global(.craft-icon) {
+    color: var(--sand-200);
+    opacity: .78;
+    transform: translateY(.2rem);
+  }
+
+  h3 {
+    color: var(--text-primary);
+    font-size: var(--label-lg);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-title);
+    line-height: var(--leading-title);
+  }
+
+  p {
+    margin-top: var(--space-2);
+    color: var(--text-secondary);
+    font-size: var(--body-sm);
+    line-height: var(--leading-body);
+    text-wrap: pretty;
+  }
+
+  figure {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-premium), var(--shadow-inset);
+  }
+
+  figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--gradient-glass);
+    opacity: .62;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 1023px) {
+    .craft-layout {
+      grid-template-columns: 1fr;
+    }
+
+    figure {
+      max-width: 34rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .craft-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .craft-item {
+      padding-inline: 0;
+    }
+  }
+</style>
