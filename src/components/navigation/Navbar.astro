@@ -14,6 +14,7 @@ import { navigation as navigationItems } from "../../data/navigation";
     <div class="navbar__header">
       <a href="/" class="navbar__brand" aria-label="Rangbastra Home">
         <Logo />
+        <span class="navbar__brand-name">Rangbastra</span>
       </a>
 
       <DesktopNav items={navigationItems} />
@@ -38,3 +39,34 @@ import { navigation as navigationItems } from "../../data/navigation";
   initializeNavbar();
   initAccountNavigation();
 </script>
+
+
+<style>
+  .navbar__brand {
+    gap: clamp(0.5rem, 0.8vw, 0.8rem);
+  }
+
+  .navbar__brand-name {
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: clamp(0.72rem, 0.8vw, 0.92rem);
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1180px) {
+    .navbar__brand-name {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+    }
+  }
+
+  @media (max-width: 920px) {
+    .navbar__brand-name {
+      display: none;
+    }
+  }
+</style>
