@@ -1,0 +1,5 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro"; import Section from "../components/primitives/Section.astro"; import Container from "../components/primitives/Container.astro"; import ProductionJourney from "../components/experience/ProductionJourney.astro"; import SignatureCTA from "../components/experience/SignatureCTA.astro"; import Footer from "../sections/home/Footer.astro";
+---
+<BaseLayout title="Customization Process | Rangbastra" description="Explore the transparent Rangbastra couture production journey from discovery and sketch approval through crafting, fitting and delivery." canonical="/customization-process"><Section class="experience-section"><Container class="experience-container"><ProductionJourney/><SignatureCTA variant="consultation"/></Container></Section><Footer/></BaseLayout>
+<style>:global(.experience-section){--section-padding-block:0 clamp(var(--space-10),10vw,var(--space-13));background:radial-gradient(circle at 12% 38%,rgba(var(--cocoa-rgb),.1),transparent 32%),var(--surface-canvas)}:global(.experience-container){--container-default:var(--container-wide);display:grid;gap:clamp(var(--space-10),10vw,var(--space-13))}</style>

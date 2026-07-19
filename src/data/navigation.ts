@@ -31,8 +31,8 @@ export const navigation: NavigationItem[] = [
     children: [
       { label: "Custom Couture", href: "/custom-couture", icon:"needle" },
       { label: "Our Philosophy", href: "/our-story", icon:"journal" },
-      { label: "The Rangbastra Journey", href: "/our-story", icon:"signature" },
-      { label: "Designer Consultation", href: "/design-your-outfit", icon:"designer" },
+      { label: "Rangbastra Journey", href: "/rangbastra-journey", icon:"signature" },
+      { label: "Designer Consultation", href: "/designer-consultation", icon:"designer" },
     ],
   },
   {
@@ -40,9 +40,9 @@ export const navigation: NavigationItem[] = [
     href: "/bride-stories",
     icon: "mirrorWork",
     children: [
-      { label: "Begin a Consultation", href: "/design-your-outfit", icon:"personalGuidance" },
       { label: "Bride Stories", href: "/bride-stories", icon:"wedding" },
-      { label: "Customisation Process", href: "/custom-couture", icon:"measurements" },
+      { label: "Customization Process", href: "/customization-process", icon:"measurements" },
+      { label: "Design Your Outfit", href: "/design-your-outfit", icon:"personalGuidance" },
       { label: "Frequently Asked Questions", href: "/faq", icon:"confidentialDiscussion" },
     ],
   },
