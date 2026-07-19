@@ -101,3 +101,19 @@ Use the Supabase dashboard for the current MVP. A website owner console requires
 - Complete upload signature/size/cross-user tests before enabling uploads.
 - Run build, security suite, dependency audit, accessibility and responsive QA.
 - Do not merge or attach the Preview branch to the Production domain during Google branding review.
+
+## Preview implementation map
+
+- `/account`: authenticated customer shell with URL-fragment deep links for every section.
+- `CustomerAccountPlatform.astro`: overview, profile, inspirations, request history, configured appointments, notifications, preferences and privacy controls.
+- `/wishlist`: remains the guest, device-local shortlist. On authenticated account load, canonical catalogue matches are merged into `saved_inspirations` and the local list is cleared only after a successful database write.
+- `/design-your-outfit`: remains the canonical detailed couture-request route.
+
+### Developer control guide
+
+- Account navigation labels and order: `sections` in `CustomerAccountPlatform.astro`.
+- Account responsive boundary: 900 px for horizontal mobile navigation and 600 px for single-column forms/cards.
+- Availability is configured only in `availability_slots`; never add demo slots to the component.
+- Customer profile fields exposed to updates are controlled twice: the form payload allowlist and column-level grants in migration `006`.
+- Notification customers can update only `read_at`; content and delivery are service-controlled.
+- Do not enable the intentionally disabled panels by adding placeholder data. Complete the trust-boundary and moderation work first.
