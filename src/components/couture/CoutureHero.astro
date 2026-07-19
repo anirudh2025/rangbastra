@@ -1,134 +1,71 @@
 ---
 import Eyebrow from "../primitives/Eyebrow.astro";
+import { collectionPersonas } from "../../data/collections";
+
+const fallback = {
+  eyebrow: "Rangbastra Collections",
+  heading: "Couture Stories",
+  statement: "Made personal",
+  introduction: "Explore bridal and occasion pieces shaped through personal design attention, handcrafted detail and the quiet confidence of couture made for one woman.",
+  image: collectionPersonas.bridal.image,
+  imageAlt: "Rangbastra couture with handcrafted ceremonial detail",
+  imagePosition: "50% 34%",
+  accent: "106 78 66",
+  motion: "poised",
+};
 ---
 
-<header class="product-hero">
-  <Eyebrow>Rangbastra Collections</Eyebrow>
-
-  <div class="exhibition-line" aria-hidden="true">
-    <span>Curated Exhibition</span>
-    <span>01</span>
+<header class="product-hero" data-collection-hero style={`--persona-accent:${fallback.accent};--persona-position:${fallback.imagePosition}`} data-motion={fallback.motion}>
+  <div class="hero-copy">
+    <Eyebrow><span data-persona-eyebrow>{fallback.eyebrow}</span></Eyebrow>
+    <p class="exhibition-line" aria-hidden="true"><span>Curated Exhibition</span><span>01</span></p>
+    <h1><span data-persona-heading>{fallback.heading}</span><em data-persona-statement>{fallback.statement}</em></h1>
+    <p class="hero-introduction" data-persona-introduction>{fallback.introduction}</p>
   </div>
-
-  <h1>
-    <span class="title-intro">Couture Stories</span>
-    <span class="title-statement">Made Personal</span>
-  </h1>
-
-  <p>
-    Explore bridal and occasion pieces shaped through personal design attention,
-    handcrafted detail and the quiet confidence of couture made for one woman.
-  </p>
+  <figure class="hero-visual">
+    <img data-persona-image src={fallback.image} alt={fallback.imageAlt} width="1080" height="1350" fetchpriority="high" decoding="async" />
+  </figure>
 </header>
 
+<script is:inline define:vars={{ collectionPersonas }}>
+  const normalizePersona = (value) => value?.toLowerCase().replace(/\s+/g, "-");
+  const applyPersona = () => {
+    const hero = document.querySelector("[data-collection-hero]");
+    if (!hero) return;
+    const id = normalizePersona(new URLSearchParams(location.search).get("category"));
+    const persona = collectionPersonas[id];
+    if (!persona) return;
+    hero.querySelector("[data-persona-eyebrow]").textContent = persona.eyebrow;
+    hero.querySelector("[data-persona-heading]").textContent = persona.heading;
+    hero.querySelector("[data-persona-statement]").textContent = persona.statement;
+    hero.querySelector("[data-persona-introduction]").textContent = persona.introduction;
+    const image = hero.querySelector("[data-persona-image]");
+    image.src = persona.image;
+    image.alt = persona.imageAlt;
+    hero.style.setProperty("--persona-accent", persona.accent);
+    hero.style.setProperty("--persona-position", persona.imagePosition);
+    hero.dataset.motion = persona.motion;
+  };
+  applyPersona();
+  addEventListener("popstate", applyPersona);
+</script>
+
 <style>
-  .product-hero {
-    position: relative;
-    display: grid;
-    gap: var(--space-5);
-    max-width: min(100%, 68rem);
-    padding-top: clamp(var(--space-12), 15vw, var(--space-14));
-  }
-
-  .product-hero::after {
-    content: "";
-    position: absolute;
-    top: clamp(var(--space-11), 13vw, var(--space-13));
-    right: 0;
-    width: min(24rem, 42vw);
-    height: 1px;
-    background:linear-gradient(90deg,transparent,var(--cocoa-border-strong));
-    opacity: .75;
-  }
-
-  .exhibition-line {
-    display: flex;
-    width: min(100%, 30rem);
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    color: var(--sand-200);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    text-transform: uppercase;
-  }
-
-  .exhibition-line::before {
-    content: "";
-    flex: 1;
-    height: 1px;
-    order: 2;
-    background:linear-gradient(90deg,var(--cocoa-border),transparent);
-  }
-
-  .exhibition-line span:last-child {
-    order: 3;
-    color: var(--text-muted);
-  }
-
-  h1 {
-    display: grid;
-    gap: var(--space-2);
-    color: var(--text-primary);
-    font-family: var(--font-display);
-    font-weight: var(--weight-light);
-    text-wrap: balance;
-  }
-
-  .title-intro {
-    display: block;
-    color: var(--text-primary);
-    font-size: var(--section-heading-intro);
-    letter-spacing: var(--tracking-heading);
-    line-height: 1.18;
-  }
-
-  .title-statement {
-    display: block;
-    max-width: 11ch;
-    background: var(--gradient-brand-text);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    font-size: var(--section-heading-statement);
-    letter-spacing: var(--tracking-heading);
-    line-height: 1.12;
-    padding-bottom: .08em;
-  }
-
-  p {
-    max-width: var(--measure-sm);
-    color: var(--text-secondary);
-    font-size: var(--body-lg);
-    line-height: var(--leading-body);
-    text-wrap: pretty;
-  }
-
-  @media (max-width: 900px) {
-    .product-hero {
-      gap: var(--space-4);
-      padding-top: clamp(var(--space-11), 30vw, var(--space-13));
-    }
-
-    .product-hero::after {
-      display: none;
-    }
-
-    .title-intro {
-      font-size: var(--section-heading-intro-mobile);
-    }
-
-    .title-statement {
-      font-size: clamp(2rem, 10vw, 3rem);
-    }
-
-    p {
-      max-width: min(100%, 34ch);
-      font-size: var(--body-md);
-      overflow-wrap: break-word;
-    }
-  }
+  .product-hero { position:relative; display:grid; grid-template-columns:minmax(0,.88fr) minmax(22rem,.72fr); min-height:min(48rem,86svh); align-items:center; gap:clamp(var(--space-7),6vw,var(--space-11)); padding-top:clamp(var(--space-11),12vw,var(--space-13)); }
+  .hero-copy { position:relative; z-index:2; display:grid; min-width:0; gap:var(--space-5); }
+  .hero-copy :global(.eyebrow) { border:1px solid rgba(var(--persona-accent),.46); border-radius:var(--radius-2xs); background:rgba(var(--persona-accent),.13); color:var(--text-secondary); box-shadow:none; }
+  .exhibition-line { display:flex; width:min(100%,28rem); align-items:center; gap:var(--space-4); color:var(--text-muted); font-size:var(--caption); font-weight:var(--weight-semibold); letter-spacing:var(--tracking-label); text-transform:uppercase; }
+  .exhibition-line::after { content:""; flex:1; height:1px; order:2; background:linear-gradient(90deg,rgba(var(--persona-accent),.72),rgba(var(--persona-accent),0)); }
+  .exhibition-line span:last-child { order:3; }
+  h1 { display:grid; gap:var(--space-2); max-width:13ch; color:var(--text-primary); font-family:var(--font-display); font-size:clamp(2.6rem,5.6vw,6.6rem); font-weight:var(--weight-light); line-height:1.02; text-wrap:balance; }
+  h1 em { color:var(--cocoa-300); font-family:inherit; font-size:.55em; font-style:normal; line-height:1.2; }
+  .hero-introduction { max-width:var(--measure-sm); color:var(--text-secondary); font-size:var(--body-lg); line-height:var(--leading-body); overflow-wrap:anywhere; text-wrap:pretty; }
+  .hero-visual { position:relative; min-height:clamp(28rem,62vw,46rem); align-self:stretch; overflow:hidden; isolation:isolate; }
+  .hero-visual::after { content:""; position:absolute; inset:-1px; z-index:2; background:radial-gradient(ellipse at center,transparent 28%,rgba(0,0,0,.2) 54%,#000 82%),linear-gradient(90deg,#000 0,transparent 32%,transparent 70%,#000 100%); pointer-events:none; }
+  .hero-visual img { width:100%; height:100%; object-fit:cover; object-position:var(--persona-position); filter:saturate(.82) contrast(1.04); transform:scale(1.025); animation:persona-breathe 14s var(--ease-luxury) both; }
+  [data-motion="luminous"] .hero-visual img { animation-duration:11s; }
+  [data-motion="ceremonial"] .hero-visual img { animation-duration:18s; }
+  @keyframes persona-breathe { from { transform:scale(1.025); } to { transform:scale(1.075); } }
+  @media(max-width:900px){.product-hero{grid-template-columns:1fr; min-height:auto; gap:var(--space-7); padding-top:clamp(var(--space-11),24vw,var(--space-13))}.hero-copy{max-width:38rem}.hero-visual{min-height:clamp(24rem,100vw,38rem); margin-inline:calc(var(--space-5) * -1)}h1{font-size:clamp(2.5rem,10vw,4.7rem)}.hero-introduction{font-size:var(--body-md)}}
+  @media(prefers-reduced-motion:reduce){.hero-visual img{animation:none;transform:none}}
 </style>

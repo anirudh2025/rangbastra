@@ -63,6 +63,7 @@ export interface CouturePiece {
   price: string | null;
   discount: string | null;
   priceLabel: string;
+  startingPrice: number | null;
   discountLabel: string | null;
   makingTime: string | null;
   shade: string | null;
@@ -739,17 +740,17 @@ const formatPriceLabel = (price: string | null) => {
   }
 
   if (normalized.includes("/")) {
-    const range = normalized
-      .split("/")
-      .map((item) => item.trim())
-      .filter(Boolean)
-      .map(formatInr)
-      .join(" to ");
-
-    return `From ${range}`;
+    return formatInr(normalized.split("/")[0]!.trim());
   }
 
-  return `From ${formatInr(normalized)}`;
+  return formatInr(normalized);
+};
+
+const getStartingPrice = (price: string | null) => {
+  const normalized = cleanValue(price);
+  if (!normalized) return null;
+  const value = Number(normalized.split("/")[0]?.trim());
+  return Number.isFinite(value) ? value : null;
 };
 
 const formatDiscountLabel = (discount: string | null) => {
@@ -777,15 +778,28 @@ const normalizeMakingTime = (value: string | null) =>
     ?.replace(/\s*D$/i, " days")
     .replace(/\s+-\s+/g, "-") ?? null;
 
-const buildCraftTags = (record: CoutureSourceRecord) =>
-  [
-    cleanValue(record.fabric),
-    cleanValue(record.handwork)?.split(",")[0],
-    cleanValue(record.style),
-    cleanValue(record.motif),
-  ]
-    .filter((value): value is string => Boolean(value))
-    .slice(0, 4);
+const conciseAttribute = (value: string | null) => cleanValue(value)
+  ?.replace(/\s+Fabric$/i, "")
+  .replace(/^Anaarkali$/i, "Anarkali")
+  .replace(/^Golden and cotton thread weave with mirror work$/i, "Thread Weave")
+  .replace(/^Inspired by Inaayat.*$/i, "Resham Work")
+  .replace(/^\d+\s+inch\s+border\s+embroidery.*$/i, "Border Embroidery")
+  .replace(/^\d+\s+Border\s+Embroidery$/i, "Border Embroidery")
+  .replace(/^Printed\s+/i, "");
+
+const buildCraftTags = (record: CoutureSourceRecord) => {
+  const handwork = cleanValue(record.handwork);
+  const firstDetail = conciseAttribute(handwork?.split(",")[0] ?? null);
+  const details = handwork?.toLowerCase().includes("mirror")
+    ? [firstDetail, "Mirror Work"]
+    : [firstDetail];
+  return [...new Set([
+    conciseAttribute(cleanValue(record.fabric)?.split(",")[0] ?? null),
+    conciseAttribute(record.style),
+    ...details,
+    conciseAttribute(record.motif),
+  ].filter((value): value is string => Boolean(value)))].slice(0, 4);
+};
 
 const buildShortDescription = (record: CoutureSourceRecord) => {
   const featuredCopy: Record<string, string> = {
@@ -903,22 +917,22 @@ const productImageUrls: Record<
     "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784188775/Elara_Web_01_wyoibr.webp", // 07 editorial - temporary hero fallback
   ],
   noor: [
-    coutureImages.signature, // 01 hero
-    coutureImages.signature, // 02 front
-    coutureImages.signature, // 03 side
-    coutureImages.signature, // 04 back
-    coutureImages.signature, // 05 detail
-    coutureImages.signature, // 06 drape
-    coutureImages.signature, // 07 editorial
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457855/Noor_Web_01_lzgejf.webp", // 01 hero
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457856/Noor_Web_02_a4b0d6.webp", // 02 front
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457857/Noor_Web_03_odw8vy.webp", // 03 side
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457857/Noor_Web_04_hgfm1n.webp", // 04 back
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457856/Noor_Web_05_iknicz.webp", // 05 detail
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457857/Noor_Web_06_dwqhey.webp", // 06 drape
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457856/Noor_Web_07_yfdeai.webp", // 07 editorial
   ],
   inaayat: [
-    coutureImages.craft, // 01 hero
-    coutureImages.craft, // 02 front
-    coutureImages.craft, // 03 side
-    coutureImages.craft, // 04 back
-    coutureImages.craft, // 05 detail
-    coutureImages.craft, // 06 drape
-    coutureImages.craft, // 07 editorial
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461296/Inaayat_Web_01_bnyonn.webp", // 01 hero
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461297/Inaayat_Web_02_ewc039.webp", // 02 front
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461298/Inaayat_Web_03_jsepzz.webp", // 03 side
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461297/Inaayat_Web_04_nwlmuc.webp", // 04 back
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461298/Inaayat_Web_05_jckrsr.webp", // 05 detail
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461298/Inaayat_Web_06_tl1gir.webp", // 06 drape
+    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461299/Inaayat_Web_07_foksqp.webp", // 07 editorial
   ],
   amaira: [
     coutureImages.bridal, // 01 hero
@@ -1257,12 +1271,15 @@ const categoryPalettes: Record<CoutureCategory, CouturePaletteOption[]> = {
   ],
 };
 
-const buildPalette = (record: CoutureSourceRecord): CouturePaletteOption[] => {
-  const shade = cleanValue(record.shade);
+const buildPalette = (
+  record: CoutureSourceRecord,
+  shadeName: string,
+  shadeHex: string,
+): CouturePaletteOption[] => {
   const original: CouturePaletteOption = {
     id: "original",
-    name: shade ? `Original ${shade}` : "Original shade - hex pending",
-    value: record.shadeHex ?? "transparent",
+    name: shadeName,
+    value: shadeHex,
     finish: "As photographed",
     type: "original",
     availability: "As photographed",
@@ -1275,6 +1292,20 @@ const buildPalette = (record: CoutureSourceRecord): CouturePaletteOption[] => {
   ];
 };
 
+/**
+ * OWNER-EDITABLE PALETTE VALUES.
+ * Only Dusty Rose and Royal Plum are confirmed in source data. The category
+ * fallbacks below are intentionally conservative temporary values for products
+ * whose exact atelier shade has not yet been supplied.
+ */
+const temporaryCategoryShade: Record<CoutureCategory, { name: string; hex: string }> = {
+  Bridal: { name: "Atelier Crimson (temporary)", hex: "#68172D" },
+  Festive: { name: "Cocoa Bloom (temporary)", hex: "#6A4E42" },
+  Reception: { name: "Midnight Plum (temporary)", hex: "#38223D" },
+  Engagement: { name: "Mauve Cocoa (temporary)", hex: "#765060" },
+  "Custom Couture": { name: "Atelier Cocoa (temporary)", hex: "#6A4E42" },
+};
+
 // Couture imagery currently uses approved editorial placeholders until each piece
 // receives dedicated photography from the atelier.
 export const couturePieces: CouturePiece[] = coutureSourceRecords.map(
@@ -1283,6 +1314,7 @@ export const couturePieces: CouturePiece[] = coutureSourceRecords.map(
     const status = record.status ?? "published";
     const signatureName = `${record.name} by Rangbastra`;
     const shade = cleanValue(record.shade);
+    const temporaryShade = temporaryCategoryShade[record.category];
     const shadeHex =
       record.shadeHex ??
       (
@@ -1294,11 +1326,12 @@ export const couturePieces: CouturePiece[] = coutureSourceRecords.map(
           Green: "#315B45",
         } as Record<string, string>
       )[shade ?? ""] ??
-      "#4B3731";
+      temporaryShade.hex;
+    const displayShade = shade ?? temporaryShade.name;
     const fabric = cleanValue(record.fabric);
     const shortDescription = buildShortDescription(record);
     const slug = slugify(record.name);
-    const paletteOptions = buildPalette(record);
+    const paletteOptions = buildPalette(record, displayShade, shadeHex);
     const images = buildProductImages(record.name, slug, legacyFallback);
     const coverImage = images.find((image) => image.id === "hero") ?? images[0];
     const featuredImage = coverImage.src;
@@ -1315,6 +1348,7 @@ export const couturePieces: CouturePiece[] = coutureSourceRecords.map(
       price: cleanValue(record.price),
       discount: formatDiscountLabel(record.discount),
       priceLabel: formatPriceLabel(record.price),
+      startingPrice: getStartingPrice(record.price),
       discountLabel: formatDiscountLabel(record.discount),
       makingTime: normalizeMakingTime(record.makingTime),
       shade,
@@ -1335,7 +1369,7 @@ export const couturePieces: CouturePiece[] = coutureSourceRecords.map(
       // Replace these placeholder URLs per product when dedicated photography is ready.
       // Repeated URLs are temporary legacy placeholders so all seven slots remain available.
       images,
-      color: { name: shade ?? "Original shade pending", hex: shadeHex },
+      color: { name: displayShade, hex: shadeHex },
       paletteOptions,
       customization: { enabled: true, route: `/products/${slug}/customize` },
       status,
@@ -1348,7 +1382,7 @@ export const couturePieces: CouturePiece[] = coutureSourceRecords.map(
       image: featuredImage,
       featured:
         status === "published" && [5, 9, 12, 16, 20, 21].includes(record.id),
-      colorFamily: shade ?? "Atelier palette",
+      colorFamily: displayShade,
       palette: paletteOptions,
     };
   },

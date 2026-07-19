@@ -1,5 +1,6 @@
 ---
 import Label from "../primitives/Label.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
 import Icon from "../primitives/Icon.astro";
 import WishlistButton from "../wishlist/WishlistButton.astro";
 import type { CouturePiece } from "../../data/couture";
@@ -56,10 +57,7 @@ const confirmedFourByFive = isConfirmedFourByFive(cover);
     </figure>
 
     <div class="product-copy">
-      <div class="product-kicker">
-        <span>{product.category}</span>
-        <span>{product.occasion}</span>
-      </div>
+      <div class="product-kicker"><Eyebrow>{product.category}</Eyebrow></div>
 
       <h2>
         <span>{product.name}</span>
@@ -69,10 +67,18 @@ const confirmedFourByFive = isConfirmedFourByFive(cover);
       <p class="product-description">{product.shortDescription}</p>
 
       <div class="product-meta">
-        <strong class="product-price">{product.priceLabel}</strong>
-        <span class="product-palette"
-          ><i aria-hidden="true"></i><span>{product.colorFamily}</span></span
-        >
+        <div class="product-price" aria-label={product.startingPrice ? `Starting at ${product.priceLabel}` : product.priceLabel}>
+          {product.startingPrice && <span>Starting at</span>}
+          <strong>{product.priceLabel}</strong>
+        </div>
+        <div class="product-palette" aria-label={`${product.name} colour palette`}>
+          {product.paletteOptions.slice(0, 3).map((shade, shadeIndex) => (
+            <span class="palette-choice" role="img" aria-label={`${shade.name}${shadeIndex === 0 ? ", selected" : ""}`}>
+              <i class:list={[shadeIndex === 0 && "is-selected"]} style={`--swatch:${shade.value}`} aria-hidden="true"></i>
+            </span>
+          ))}
+          <span class="palette-name">{product.colorFamily}</span>
+        </div>
       </div>
 
       <ul class="craft-tags" aria-label={`${product.name} craft details`}>
@@ -177,29 +183,13 @@ const confirmedFourByFive = isConfirmedFourByFive(cover);
 
   .product-kicker {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2) var(--space-3);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
   }
-
-  .product-kicker span {
-    display: inline-flex;
-    min-height: 30px;
-    align-items: center;
-    justify-content: center;
-    padding: 0.3rem 0.58rem;
-    border: 1px solid var(--cocoa-border-soft);
-    border-radius: var(--radius-md);
-    background: #030303;
-    -webkit-backdrop-filter: var(--navbar-glass-filter);
-    backdrop-filter: var(--navbar-glass-filter);
-    text-align: center;
-  }
-
-  .product-kicker span + span::before {
-    content: none;
+  .product-kicker :global(.eyebrow) {
+    border: 1px solid rgba(var(--cocoa-rgb), 0.38);
+    border-radius: var(--radius-2xs);
+    background: rgba(var(--cocoa-rgb), 0.12);
+    color: var(--text-secondary);
+    box-shadow: none;
   }
 
   h2 {
@@ -234,8 +224,13 @@ const confirmedFourByFive = isConfirmedFourByFive(cover);
     text-wrap: pretty;
   }
   .product-description {
+    display: -webkit-box;
+    min-height: calc(2 * var(--leading-body) * 1em);
+    overflow: hidden;
     opacity: 1;
     transform: none;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
   .product-card--staged .product-description {
     opacity: 0;
@@ -251,49 +246,43 @@ const confirmedFourByFive = isConfirmedFourByFive(cover);
 
   .product-meta {
     display: grid;
-    gap: var(--space-1);
+    gap: var(--space-4);
     padding-top: var(--space-1);
   }
   .product-price {
+    display: grid;
     width: fit-content;
-    background: linear-gradient(
-      100deg,
-      #f3e8e2 0%,
-      rgb(var(--cocoa-rgb)) 46%,
-      #5b382d 100%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
+    gap: var(--space-1);
+    color: var(--text-primary);
     font-family: var(--font-body);
-    font-size: clamp(1rem, 1.4vw, 1.25rem);
-    font-weight: 700;
     font-variant-numeric: tabular-nums;
     line-height: 1.25;
   }
+  .product-price span { color: var(--text-muted); font-size: var(--caption); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-label); text-transform: uppercase; }
+  .product-price strong { color: var(--text-primary); font-size: clamp(1.15rem, 1.6vw, 1.42rem); font-weight: 700; }
   .product-palette {
     display: inline-flex;
     width: fit-content;
-    min-height: 36px;
+    min-height: 44px;
     align-items: center;
-    gap: 0.55rem;
-    padding: 0.35rem 0.65rem;
-    border: 1px solid var(--cocoa-border-soft);
-    border-radius: var(--radius-md);
-    background: #030303;
+    gap: var(--space-2);
     color: var(--text-secondary);
   }
-  .product-palette i {
-    width: 2.1rem;
-    height: 1.15rem;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: var(--radius-2xs);
-    background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 45%),
-      var(--product-shade);
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  .palette-choice { display: inline-grid; place-items: center; width: 2rem; height: 2rem; }
+  .palette-choice i {
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+    border: 1px solid rgba(var(--cocoa-rgb), 0.42);
+    border-radius: 50%;
+    background: var(--swatch);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28);
   }
+  .palette-choice i.is-selected {
+    outline: 2px solid rgb(var(--cocoa-rgb));
+    outline-offset: 3px;
+  }
+  .palette-name { margin-inline-start: var(--space-1); font-size: var(--caption); }
 
   .craft-tags {
     display: flex;
@@ -309,9 +298,9 @@ const confirmedFourByFive = isConfirmedFourByFive(cover);
     align-items: center;
     justify-content: center;
     border: 1px solid var(--cocoa-border-soft);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-2xs);
     padding: 0.35rem 0.65rem;
-    background: #030303;
+    background: rgba(var(--cocoa-rgb), 0.08);
     -webkit-backdrop-filter: var(--navbar-glass-filter);
     backdrop-filter: var(--navbar-glass-filter);
     text-align: center;
