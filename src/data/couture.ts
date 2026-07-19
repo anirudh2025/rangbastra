@@ -1293,17 +1293,17 @@ const buildPalette = (
 };
 
 /**
- * OWNER-EDITABLE PALETTE VALUES.
- * Only Dusty Rose and Royal Plum are confirmed in source data. The category
- * fallbacks below are intentionally conservative temporary values for products
- * whose exact atelier shade has not yet been supplied.
+ * INTERNAL DISPLAY FALLBACKS.
+ * Only Dusty Rose and Royal Plum are confirmed in source data. Products without
+ * a confirmed shade use the neutral "Atelier palette" label so an estimated
+ * colour is never presented to customers as a factual garment specification.
  */
 const temporaryCategoryShade: Record<CoutureCategory, { name: string; hex: string }> = {
-  Bridal: { name: "Atelier Crimson (temporary)", hex: "#68172D" },
-  Festive: { name: "Cocoa Bloom (temporary)", hex: "#6A4E42" },
-  Reception: { name: "Midnight Plum (temporary)", hex: "#38223D" },
-  Engagement: { name: "Mauve Cocoa (temporary)", hex: "#765060" },
-  "Custom Couture": { name: "Atelier Cocoa (temporary)", hex: "#6A4E42" },
+  Bridal: { name: "Atelier palette", hex: "#68172D" },
+  Festive: { name: "Atelier palette", hex: "#6A4E42" },
+  Reception: { name: "Atelier palette", hex: "#38223D" },
+  Engagement: { name: "Atelier palette", hex: "#765060" },
+  "Custom Couture": { name: "Atelier palette", hex: "#6A4E42" },
 };
 
 // Couture imagery currently uses approved editorial placeholders until each piece

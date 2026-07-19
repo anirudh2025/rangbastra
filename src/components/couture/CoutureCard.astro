@@ -20,6 +20,9 @@ const { product, index, animateEntrance = false } = Astro.props;
 const loading = index < 4 ? "eager" : "lazy";
 const cover = getProductCoverImage(product);
 const confirmedFourByFive = isConfirmedFourByFive(cover);
+const visiblePalette = product.paletteOptions
+  .filter((shade) => shade.name !== "Atelier palette")
+  .slice(0, 3);
 ---
 
 <article
@@ -72,7 +75,7 @@ const confirmedFourByFive = isConfirmedFourByFive(cover);
           <strong>{product.priceLabel}</strong>
         </div>
         <div class="product-palette" aria-label={`${product.name} colour palette`}>
-          {product.paletteOptions.slice(0, 3).map((shade, shadeIndex) => (
+          {visiblePalette.map((shade, shadeIndex) => (
             <span class="palette-choice" role="img" aria-label={`${shade.name}${shadeIndex === 0 ? ", selected" : ""}`}>
               <i class:list={[shadeIndex === 0 && "is-selected"]} style={`--swatch:${shade.value}`} aria-hidden="true"></i>
             </span>
