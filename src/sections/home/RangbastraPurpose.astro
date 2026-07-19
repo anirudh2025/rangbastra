@@ -8,25 +8,46 @@ import Section from "../../components/primitives/Section.astro";
   <Container class="purpose-container">
     <div class="purpose-introduction">
       <Eyebrow>About Rangbastra</Eyebrow>
-      <h2 id="rangbastra-purpose-heading">What Rangbastra does</h2>
+      <h2 id="rangbastra-purpose-heading">Your private couture account</h2>
     </div>
     <div class="purpose-copy">
-      <p>
+      <p class="purpose-summary">
         Rangbastra is an online luxury bridal and occasion-wear couture platform
-        based in Anand, Gujarat. Customers can explore couture collections,
-        create a private account, save favourite pieces, request a personalised
-        design consultation, and share measurements, preferences and design
-        requirements with the Rangbastra team.
+        based in Anand, Gujarat.
       </p>
-      <p class="purpose-authentication">
-        Google Sign-In is used to authenticate customers and provide secure
-        access to their Rangbastra account, saved inspirations and submitted
-        couture enquiries.
+      <p>
+        The Rangbastra website allows customers to explore couture collections,
+        create a private account, save favourite pieces, submit measurements and
+        design preferences, and request personalised couture consultations from
+        the Rangbastra team.
       </p>
+      <div class="purpose-google">
+        <h3>Why we request Google account information</h3>
+        <p>
+          When you choose Continue with Google, Rangbastra receives basic
+          profile information from Google to create and authenticate your
+          account. This allows us to identify your account, provide access to
+          saved inspirations, and connect your submitted couture enquiries with
+          you.
+        </p>
+        <p>
+          Depending on the information available from your Google profile, this
+          may include your name, email address and profile image.
+        </p>
+        <p>
+          Rangbastra uses this information only for account creation,
+          authentication, account features and customer support. We do not sell
+          Google user information or use it for third-party advertising.
+        </p>
+        <p>
+          Rangbastra does not request access to Gmail messages, Google Drive
+          files, Google Contacts or other private Google services.
+        </p>
+      </div>
       <nav class="purpose-links" aria-label="Rangbastra account and policies">
         <a href="/privacy-policy">Privacy Policy</a>
         <a href="/terms-and-conditions">Terms &amp; Conditions</a>
-        <a href="/account">Create Account or Sign In</a>
+        <a href="/account">Create Account / Sign In</a>
       </nav>
     </div>
   </Container>
@@ -62,11 +83,28 @@ import Section from "../../components/primitives/Section.astro";
     font-size: var(--body-lg);
     line-height: var(--leading-body);
   }
-  .purpose-authentication {
+  .purpose-summary {
+    color: var(--text-primary) !important;
+  }
+  .purpose-google {
+    display: grid;
+    gap: var(--space-4);
     padding-top: var(--space-5);
     border-top: 1px solid var(--cocoa-border-soft);
-    color: var(--sand-200) !important;
-    font-size: var(--body-md) !important;
+  }
+  .purpose-google h3 {
+    margin: 0;
+    color: var(--sand-200);
+    font-family: var(--font-sans);
+    font-size: var(--label-md);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-caption);
+    text-transform: uppercase;
+  }
+  .purpose-google p {
+    color: var(--text-secondary);
+    font-size: var(--body-md);
   }
   .purpose-links {
     display: flex;
@@ -75,6 +113,9 @@ import Section from "../../components/primitives/Section.astro";
     padding-top: var(--space-2);
   }
   .purpose-links a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
     color: var(--ivory-100);
     font-size: var(--body-sm);
     text-decoration-color: rgb(var(--cocoa-rgb));
