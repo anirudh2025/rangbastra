@@ -1,0 +1,15 @@
+---
+import Button from "../primitives/Button.astro";
+import Eyebrow from "../primitives/Eyebrow.astro";
+import { signatureCtaVariants } from "../../data/experiencePages";
+type Variant = keyof typeof signatureCtaVariants;
+const { variant = "consultation" } = Astro.props as { variant?: Variant };
+const content = signatureCtaVariants[variant];
+---
+<aside class:list={["signature-cta", `signature-cta--${variant}`]}>
+  <div><Eyebrow>{content.eyebrow}</Eyebrow><h2>{content.title}</h2></div>
+  <div><p>{content.copy}</p><Button href={content.href}>{content.label}</Button></div>
+</aside>
+<style>
+  .signature-cta{display:grid;grid-template-columns:minmax(0,1fr) minmax(18rem,.52fr);gap:clamp(var(--space-6),7vw,var(--space-10));align-items:end;padding:clamp(var(--space-6),7vw,var(--space-10));border:1px solid var(--cocoa-border-soft);border-radius:var(--radius-lg);background:radial-gradient(circle at 85% 15%,rgba(var(--cocoa-rgb),.13),transparent 42%),#030303}.signature-cta>div{display:grid;gap:var(--space-4);justify-items:start}.signature-cta h2{max-width:15ch;color:var(--text-primary);font-family:var(--font-display);font-size:clamp(2.5rem,5vw,5.2rem);font-weight:var(--weight-light);line-height:1}.signature-cta p{max-width:var(--measure-xs);color:var(--text-secondary);line-height:var(--leading-body)}@media(max-width:760px){.signature-cta{grid-template-columns:1fr}}
+</style>

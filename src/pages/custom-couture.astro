@@ -3,14 +3,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/primitives/Section.astro";
 import Container from "../components/primitives/Container.astro";
 import CustomCoutureHero from "../components/custom-couture/CustomCoutureHero.astro";
-import CustomCoutureBespoke from "../components/custom-couture/CustomCoutureBespoke.astro";
-import CustomCoutureJourney from "../components/custom-couture/CustomCoutureJourney.astro";
-import CustomCoutureOccasions from "../components/custom-couture/CustomCoutureOccasions.astro";
-import CustomCoutureInspirations from "../components/custom-couture/CustomCoutureInspirations.astro";
-import CustomCoutureCraft from "../components/custom-couture/CustomCoutureCraft.astro";
 import CustomCouturePricing from "../components/custom-couture/CustomCouturePricing.astro";
 import CustomCoutureFAQ from "../components/custom-couture/CustomCoutureFAQ.astro";
-import CustomCoutureInvitation from "../components/custom-couture/CustomCoutureInvitation.astro";
+import CoutureDiscovery from "../components/experience/CoutureDiscovery.astro";
+import SignatureCTA from "../components/experience/SignatureCTA.astro";
 import Footer from "../sections/home/Footer.astro";
 import { customCoutureImages } from "../data/customCouture";
 ---
@@ -24,14 +20,10 @@ import { customCoutureImages } from "../data/customCouture";
   <Section class="custom-couture-section">
     <Container class="custom-couture-container">
       <CustomCoutureHero />
-      <CustomCoutureBespoke />
-      <CustomCoutureJourney />
-      <CustomCoutureOccasions />
-      <CustomCoutureInspirations />
-      <CustomCoutureCraft />
+      <CoutureDiscovery />
       <CustomCouturePricing />
       <CustomCoutureFAQ />
-      <CustomCoutureInvitation />
+      <SignatureCTA variant="consultation" />
     </Container>
   </Section>
 

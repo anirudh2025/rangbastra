@@ -31,12 +31,12 @@ import { customCoutureImages } from "../../data/customCouture";
     </p>
 
     <div class="hero-actions" aria-label="Custom couture actions">
-      <Button href="/design-your-outfit" class="custom-hero-primary">
+      <Button href="#couture-discovery" class="custom-hero-primary">
         <Label icon="sketch">Begin Your Custom Journey</Label>
       </Button>
 
-      <Button href="#couture-journey" class="custom-hero-secondary">
-        <Label icon="customCouture">View Couture Experiences</Label>
+      <Button href="/customization-process" class="custom-hero-secondary">
+        <Label icon="customCouture">View Customization Process</Label>
       </Button>
     </div>
   </div>
@@ -82,6 +82,7 @@ import { customCoutureImages } from "../../data/customCouture";
 
   .hero-copy {
     display: grid;
+    min-width: 0;
     gap: clamp(var(--space-4), 3vw, var(--space-6));
     max-width: 39rem;
   }
@@ -186,7 +187,8 @@ import { customCoutureImages } from "../../data/customCouture";
     }
 
     .title-statement {
-      font-size: clamp(3rem, 17vw, 4.7rem);
+      font-size: clamp(2.7rem, 14vw, 4.2rem);
+      overflow-wrap: anywhere;
     }
 
     .hero-actions,
