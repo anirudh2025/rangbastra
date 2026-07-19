@@ -2,104 +2,47 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Container from "../components/primitives/Container.astro";
 import Section from "../components/primitives/Section.astro";
-import LookbookHero from "../components/lookbook-experience/LookbookHero.astro";
-import LookbookEditorsNote from "../components/lookbook-experience/LookbookEditorsNote.astro";
-import LookbookEditorialCollections from "../components/lookbook-experience/LookbookEditorialCollections.astro";
-import LookbookMasonry from "../components/lookbook-experience/LookbookMasonry.astro";
-import LookbookBehindFrame from "../components/lookbook-experience/LookbookBehindFrame.astro";
-import LookbookProcess from "../components/lookbook-experience/LookbookProcess.astro";
-import LookbookSignatureDetails from "../components/lookbook-experience/LookbookSignatureDetails.astro";
-import LookbookTimeline from "../components/lookbook-experience/LookbookTimeline.astro";
-import LookbookQuote from "../components/lookbook-experience/LookbookQuote.astro";
-import LookbookInvitation from "../components/lookbook-experience/LookbookInvitation.astro";
+import LookbookReader from "../components/editorial/LookbookReader.astro";
+import EditorialMarquee from "../components/editorial/EditorialMarquee.astro";
+import SignatureCTA from "../components/experience/SignatureCTA.astro";
 import Footer from "../sections/home/Footer.astro";
-import { lookbookExperienceImages } from "../data/lookbookExperience";
+import { lookbookPages } from "../data/lookbookBook";
 ---
 
 <BaseLayout
   title="Editorial Lookbook | Rangbastra"
-  description="Enter Rangbastra's editorial lookbook, a cinematic archive of bridal, festive and couture stories photographed with craft, emotion and restraint."
+  description="Read the Rangbastra editorial lookbook as an accessible digital book with bridal, festive and evening couture chapters."
   canonical="/lookbook"
-  image={lookbookExperienceImages.hero}
+  image={lookbookPages[0].image}
+  ><Section class="lookbook-book"
+    ><Container class="lookbook-book__container"
+      ><LookbookReader /><EditorialMarquee
+        phrases={[
+          "Bridal Couture",
+          "Considered Craft",
+          "Designed Around Your Story",
+          "Occasion Dressing",
+        ]}
+        label="Lookbook themes"
+      /><SignatureCTA variant="collection" /></Container
+    ></Section
+  ><Footer /></BaseLayout
 >
-  <Section class="lookbook-experience-section">
-    <Container class="lookbook-experience-container">
-      <LookbookHero />
-      <LookbookEditorsNote />
-      <LookbookEditorialCollections />
-      <LookbookMasonry />
-      <LookbookBehindFrame />
-      <LookbookProcess />
-      <LookbookSignatureDetails />
-      <LookbookTimeline />
-      <LookbookQuote />
-      <LookbookInvitation />
-    </Container>
-  </Section>
-
-  <Footer />
-</BaseLayout>
-
 <style>
-  :global(.lookbook-experience-section) {
-    --section-padding-block: 0 clamp(var(--space-10), 11vw, var(--space-14));
-
+  :global(.lookbook-book) {
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
     overflow: hidden;
     background:
-      linear-gradient(90deg, transparent 0 49.85%, rgba(255, 255, 255, .04) 49.9% 50%, transparent 50.05%),
-      repeating-linear-gradient(180deg, transparent 0 5.6rem, rgba(255, 255, 255, .025) 5.65rem 5.7rem),
-      radial-gradient(circle at 78% 8%, rgba(106, 78, 66, .14), transparent 34%),
-      linear-gradient(180deg, rgba(0, 0, 0, .97), transparent 22%),
-      var(--surface-canvas);
-    isolation: isolate;
+      radial-gradient(
+        circle at 82% 12%,
+        rgba(var(--cocoa-rgb), 0.12),
+        transparent 34%
+      ),
+      #000;
   }
-
-  :global(.lookbook-experience-section)::before,
-  :global(.lookbook-experience-section)::after {
-    content: "";
-    position: absolute;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  :global(.lookbook-experience-section)::before {
-    top: 12%;
-    right: -18%;
-    width: min(64rem, 70vw);
-    height: min(34rem, 42vw);
-    background: var(--gradient-satin-fold);
-    opacity: .2;
-    transform: rotate(-8deg);
-  }
-
-  :global(.lookbook-experience-section)::after {
-    left: -16%;
-    bottom: 16%;
-    width: min(54rem, 66vw);
-    height: min(34rem, 42vw);
-    background: var(--gradient-satin-fold);
-    opacity: .14;
-    transform: rotate(12deg);
-  }
-
-  :global(.lookbook-experience-container) {
+  :global(.lookbook-book__container) {
     --container-default: var(--container-wide);
-    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
-
-    position: relative;
-    z-index: var(--z-content);
     display: grid;
-    gap: clamp(var(--space-10), 11vw, var(--space-14));
-  }
-
-  @media (max-width: 767px) {
-    :global(.lookbook-experience-section) {
-      --section-padding-block: 0 clamp(var(--space-9), 20vw, var(--space-12));
-    }
-
-    :global(.lookbook-experience-container) {
-      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
-      gap: clamp(var(--space-9), 18vw, var(--space-12));
-    }
+    gap: clamp(var(--space-8), 8vw, var(--space-12));
   }
 </style>

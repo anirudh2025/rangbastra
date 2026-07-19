@@ -4,13 +4,18 @@ export interface JournalArticle {
   description: string;
   category: string;
   readingTime: string;
+  wordCount: number;
+  author: string;
+  publishedDate: string;
+  productSlugs: string[];
+  storyHref?: string;
   heroImage: string;
   heroAlt: string;
   excerpt: string;
   body: string[];
 }
 
-export const journalArticles: JournalArticle[] = [
+const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "author" | "publishedDate" | "productSlugs"> & { readingTime?: string }> = [
   {
     slug: "begin-custom-bridal-lehenga-journey",
     title: "How To Begin A Custom Bridal Lehenga Journey",
@@ -120,6 +125,22 @@ export const journalArticles: JournalArticle[] = [
     ],
   },
 ];
+
+const wordCount = (article: { title:string; description:string; excerpt:string; body:string[] }) =>
+  [article.title, article.description, article.excerpt, ...article.body].join(" ").trim().split(/\s+/).filter(Boolean).length;
+
+export const journalArticles: JournalArticle[] = journalDrafts.map((article, index) => {
+  const count = wordCount(article);
+  return {
+    ...article,
+    wordCount: count,
+    readingTime: `${Math.max(1, Math.ceil(count / 220))} min read`,
+    author: "Rangbastra Editorial Desk",
+    publishedDate: `2026-07-${String(10 + index).padStart(2,"0")}`,
+    productSlugs: index % 2 === 0 ? ["amaira"] : ["gulnaar"],
+    storyHref: "/bride-stories",
+  };
+});
 
 export const journalCategories = [
   "All",

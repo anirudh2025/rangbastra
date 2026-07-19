@@ -1,0 +1,297 @@
+---
+import Button from "../primitives/Button.astro";
+import { lookbookPages } from "../../data/lookbookBook";
+---
+
+<section
+  class="reader"
+  data-lookbook-reader
+  tabindex="0"
+  aria-label="Rangbastra lookbook reader"
+>
+  <nav class="reader-toc" aria-label="Lookbook table of contents">
+    <strong>Contents</strong>{
+      lookbookPages.map((page, index) => (
+        <a href={`#spread=${page.id}`} data-page-link={index}>
+          {page.title}
+        </a>
+      ))
+    }
+  </nav><div class="reader-stage" aria-live="polite">
+    {
+      lookbookPages.map((page, index) => (
+        <article
+          class:list={["book-page", `book-page--${page.kind}`]}
+          data-page={index}
+          data-page-id={page.id}
+          hidden={index > 1}
+        >
+          {page.image && (
+            <figure>
+              <img
+                src={page.image}
+                alt={page.imageAlt}
+                width="900"
+                height="1125"
+                loading={index < 2 ? "eager" : "lazy"}
+                decoding="async"
+              />
+            </figure>
+          )}
+          <div class="page-copy">
+            <p>{page.copy}</p>
+            {page.annotation && (
+              <aside aria-label="Garment annotation">{page.annotation}</aside>
+            )}
+            {page.pieceSlug && (
+              <Button href={`/products/${page.pieceSlug}`}>
+                Explore Piece
+              </Button>
+            )}
+          </div>
+          <small>{String(index + 1).padStart(2, "0")}</small>
+        </article>
+      ))
+    }
+  </div><div class="reader-controls">
+    <button type="button" data-previous aria-label="Previous spread"
+      >Previous</button
+    ><span data-page-status
+      >Pages 01–02 of {String(lookbookPages.length).padStart(2, "0")}</span
+    ><button type="button" data-next aria-label="Next spread">Next</button>
+  </div>
+</section>
+<script>
+  document
+    .querySelectorAll<HTMLElement>("[data-lookbook-reader]")
+    .forEach((root) => {
+      const pages = [...root.querySelectorAll<HTMLElement>("[data-page]")];
+      const desktop = () => matchMedia("(min-width: 801px)").matches;
+      let index = 0;
+      let startX = 0;
+      const fromHash = () => {
+        const id = location.hash.match(/spread=([^&]+)/)?.[1];
+        const found = pages.findIndex((page) => page.dataset.pageId === id);
+        return found >= 0 ? found : 0;
+      };
+      const render = (requested: number, push = true) => {
+        const step = desktop() ? 2 : 1;
+        index = Math.max(
+          0,
+          Math.min(pages.length - 1, Math.floor(requested / step) * step),
+        );
+        pages.forEach(
+          (page, i) => (page.hidden = !(i >= index && i < index + step)),
+        );
+        root.querySelector<HTMLElement>("[data-page-status]")!.textContent =
+          desktop()
+            ? `Pages ${String(index + 1).padStart(2, "0")}–${String(Math.min(index + 2, pages.length)).padStart(2, "0")} of ${String(pages.length).padStart(2, "0")}`
+            : `Page ${String(index + 1).padStart(2, "0")} of ${String(pages.length).padStart(2, "0")}`;
+        root.querySelector<HTMLButtonElement>("[data-previous]")!.disabled =
+          index === 0;
+        root.querySelector<HTMLButtonElement>("[data-next]")!.disabled =
+          index + step >= pages.length;
+        if (push)
+          history.replaceState(
+            null,
+            "",
+            `#spread=${pages[index]?.dataset.pageId}`,
+          );
+        for (
+          let i = index + step;
+          i < Math.min(pages.length, index + step + 2);
+          i++
+        ) {
+          const image =
+            pages[i]?.querySelector<HTMLImageElement>("img[loading=lazy]");
+          if (image) image.loading = "eager";
+        }
+      };
+      root
+        .querySelector("[data-previous]")
+        ?.addEventListener("click", () => render(index - (desktop() ? 2 : 1)));
+      root
+        .querySelector("[data-next]")
+        ?.addEventListener("click", () => render(index + (desktop() ? 2 : 1)));
+      root.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight" || event.key === "PageDown") {
+          event.preventDefault();
+          render(index + (desktop() ? 2 : 1));
+        }
+        if (event.key === "ArrowLeft" || event.key === "PageUp") {
+          event.preventDefault();
+          render(index - (desktop() ? 2 : 1));
+        }
+      });
+      root.addEventListener("pointerdown", (event) => (startX = event.clientX));
+      root.addEventListener("pointerup", (event) => {
+        const delta = event.clientX - startX;
+        if (Math.abs(delta) > 55)
+          render(
+            index + (delta < 0 ? (desktop() ? 2 : 1) : -(desktop() ? 2 : 1)),
+          );
+      });
+      root.querySelectorAll<HTMLElement>("[data-page-link]").forEach((link) =>
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          render(Number(link.dataset.pageLink));
+        }),
+      );
+      addEventListener("hashchange", () => render(fromHash(), false));
+      addEventListener("resize", () => render(index, false));
+      render(fromHash(), false);
+    });
+</script>
+<style>
+  .reader {
+    display: grid;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    gap: var(--space-5);
+    padding-top: clamp(var(--space-12), 14vw, var(--space-14));
+    touch-action: pan-y;
+  }
+  .reader:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 4px;
+  }
+  .reader-toc {
+    display: flex;
+    gap: var(--space-4);
+    overflow-x: auto;
+    align-items: center;
+    padding-block: var(--space-3);
+    color: var(--text-muted);
+  }
+  .reader-toc a {
+    flex: 0 0 auto;
+    color: var(--text-secondary);
+  }
+  .reader-stage {
+    display: grid;
+    max-width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: min(44rem, 72svh);
+    border: 1px solid var(--cocoa-border-soft);
+    background: #020202;
+  }
+  .book-page {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-width: 0;
+    overflow: hidden;
+    border-right: 1px solid rgba(var(--cocoa-rgb), 0.2);
+    background: #030303;
+  }
+  .book-page[hidden] {
+    display: none;
+  }
+  .book-page figure {
+    position: absolute;
+    inset: 0;
+  }
+  .book-page img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.56;
+  }
+  .book-page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.05),
+      rgba(0, 0, 0, 0.88)
+    );
+    pointer-events: none;
+  }
+  .page-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: var(--space-4);
+    align-content: end;
+    padding: clamp(var(--space-5), 5vw, var(--space-9));
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .page-copy > span,
+  .book-page > small {
+    color: var(--cocoa-300);
+    font-size: var(--caption);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+  .page-copy h1 {
+    max-width: 10ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 5.8rem);
+    font-weight: var(--weight-light);
+    line-height: 0.98;
+  }
+  .page-copy p,
+  .page-copy aside {
+    max-width: 34rem;
+    color: var(--text-secondary);
+    line-height: var(--leading-body);
+  }
+  .page-copy aside {
+    padding-left: var(--space-3);
+    border-left: 2px solid rgb(var(--cocoa-rgb));
+  }
+  .book-page > small {
+    position: absolute;
+    z-index: 3;
+    right: var(--space-4);
+    bottom: var(--space-3);
+  }
+  .reader-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .reader-controls button {
+    min-height: 44px;
+    padding-inline: var(--space-4);
+    border: 1px solid var(--cocoa-border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+  }
+  .reader-controls button:disabled {
+    opacity: 0.35;
+  }
+  .reader-controls span {
+    color: var(--text-muted);
+  }
+  @media (max-width: 800px) {
+    .reader-stage {
+      grid-template-columns: 1fr;
+      min-height: 68svh;
+    }
+    .book-page {
+      border-right: 0;
+    }
+    .page-copy h1 {
+      font-size: clamp(2.8rem, 14vw, 4.6rem);
+    }
+    .reader-controls {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+    .reader-controls span {
+      text-align: center;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reader * {
+      scroll-behavior: auto;
+    }
+  }
+</style>

@@ -53,7 +53,6 @@ export const navigation: NavigationItem[] = [
     children: [
       { label: "Lookbook", href: "/lookbook", icon:"mirrorWork" },
       { label: "Journal", href: "/journal", icon:"journal" },
-      { label: "Our Story", href: "/our-story", icon:"heritage" },
       { label: "Contact", href: "/contact", icon:"email" },
     ],
   },

@@ -1,0 +1,82 @@
+---
+interface Props {
+  phrases: string[];
+  label?: string;
+}
+const { phrases, label = "Editorial highlights" } = Astro.props;
+---
+
+<section class="marquee" aria-label={label} tabindex="0">
+  <p class="semantic">{phrases.join(" · ")}</p><div
+    class="track"
+    aria-hidden="true"
+  >
+    <span>{phrases.map((phrase) => <b>{phrase}</b>)}</span><span
+      >{phrases.map((phrase) => <b>{phrase}</b>)}</span>
+  </div>
+</section>
+<style>
+  .marquee {
+    position: relative;
+    overflow: hidden;
+    min-height: 4.5rem;
+    border-block: 1px solid rgba(var(--cocoa-rgb), 0.3);
+    background: #000;
+    color: var(--cocoa-300);
+  }
+  .semantic {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .track {
+    display: flex;
+    width: max-content;
+    animation: marquee 28s linear infinite;
+  }
+  .track span {
+    display: flex;
+    align-items: center;
+    min-height: 4.5rem;
+  }
+  .track b {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 2vw, 2rem);
+    font-weight: var(--weight-light);
+    white-space: nowrap;
+  }
+  .track b::after {
+    content: "·";
+    padding-inline: var(--space-6);
+    color: rgb(var(--cocoa-rgb));
+  }
+  .marquee:hover .track,
+  .marquee:focus .track,
+  .marquee:focus-within .track {
+    animation-play-state: paused;
+  }
+  .marquee:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+  @keyframes marquee {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      overflow-x: auto;
+    }
+    .track {
+      animation: none;
+    }
+    .track span + span {
+      display: none;
+    }
+  }
+</style>

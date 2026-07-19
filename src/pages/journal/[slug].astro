@@ -16,6 +16,19 @@ export const getStaticPaths = () =>
 
 const { article } = Astro.props;
 const relatedArticles = getRelatedArticles(article.slug);
+const articleUrl = `https://www.rangbastra.luxury/journal/${article.slug}`;
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: article.title,
+  description: article.description,
+  image: article.heroImage,
+  datePublished: article.publishedDate,
+  author: { "@type": "Organization", name: article.author },
+  publisher: { "@type": "Organization", name: "Rangbastra" },
+  mainEntityOfPage: articleUrl,
+  wordCount: article.wordCount,
+};
 ---
 
 <BaseLayout
@@ -24,6 +37,10 @@ const relatedArticles = getRelatedArticles(article.slug);
   canonical={`/journal/${article.slug}`}
   image={article.heroImage}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  <div class="reading-progress" aria-hidden="true">
+    <i data-reading-progress></i>
+  </div>
   <Section class="article-section">
     <Container class="article-container">
       <article class="article-shell">
@@ -31,7 +48,14 @@ const relatedArticles = getRelatedArticles(article.slug);
           <div class="article-meta-panel">
             <Eyebrow>{article.category}</Eyebrow>
             <span>{article.readingTime}</span>
-            <span>Rangbastra Atelier</span>
+            <span>{article.author}</span>
+            <time datetime={article.publishedDate}
+              >{
+                new Intl.DateTimeFormat("en-IN", { dateStyle: "long" }).format(
+                  new Date(article.publishedDate),
+                )
+              }</time
+            >
           </div>
 
           <div class="article-title">
@@ -44,7 +68,12 @@ const relatedArticles = getRelatedArticles(article.slug);
           </div>
 
           <figure class="article-image">
-            <img src={article.heroImage} alt={article.heroAlt} loading="eager" decoding="async" />
+            <img
+              src={article.heroImage}
+              alt={article.heroAlt}
+              loading="eager"
+              decoding="async"
+            />
           </figure>
         </header>
 
@@ -59,29 +88,69 @@ const relatedArticles = getRelatedArticles(article.slug);
 
           <div class="article-content">
             {article.body.map((paragraph) => <p>{paragraph}</p>)}
+            <nav class="share-links" aria-label="Share this article">
+              <strong>Share</strong><a
+                href={`https://wa.me/?text=${encodeURIComponent(`${article.title} ${articleUrl}`)}`}
+                target="_blank"
+                rel="noopener noreferrer">WhatsApp</a
+              ><a
+                href={`mailto:?subject=${encodeURIComponent(article.title)}&body=${encodeURIComponent(articleUrl)}`}
+                >Email</a
+              ><button type="button" data-copy-link>Copy link</button><output
+                data-copy-status
+                aria-live="polite"></output>
+            </nav>
           </div>
         </div>
       </article>
 
-      <section class="related-articles" aria-labelledby="related-articles-heading">
+      <section
+        class="related-articles"
+        aria-labelledby="related-articles-heading"
+      >
         <div class="related-heading">
           <Eyebrow>Continue Reading</Eyebrow>
           <h2 id="related-articles-heading">More From The Atelier Desk</h2>
         </div>
 
         <div class="related-grid">
-          {relatedArticles.map((related) => (
-            <a href={`/journal/${related.slug}`} class="related-card">
-              <span>{related.category}</span>
-              <h3>{related.title}</h3>
-              <p>{related.excerpt}</p>
-            </a>
-          ))}
+          {
+            relatedArticles.map((related) => (
+              <a href={`/journal/${related.slug}`} class="related-card">
+                <span>{related.category}</span>
+                <h3>{related.title}</h3>
+                <p>{related.excerpt}</p>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+
+      <section
+        class="article-connections"
+        aria-labelledby="connections-heading"
+      >
+        <div>
+          <Eyebrow>Connections</Eyebrow><h2 id="connections-heading">
+            Continue from reading to discovery
+          </h2>
+        </div><div>
+          {
+            article.productSlugs.map((slug) => (
+              <Button href={`/products/${slug}`}>Explore Related Piece</Button>
+            ))
+          }{
+            article.storyHref && (
+              <Button href={article.storyHref}>Read Bride Stories</Button>
+            )
+          }
         </div>
       </section>
 
       <aside class="article-cta" aria-labelledby="article-cta-heading">
-        <h2 id="article-cta-heading">Let This Become A Private Design Conversation</h2>
+        <h2 id="article-cta-heading">
+          Let This Become A Private Design Conversation
+        </h2>
         <Button href="/design-your-outfit">Design Your Dream Outfit</Button>
       </aside>
     </Container>
@@ -89,14 +158,67 @@ const relatedArticles = getRelatedArticles(article.slug);
   <Footer />
 </BaseLayout>
 
+<script>
+  const progress = document.querySelector<HTMLElement>(
+    "[data-reading-progress]",
+  );
+  const updateProgress = () => {
+    if (!progress) return;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+  };
+  addEventListener("scroll", () => requestAnimationFrame(updateProgress), {
+    passive: true,
+  });
+  updateProgress();
+  document
+    .querySelector<HTMLButtonElement>("[data-copy-link]")
+    ?.addEventListener("click", async () => {
+      const output =
+        document.querySelector<HTMLOutputElement>("[data-copy-status]");
+      try {
+        await navigator.clipboard.writeText(location.href);
+        if (output) output.textContent = "Link copied";
+      } catch {
+        if (output) output.textContent = "Copy unavailable";
+      }
+    });
+</script>
+
 <style>
   :global(.article-section) {
     --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
     overflow: hidden;
     background:
-      radial-gradient(circle at 82% 20%, rgba(106, 78, 66, .2), transparent 34%),
-      linear-gradient(90deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 12rem),
+      radial-gradient(
+        circle at 82% 20%,
+        rgba(106, 78, 66, 0.2),
+        transparent 34%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.035) 0 1px,
+        transparent 1px 12rem
+      ),
       var(--surface-canvas);
+  }
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-overlay);
+    width: 100%;
+    height: 2px;
+    pointer-events: none;
+  }
+  .reading-progress i {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: rgb(var(--cocoa-rgb));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--motion-scroll-progress) linear;
   }
 
   :global(.article-container) {
@@ -110,7 +232,10 @@ const relatedArticles = getRelatedArticles(article.slug);
 
   .article-hero {
     display: grid;
-    grid-template-columns: minmax(10rem, .16fr) minmax(0, .48fr) minmax(18rem, .36fr);
+    grid-template-columns: minmax(10rem, 0.16fr) minmax(0, 0.48fr) minmax(
+        18rem,
+        0.36fr
+      );
     gap: clamp(var(--space-5), 6vw, var(--space-10));
     align-items: end;
     min-height: min(52rem, calc(100svh - var(--navbar-height)));
@@ -152,7 +277,7 @@ const relatedArticles = getRelatedArticles(article.slug);
   h1 {
     max-width: 11ch;
     font-size: clamp(3.2rem, 7vw, 7.6rem);
-    line-height: .96;
+    line-height: 0.96;
   }
 
   .article-title p {
@@ -166,7 +291,7 @@ const relatedArticles = getRelatedArticles(article.slug);
   .article-image {
     min-height: clamp(28rem, 50vw, 42rem);
     overflow: hidden;
-    border: 1px solid rgba(198, 169, 114, .22);
+    border: 1px solid rgba(198, 169, 114, 0.22);
   }
 
   .article-image img {
@@ -174,12 +299,12 @@ const relatedArticles = getRelatedArticles(article.slug);
     height: 100%;
     min-height: inherit;
     object-fit: cover;
-    opacity: .84;
+    opacity: 0.84;
   }
 
   .article-body {
     display: grid;
-    grid-template-columns: minmax(12rem, .25fr) minmax(0, .58fr);
+    grid-template-columns: minmax(12rem, 0.25fr) minmax(0, 0.58fr);
     gap: clamp(var(--space-6), 8vw, var(--space-12));
     padding-block: clamp(var(--space-9), 10vw, var(--space-13));
   }
@@ -189,8 +314,8 @@ const relatedArticles = getRelatedArticles(article.slug);
     top: calc(var(--navbar-height) + var(--space-5));
     align-self: start;
     padding: var(--space-5);
-    border: 1px solid rgba(198, 169, 114, .18);
-    background: rgba(255, 255, 255, .025);
+    border: 1px solid rgba(198, 169, 114, 0.18);
+    background: rgba(255, 255, 255, 0.025);
   }
 
   .article-note span,
@@ -215,21 +340,62 @@ const relatedArticles = getRelatedArticles(article.slug);
     gap: var(--space-6);
     max-width: 52rem;
   }
+  .share-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border-default);
+  }
+  .share-links a,
+  .share-links button {
+    min-height: 44px;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--cocoa-border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .share-links a:focus-visible,
+  .share-links button:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+  .article-connections {
+    display: grid;
+    grid-template-columns: minmax(0, 0.5fr) minmax(18rem, 0.5fr);
+    gap: var(--space-6);
+    padding-block: clamp(var(--space-8), 8vw, var(--space-11));
+    border-bottom: 1px solid var(--border-default);
+  }
+  .article-connections > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+  .article-connections > div:first-child {
+    display: grid;
+  }
+  .article-connections h2 {
+    font-size: clamp(2.5rem, 5vw, 5rem);
+  }
 
   .article-content p:first-child::first-letter {
     float: left;
-    padding: .2rem .5rem 0 0;
+    padding: 0.2rem 0.5rem 0 0;
     color: var(--sand-200);
     font-family: var(--font-display);
     font-size: clamp(5rem, 9vw, 8rem);
-    line-height: .72;
+    line-height: 0.72;
   }
 
   .related-articles {
     display: grid;
     gap: var(--space-7);
     padding-block: clamp(var(--space-8), 9vw, var(--space-12));
-    border-block: 1px solid rgba(255, 255, 255, .08);
+    border-block: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .related-heading h2,
@@ -251,16 +417,18 @@ const relatedArticles = getRelatedArticles(article.slug);
     gap: var(--space-3);
     padding: var(--space-5);
     min-height: 20rem;
-    border: 1px solid rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     color: inherit;
     text-decoration: none;
-    background: rgba(255, 255, 255, .025);
-    transition: border-color 420ms var(--ease-luxury), transform 420ms var(--ease-luxury);
+    background: rgba(255, 255, 255, 0.025);
+    transition:
+      border-color 420ms var(--ease-luxury),
+      transform 420ms var(--ease-luxury);
   }
 
   .related-card:hover {
-    border-color: rgba(198, 169, 114, .34);
-    transform: translate3d(0, -.3rem, 0);
+    border-color: rgba(198, 169, 114, 0.34);
+    transform: translate3d(0, -0.3rem, 0);
   }
 
   .related-card h3 {
@@ -305,6 +473,9 @@ const relatedArticles = getRelatedArticles(article.slug);
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .reading-progress i {
+      transition: none;
+    }
     .related-card {
       transition: none;
     }

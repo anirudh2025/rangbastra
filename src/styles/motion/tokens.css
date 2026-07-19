@@ -78,6 +78,15 @@ REFINED INTERACTION MOTION
 --motion-image:var(--motion-luxury);
 --motion-reveal:var(--motion-editorial);
 
+/* Semantic hierarchy: use these names in new experience components. */
+--motion-micro:150ms;
+--motion-button-transition:350ms;
+--motion-card-reveal:400ms;
+--motion-section-entrance:800ms;
+--motion-page-transition:800ms;
+--motion-editorial-carousel:620ms;
+--motion-scroll-progress:120ms;
+
 --motion-card-lift:calc(var(--motion-distance-xs) * -1);
 --motion-button-lift:calc(var(--motion-distance-xs) * -.5);
 --motion-card-scale:1.01;
