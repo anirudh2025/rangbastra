@@ -30,10 +30,10 @@ import Footer from "../sections/home/Footer.astro";
 
     overflow: hidden;
     background:
-      linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px) 50% 0 / 25% 100%,
+      linear-gradient(90deg, rgba(var(--cocoa-rgb), .035) 1px, transparent 1px) 50% 0 / 25% 100%,
       linear-gradient(180deg, rgba(0, 0, 0, .98), transparent 24%),
-      radial-gradient(circle at 86% 11%, rgba(198, 169, 114, .1), transparent 28%),
-      radial-gradient(circle at 14% 48%, rgba(181, 147, 130, .055), transparent 32%),
+      radial-gradient(circle at 86% 11%, rgba(var(--cocoa-rgb), .1), transparent 28%),
+      radial-gradient(circle at 14% 48%, rgba(var(--cocoa-rgb), .055), transparent 32%),
       var(--surface-canvas);
   }
 
@@ -44,8 +44,7 @@ import Footer from "../sections/home/Footer.astro";
     z-index: 0;
     pointer-events: none;
     background:
-      linear-gradient(90deg, transparent 0 11%, rgba(198, 169, 114, .14) 11.1% 11.18%, transparent 11.3% 88.7%, rgba(198, 169, 114, .14) 88.82% 88.9%, transparent 89%),
-      var(--gradient-satin-fold);
+      linear-gradient(90deg, transparent 0 11%, rgba(var(--cocoa-rgb), .14) 11.1% 11.18%, transparent 11.3% 88.7%, rgba(var(--cocoa-rgb), .14) 88.82% 88.9%, transparent 89%);
     opacity: .18;
     transform: scale(1.08);
   }
