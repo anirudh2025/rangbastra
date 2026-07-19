@@ -24,7 +24,6 @@ import { lookbookPages } from "../../data/lookbookBook";
           class:list={["book-page", `book-page--${page.kind}`]}
           data-page={index}
           data-page-id={page.id}
-          hidden={index > 1}
         >
           {page.image && (
             <figure>
@@ -65,6 +64,7 @@ import { lookbookPages } from "../../data/lookbookBook";
   document
     .querySelectorAll<HTMLElement>("[data-lookbook-reader]")
     .forEach((root) => {
+      root.classList.add("reader--enhanced");
       const pages = [...root.querySelectorAll<HTMLElement>("[data-page]")];
       const desktop = () => matchMedia("(min-width: 801px)").matches;
       let index = 0;
@@ -176,6 +176,15 @@ import { lookbookPages } from "../../data/lookbookBook";
     min-height: min(44rem, 72svh);
     border: 1px solid var(--cocoa-border-soft);
     background: #020202;
+  }
+  .reader:not(.reader--enhanced) .reader-stage {
+    grid-template-columns: 1fr;
+  }
+  .reader:not(.reader--enhanced) .book-page {
+    min-height: min(44rem, 72svh);
+  }
+  .reader:not(.reader--enhanced) .reader-controls {
+    display: none;
   }
   .book-page {
     position: relative;

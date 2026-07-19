@@ -15,14 +15,13 @@ export interface JournalArticle {
   body: string[];
 }
 
-const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "author" | "publishedDate" | "productSlugs"> & { readingTime?: string }> = [
+const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "author" | "publishedDate" | "productSlugs">> = [
   {
     slug: "begin-custom-bridal-lehenga-journey",
     title: "How To Begin A Custom Bridal Lehenga Journey",
     description:
       "A calm editorial guide to beginning your custom bridal lehenga journey with clarity, emotion and trust.",
     category: "Bridal Guidance",
-    readingTime: "5 min read",
     heroImage:
       "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648330/Bridal_Edit_wajwba.webp",
     heroAlt: "Editorial bridal couture portrait in warm atelier light",
@@ -40,7 +39,6 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "Understand the difference between couture and ready-made fashion through craft, fit, emotion and personal detail.",
     category: "Couture Knowledge",
-    readingTime: "4 min read",
     heroImage:
       "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648334/Couture_Edit_u7kmac.webp",
     heroAlt: "Handcrafted couture detail photographed editorially",
@@ -58,7 +56,6 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "A Rangbastra editorial note on choosing bridal colour through season, ceremony, jewellery and personal feeling.",
     category: "Colour",
-    readingTime: "4 min read",
     heroImage:
       "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
     heroAlt: "Bride in a richly coloured couture ensemble",
@@ -76,7 +73,6 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "A couture knowledge note on handwork, embroidery density, detail placement and why restraint matters.",
     category: "Craft",
-    readingTime: "6 min read",
     heroImage:
       "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648351/Festive_Edit_cq2w5g.webp",
     heroAlt: "Close view of ornate handcrafted embroidery",
@@ -94,7 +90,6 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "A practical yet emotional guide to preparing for a private bridal design conversation.",
     category: "Atelier Notes",
-    readingTime: "5 min read",
     heroImage:
       "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782614896/Hero_Desktop_klovjb.webp",
     heroAlt: "Rangbastra couture mood in a cinematic atelier setting",
@@ -112,7 +107,6 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "Why personal details, emotional references and private symbols make bridal couture more meaningful.",
     category: "Personalisation",
-    readingTime: "4 min read",
     heroImage:
       "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648338/Custom_Edit_vbbzxk.webp",
     heroAlt: "Custom couture details arranged in an editorial composition",
@@ -136,7 +130,7 @@ export const journalArticles: JournalArticle[] = journalDrafts.map((article, ind
     wordCount: count,
     readingTime: `${Math.max(1, Math.ceil(count / 220))} min read`,
     author: "Rangbastra Editorial Desk",
-    publishedDate: `2026-07-${String(10 + index).padStart(2,"0")}`,
+    publishedDate: "2026-07-19",
     productSlugs: index % 2 === 0 ? ["amaira"] : ["gulnaar"],
     storyHref: "/bride-stories",
   };

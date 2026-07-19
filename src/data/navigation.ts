@@ -30,7 +30,7 @@ export const navigation: NavigationItem[] = [
     icon: "customCouture",
     children: [
       { label: "Custom Couture", href: "/custom-couture", icon:"needle" },
-      { label: "Our Philosophy", href: "/our-story", icon:"journal" },
+        { label: "Our Story", href: "/our-story", icon:"journal" },
       { label: "Rangbastra Journey", href: "/rangbastra-journey", icon:"signature" },
       { label: "Designer Consultation", href: "/designer-consultation", icon:"designer" },
     ],
