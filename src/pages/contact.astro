@@ -1,314 +1,246 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/primitives/Button.astro";
 import Container from "../components/primitives/Container.astro";
 import Eyebrow from "../components/primitives/Eyebrow.astro";
 import Icon from "../components/primitives/Icon.astro";
 import Section from "../components/primitives/Section.astro";
-import EditorialMarquee from "../components/editorial/EditorialMarquee.astro";
 import Footer from "../sections/home/Footer.astro";
 import { contact, getMailtoHref, getWhatsAppHref } from "../data/contact";
-const purposes = [
-  "General enquiry",
-  "Couture consultation",
-  "Existing order or request",
-  "Press or collaboration",
-];
-const methods = [
+
+const contactMethods = [
   {
     label: "WhatsApp",
     value: contact.whatsappNumber,
-    href: getWhatsAppHref("customCouture"),
+    href: getWhatsAppHref("designYourOutfit"),
     icon: "whatsapp",
   },
   {
     label: "Email",
     value: contact.email,
-    href: getMailtoHref(),
+    href: getMailtoHref("Rangbastra couture enquiry"),
     icon: "email",
   },
   {
-    label: "Schedule a call",
-    value: "Request a private time",
-    href: "/designer-consultation",
-    icon: "phoneCall",
+    label: "Instagram",
+    value: "@rangbastra",
+    href: contact.instagramUrl,
+    icon: "instagram",
   },
 ];
 ---
 
 <BaseLayout
-  title="Contact Rangbastra | Couture, Support & Collaborations"
-  description="Contact Rangbastra for couture consultations, general enquiries, existing-request support, press and collaborations."
+  title="Contact | Rangbastra"
+  description="Contact Rangbastra for custom couture inquiries through WhatsApp, email, Instagram or the Design Your Outfit experience."
   canonical="/contact"
-  ><Section class="contact-section"
-    ><Container class="contact-container"
-      ><header>
-        <Eyebrow>Contact Rangbastra</Eyebrow><h1>
-          Reach the right conversation
-        </h1><p>
-          Choose the purpose of your note so the Rangbastra team can respond
-          with the right context. Initial replies are normally sent within one
-          business day.
-        </p>
-      </header><div class="purpose-grid">
-        {
-          purposes.map((purpose, index) => (
-            <article>
-              <>
-                <span>0{index + 1}</span>
-                <h2>{purpose}</h2>
-                <p>
-                  {index === 0
-                    ? "Questions about Rangbastra, services or visiting the Anand studio."
-                    : index === 1
-                      ? "Begin with your occasion, timeline and the direction you are considering."
-                      : index === 2
-                        ? "Include the email or phone number used for your existing enquiry."
-                        : "Share the organisation, proposal, timing and intended use."}
-                </p>
-              </>
-            </article>
-          ))
-        }
-      </div><section class="contact-workspace">
-        <form data-contact-form novalidate>
-          <div>
-            <Eyebrow>Send a Note</Eyebrow><h2>
-              Only the details needed to reply
-            </h2>
-          </div><label
-            >Purpose<select name="purpose" required
-              ><option value="">Choose a purpose</option>{
-                purposes.map((purpose) => <option>{purpose}</option>)
-              }</select
-            ></label
-          ><label
-            >Name<input
-              name="name"
-              autocomplete="name"
-              maxlength="80"
-              required
-            /></label
-          ><label
-            >Email<input
-              type="email"
-              name="email"
-              autocomplete="email"
-              maxlength="160"
-              required
-            /></label
-          ><label
-            >Message<textarea name="message" rows="6" maxlength="2000" required
-            ></textarea></label
-          ><label class="honeypot" aria-hidden="true"
-            >Website<input
-              name="website"
-              tabindex="-1"
-              autocomplete="off"
-            /></label
-          ><label class="consent"
-            ><input type="checkbox" name="consent" required /><span
-              >I consent to Rangbastra using these details to respond to this
-              enquiry. Read the <a href="/privacy-policy">Privacy Policy</a
-              >.</span
-            ></label
-          ><button type="submit">Prepare Email</button><p class="form-note">
-            This form does not write to a database. It prepares an email in your
-            device’s mail application.
-          </p><output data-form-status aria-live="polite"></output>
-        </form><aside>
-          <Eyebrow>Direct Contact</Eyebrow>{
-            methods.map((method) => (
-              <a href={method.href}>
-                <>
-                  <Icon name={method.icon} size={24} />
-                  <span>{method.label}</span>
-                  <strong>{method.value}</strong>
-                </>
-              </a>
-            ))
-          }
-        </aside>
-      </section><EditorialMarquee
-        phrases={[
-          "Private Consultation",
-          "Handcrafted in Anand",
-          "Designed Around Your Story",
-        ]}
-        label="Contact and consultation principles"
-      /></Container
-    ></Section
-  ><Footer /></BaseLayout
 >
-<script>
-  document
-    .querySelectorAll<HTMLFormElement>("[data-contact-form]")
-    .forEach((form) =>
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const status =
-          form.querySelector<HTMLOutputElement>("[data-form-status]")!;
-        const data = new FormData(form);
-        if (data.get("website")) {
-          status.textContent = "Unable to prepare this enquiry.";
-          return;
-        }
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          status.textContent = "Please complete the required fields.";
-          return;
-        }
-        const subject = `Rangbastra: ${data.get("purpose")}`;
-        const body = `Name: ${data.get("name")}\nEmail: ${data.get("email")}\nPurpose: ${data.get("purpose")}\n\n${data.get("message")}`;
-        status.textContent =
-          "Your email application is opening. Please send the prepared message to complete your enquiry.";
-        location.href = `mailto:hello@rangbastra.luxury?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      }),
-    );
-</script>
+  <Section class="contact-section">
+    <Container class="contact-container">
+      <section class="contact-hero" aria-labelledby="contact-heading">
+        <div class="contact-copy">
+          <Eyebrow>Contact</Eyebrow>
+          <h1 id="contact-heading">Begin With A Quiet Note</h1>
+          <p>
+            Tell us the celebration, the mood and the detail you cannot stop
+            thinking about. Rangbastra will guide the next couture step.
+          </p>
+          <Button href="/design-your-outfit">Send A Couture Note</Button>
+        </div>
+
+        <div class="contact-card" aria-label="Rangbastra contact details">
+          <span>Rangbastra Atelier</span>
+          <p>{contact.address}</p>
+          <p>No online payment or checkout is currently processed on this website. Couture inquiries continue through direct atelier communication.</p>
+        </div>
+      </section>
+
+      <section class="contact-methods" aria-label="Contact methods">
+        {contactMethods.map((method) => (
+          <a href={method.href} class="contact-method" target={method.label === "Instagram" ? "_blank" : undefined} rel={method.label === "Instagram" ? "noopener noreferrer" : undefined}>
+            <Icon name={method.icon} size={30} />
+            <span>{method.label}</span>
+            <strong>{method.value}</strong>
+          </a>
+        ))}
+      </section>
+
+      <aside class="contact-guidance">
+        <div>
+          <Eyebrow>What To Share</Eyebrow>
+          <h2>A Few Details Help The Atelier Respond Beautifully</h2>
+        </div>
+        <ul>
+          <li>Occasion and expected date</li>
+          <li>City or delivery location</li>
+          <li>Reference images or existing Rangbastra pieces you liked</li>
+          <li>Preferred colour, silhouette, embroidery or fabric direction</li>
+        </ul>
+      </aside>
+    </Container>
+  </Section>
+  <Footer />
+</BaseLayout>
+
 <style>
   :global(.contact-section) {
-    --section-padding-block: clamp(var(--space-12), 14vw, var(--space-14))
-      clamp(var(--space-10), 10vw, var(--space-13));
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
+    overflow: hidden;
     background:
-      radial-gradient(
-        circle at 82% 12%,
-        rgba(var(--cocoa-rgb), 0.14),
-        transparent 34%
-      ),
-      #000;
+      radial-gradient(circle at 78% 24%, rgba(106, 78, 66, .24), transparent 34%),
+      radial-gradient(circle at 20% 70%, rgba(198, 169, 114, .11), transparent 28%),
+      var(--surface-canvas);
   }
+
   :global(.contact-container) {
     --container-default: var(--container-wide);
-    display: grid;
-    max-width: 100%;
-    min-width: 0;
-    overflow: hidden;
-    gap: clamp(var(--space-8), 9vw, var(--space-12));
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
   }
-  header {
+
+  .contact-hero {
     display: grid;
-    min-width: 0;
-    max-width: 62rem;
+    grid-template-columns: minmax(0, .58fr) minmax(18rem, .34fr);
+    gap: clamp(var(--space-6), 8vw, var(--space-12));
+    align-items: center;
+    min-height: min(48rem, calc(100svh - var(--navbar-height)));
+    padding-top: clamp(var(--space-12), 14vw, var(--space-14));
+  }
+
+  .contact-copy {
+    display: grid;
     gap: var(--space-5);
+    justify-items: start;
   }
+
   h1,
   h2 {
     color: var(--text-primary);
     font-family: var(--font-display);
     font-weight: var(--weight-light);
-    line-height: 1;
+    letter-spacing: var(--tracking-heading);
   }
+
   h1 {
-    font-size: clamp(3.2rem, 7vw, 7.8rem);
+    max-width: 10ch;
+    font-size: clamp(3.6rem, 8vw, 8rem);
+    line-height: .94;
   }
-  h2 {
-    font-size: clamp(2rem, 3.5vw, 3.8rem);
-  }
-  p,
-  label {
+
+  .contact-copy p,
+  .contact-card p,
+  .contact-guidance li {
     color: var(--text-secondary);
+    font-size: var(--body-md);
     line-height: var(--leading-body);
-    overflow-wrap: anywhere;
   }
-  .purpose-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-3);
+
+  .contact-copy p {
+    max-width: var(--measure-sm);
+    font-size: var(--body-lg);
   }
-  article {
-    display: grid;
-    gap: var(--space-3);
-    padding: var(--space-5);
-    border: 1px solid var(--cocoa-border-soft);
-    background: #030303;
-  }
-  article > span {
-    color: var(--cocoa-300);
-  }
-  .contact-workspace {
-    display: grid;
-    grid-template-columns: minmax(0, 0.62fr) minmax(18rem, 0.38fr);
-    gap: var(--space-5);
-  }
-  form,
-  .contact-workspace aside {
+
+  .contact-card {
     display: grid;
     gap: var(--space-4);
     padding: clamp(var(--space-5), 5vw, var(--space-8));
-    border: 1px solid var(--cocoa-border-soft);
-    border-radius: var(--radius-lg);
-    background: #030303;
+    min-height: 24rem;
+    align-content: end;
+    border: 1px solid rgba(198, 169, 114, .2);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .04), transparent),
+      rgba(255, 255, 255, .025);
   }
-  label {
-    display: grid;
-    gap: var(--space-2);
-  }
-  input,
-  select,
-  textarea {
-    width: 100%;
-    min-height: 48px;
-    padding: var(--space-3);
-    border: 1px solid var(--cocoa-border);
-    border-radius: var(--radius-md);
-    background: #080706;
-    color: var(--text-primary);
-  }
-  textarea {
-    resize: vertical;
-  }
-  .consent {
-    grid-template-columns: auto 1fr;
-  }
-  .consent input {
-    width: 1.2rem;
-    min-height: 1.2rem;
-  }
-  .honeypot {
-    position: absolute;
-    left: -9999px;
-  }
-  form button {
-    min-height: 48px;
-    border: 1px solid rgb(var(--cocoa-rgb));
-    border-radius: var(--radius-md);
-    background: rgba(var(--cocoa-rgb), 0.18);
-    color: var(--text-primary);
-  }
-  input:focus-visible,
-  select:focus-visible,
-  textarea:focus-visible,
-  form button:focus-visible,
-  .contact-workspace aside a:focus-visible {
-    outline: 2px solid var(--focus-ring);
-    outline-offset: 3px;
-  }
-  .form-note,
-  output {
+
+  .contact-card span,
+  .contact-method span {
+    color: var(--sand-200);
     font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
   }
-  .contact-workspace aside a {
+
+  .contact-methods {
     display: grid;
-    gap: var(--space-2);
-    padding: var(--space-4);
-    border-bottom: 1px solid var(--border-default);
-    color: var(--text-secondary);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    padding-block: clamp(var(--space-8), 9vw, var(--space-12));
+    border-top: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  .contact-method {
+    display: grid;
+    gap: var(--space-4);
+    min-height: 18rem;
+    padding: var(--space-5);
+    align-content: end;
+    color: inherit;
     text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(255, 255, 255, .025);
+    transition: border-color 420ms var(--ease-luxury), transform 420ms var(--ease-luxury);
   }
-  .contact-workspace aside strong {
+
+  .contact-method:hover {
+    border-color: rgba(198, 169, 114, .35);
+    transform: translate3d(0, -.35rem, 0);
+  }
+
+  .contact-method strong {
     color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 2.8vw, 2.8rem);
+    font-weight: var(--weight-light);
+    line-height: 1.05;
+    word-break: break-word;
   }
+
+  .contact-guidance {
+    display: grid;
+    grid-template-columns: minmax(0, .44fr) minmax(0, .5fr);
+    gap: clamp(var(--space-6), 7vw, var(--space-10));
+    padding: clamp(var(--space-6), 6vw, var(--space-9));
+    border: 1px solid rgba(198, 169, 114, .18);
+  }
+
+  .contact-guidance h2 {
+    max-width: 12ch;
+    margin-top: var(--space-4);
+    font-size: clamp(2.4rem, 5vw, 5.2rem);
+    line-height: 1;
+  }
+
+  .contact-guidance ul {
+    display: grid;
+    gap: var(--space-3);
+    padding-left: var(--space-5);
+  }
+
   @media (max-width: 900px) {
-    .purpose-grid {
-      grid-template-columns: repeat(2, 1fr);
+    .contact-hero,
+    .contact-guidance {
+      grid-template-columns: 1fr;
     }
-    .contact-workspace {
+
+    .contact-methods {
       grid-template-columns: 1fr;
     }
   }
-  @media (max-width: 560px) {
-    .purpose-grid {
-      grid-template-columns: 1fr;
+
+  @media (max-width: 640px) {
+    .contact-hero {
+      min-height: auto;
+      padding-top: clamp(var(--space-11), 28vw, var(--space-13));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-method {
+      transition: none;
+    }
+
+    .contact-method:hover {
+      transform: none;
     }
   }
 </style>
