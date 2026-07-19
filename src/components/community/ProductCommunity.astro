@@ -1,0 +1,48 @@
+---
+interface Props { slug: string; name: string; }
+const { slug, name } = Astro.props;
+---
+
+<section class="community" data-product-community data-product-slug={slug} aria-labelledby={`community-${slug}`}>
+  <header><p>Client Community</p><h2 id={`community-${slug}`}>Thoughtful impressions, honestly shared</h2><span>Only approved comments appear publicly. Ratings and likes never use seeded or invented totals.</span></header>
+  <div class="community__summary">
+    <article><strong data-rating-summary>Not yet rated</strong><span data-rating-count>No ratings</span></article>
+    <article><strong data-like-count>0</strong><span>customer likes</span></article>
+  </div>
+  <div class="community__actions">
+    <fieldset data-rating-control disabled><legend>Your rating</legend>{[1,2,3,4,5].map(value=><button type="button" data-rating={value} aria-label={`Rate ${name} ${value} out of 5`}>{value}</button>)}</fieldset>
+    <button type="button" data-community-like disabled>Like this piece</button>
+  </div>
+  <div class="community__comments"><h3>Approved comments</h3><div data-comment-list></div><p data-comment-empty>No approved comments yet.</p></div>
+  <form data-comment-form>
+    <label>Share a considered comment<textarea name="body" maxlength="1200" rows="4" required disabled></textarea></label>
+    <button type="submit" disabled>Submit for review</button><p>Comments are moderated before publication.</p><output data-community-status aria-live="polite"></output>
+  </form>
+  <button class="community__locked" type="button" data-community-auth>Sign in to rate, like or comment</button>
+
+  <dialog data-community-dialog aria-labelledby={`community-dialog-${slug}`}>
+    <div><h3 id={`community-dialog-${slug}`}>Continue in your private account</h3><p>Sign in is required to prevent duplicate ratings, protect community conversations and link this action to its owner.</p><div><button type="button" data-community-close>Stay Here</button><a data-community-signin href={`/account/login?next=${encodeURIComponent(`/products/${slug}#community-${slug}`)}`}>Sign In</a><a href={`/account/signup?next=${encodeURIComponent(`/products/${slug}#community-${slug}`)}`}>Create Account</a></div></div>
+  </dialog>
+</section>
+
+<script>
+  import { getSupabaseBrowserClient } from "../../lib/auth/supabaseBrowser";
+  document.querySelectorAll<HTMLElement>("[data-product-community]").forEach(async(root)=>{
+    const slug=root.dataset.productSlug!;const status=root.querySelector<HTMLOutputElement>("[data-community-status]")!;const dialog=root.querySelector<HTMLDialogElement>("[data-community-dialog]")!;let user:any=null;
+    const say=(message:string)=>status.textContent=message;
+    root.querySelector("[data-community-auth]")?.addEventListener("click",()=>dialog.showModal());root.querySelector("[data-community-close]")?.addEventListener("click",()=>dialog.close());
+    let supabase;try{supabase=getSupabaseBrowserClient()}catch{say("Community features are unavailable until account access is configured.");return}
+    const renderComments=(items:any[])=>{const list=root.querySelector<HTMLElement>("[data-comment-list]")!;list.replaceChildren(...items.map(item=>{const article=document.createElement("article"),name=document.createElement("strong"),body=document.createElement("p"),time=document.createElement("time");name.textContent=item.display_name_snapshot;body.textContent=item.body;time.dateTime=item.created_at;time.textContent=new Intl.DateTimeFormat("en-IN",{dateStyle:"medium"}).format(new Date(item.created_at));article.append(name,body,time);return article}));root.querySelector<HTMLElement>("[data-comment-empty]")!.hidden=items.length>0};
+    const refresh=async()=>{const [summary,comments]=await Promise.all([supabase.rpc("get_product_community_summary",{p_product_slug:slug}).maybeSingle(),supabase.from("product_comments").select("id,display_name_snapshot,body,created_at").eq("product_slug",slug).eq("moderation_status","approved").order("created_at",{ascending:false}).limit(20)]);const metrics=summary.data as {rating_average:number|null;rating_count:number;like_count:number}|null;if(metrics){const count=Number(metrics.rating_count||0);root.querySelector<HTMLElement>("[data-rating-summary]")!.textContent=count?`${metrics.rating_average} / 5`:"Not yet rated";root.querySelector<HTMLElement>("[data-rating-count]")!.textContent=count?`${count} rating${count===1?"":"s"}`:"No ratings";root.querySelector<HTMLElement>("[data-like-count]")!.textContent=String(metrics.like_count||0)}if(!comments.error)renderComments(comments.data||[])};
+    const enable=(sessionUser:any)=>{user=sessionUser;root.querySelectorAll<HTMLButtonElement>("[data-rating], [data-community-like], [data-comment-form] button").forEach(button=>button.disabled=!user);const area=root.querySelector<HTMLTextAreaElement>("[data-comment-form] textarea")!;area.disabled=!user;root.querySelector<HTMLFieldSetElement>("[data-rating-control]")!.disabled=!user;root.querySelector<HTMLElement>("[data-community-auth]")!.hidden=Boolean(user)};
+    const session=await supabase.auth.getSession();enable(session.data.session?.user||null);supabase.auth.onAuthStateChange((_event,session)=>enable(session?.user||null));
+    root.querySelectorAll<HTMLButtonElement>("[data-rating]").forEach(button=>button.addEventListener("click",async()=>{if(!user)return dialog.showModal();const {error}=await supabase.from("product_ratings").upsert({user_id:user.id,product_slug:slug,rating:Number(button.dataset.rating)});say(error?"Your rating could not be saved.":"Your rating is saved.");if(!error)refresh()}));
+    root.querySelector<HTMLButtonElement>("[data-community-like]")?.addEventListener("click",async()=>{if(!user)return dialog.showModal();const existing=await supabase.from("product_likes").select("product_slug").eq("user_id",user.id).eq("product_slug",slug).maybeSingle();const result=existing.data?await supabase.from("product_likes").delete().eq("user_id",user.id).eq("product_slug",slug):await supabase.from("product_likes").insert({user_id:user.id,product_slug:slug});say(result.error?"Your like could not be updated.":existing.data?"Like removed.":"Piece liked.");if(!result.error)refresh()});
+    root.querySelector<HTMLFormElement>("[data-comment-form]")?.addEventListener("submit",async event=>{event.preventDefault();if(!user)return dialog.showModal();const form=event.currentTarget as HTMLFormElement;const body=String(new FormData(form).get("body")||"").trim();if(!body)return;const display=String(user.user_metadata?.display_name||user.user_metadata?.full_name||user.email?.split("@")[0]||"Rangbastra client").slice(0,80);const {error}=await supabase.from("product_comments").insert({user_id:user.id,product_slug:slug,display_name_snapshot:display,body});say(error?"Your comment could not be submitted.":"Your comment was submitted for moderation.");if(!error)form.reset()});
+    refresh();
+  });
+</script>
+
+<style>
+  .community{display:grid;gap:clamp(var(--space-6),6vw,var(--space-9));padding:clamp(var(--space-6),6vw,var(--space-10));border:1px solid var(--cocoa-border-soft);background:#030303}.community header{display:grid;max-width:52rem;gap:var(--space-3)}.community header>p,.community h3{color:var(--cocoa-300);font-size:var(--caption);letter-spacing:var(--tracking-label);text-transform:uppercase}.community h2{color:var(--text-primary);font-family:var(--font-display);font-size:clamp(2.7rem,6vw,6rem);font-weight:var(--weight-light);line-height:1}.community header span,.community form>p{color:var(--text-secondary);line-height:var(--leading-body)}.community__summary{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--border-default)}.community__summary article{display:grid;gap:.5rem;padding:var(--space-5);border-right:1px solid var(--border-default)}.community__summary strong{color:var(--text-primary);font-family:var(--font-display);font-size:clamp(2rem,4vw,3.5rem);font-weight:var(--weight-light)}.community__actions{display:flex;flex-wrap:wrap;gap:var(--space-4)}.community fieldset{display:flex;gap:.4rem;border:0}.community button,.community dialog a{min-height:44px;padding:.7rem 1rem;border:1px solid var(--cocoa-border);border-radius:var(--radius-md);background:transparent;color:var(--text-primary)}.community__comments,.community form{display:grid;gap:var(--space-3)}.community__comments article{display:grid;gap:.5rem;padding-block:var(--space-4);border-bottom:1px solid var(--border-default)}.community__comments p,.community__comments time{color:var(--text-secondary)}.community textarea{width:100%;padding:var(--space-3);border:1px solid var(--cocoa-border);background:#080706;color:var(--text-primary)}.community__locked{justify-self:start}.community dialog{max-width:min(34rem,calc(100% - 2rem));padding:0;border:1px solid var(--cocoa-border);border-radius:var(--radius-lg);background:#050403;color:var(--text-secondary)}.community dialog::backdrop{background:rgba(0,0,0,.82)}.community dialog>div{display:grid;gap:var(--space-4);padding:var(--space-6)}.community dialog h3{color:var(--text-primary);font-family:var(--font-display);font-size:2.3rem;letter-spacing:0;text-transform:none}.community dialog div div{display:flex;flex-wrap:wrap;gap:.75rem}[hidden]{display:none!important}@media(max-width:600px){.community__summary{grid-template-columns:1fr}.community__summary article{border-right:0;border-bottom:1px solid var(--border-default)}}
+</style>

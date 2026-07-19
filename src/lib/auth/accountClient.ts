@@ -190,12 +190,13 @@ export const initAccountExperience = async () => {
       ?.addEventListener("click", async (event) => {
         if (googleBusy) return;
         googleBusy = true;
-        const button = event.currentTarget;
+        const button = event.currentTarget as HTMLButtonElement;
         button.disabled = true;
         note.textContent = "Opening Google’s secure sign-in…";
+        const next = getSafeNext();
         const { error } = await supabase.auth.signInWithOAuth({
           provider: "google",
-          options: { redirectTo: `${window.location.origin}/auth/callback` },
+          options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
         });
         if (error) {
           googleBusy = false;

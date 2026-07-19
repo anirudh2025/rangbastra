@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import SEOHead from "../components/layout/SEOHead.astro";
 import Navbar from "../components/navigation/Navbar.astro";
 import HomepageAtmosphere from "../components/layout/HomepageAtmosphere.astro";
+import AuthActionGuard from "../components/auth/AuthActionGuard.astro";
 
 interface Props {
   title?: string;
@@ -49,6 +50,7 @@ const {
     <HomepageAtmosphere />
 
     <Navbar />
+    <AuthActionGuard />
 
     <main>
       <slot />

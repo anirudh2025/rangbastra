@@ -14,7 +14,8 @@
     "security:secrets": "node scripts/security-audit.mjs",
     "security:bundle": "node scripts/check-client-bundle.mjs",
     "security:dependencies": "npm audit --audit-level=high",
-    "security": "npm run security:secrets && npm run build && npm run security:bundle && npm run security:dependencies"
+    "security": "npm run security:secrets && npm run build && npm run security:bundle && npm run security:dependencies",
+    "test:portal": "npm run build && node scripts/portal-static-check.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

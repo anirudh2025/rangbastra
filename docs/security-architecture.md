@@ -36,3 +36,8 @@ The submission function accepts at most two files, each at most 8 MiB, and permi
 ## Logging and monitoring
 
 Functions return random request IDs and log only request ID plus exception type. Never log payloads or provider bodies. Configure alerts for elevated 401/403/413/429/5xx rates, repeated upload rejection, webhook failures, RLS denials, Auth abuse, and unusual service-role activity. Retention and log access must follow the data inventory.
+## Premium customer portal Preview boundary
+
+The premium customer portal remains Preview-only. Its browser-held Supabase session is suitable for demonstrating owner-RLS-backed, low-risk account reads, but it is not the final authorization boundary for uploads, appointments, request messaging, moderation, account export/deletion or administrator operations. Those capabilities require cookie-backed server validation, CSRF protection, rate limiting, no-store responses and explicit two-user isolation tests before activation.
+
+The private `customer-avatars` bucket intentionally has no customer upload policy. A future server endpoint must inspect file signatures, enforce byte limits, resize/re-encode images, assign randomized user-owned paths and support deletion before avatar upload is enabled.

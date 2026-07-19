@@ -9,6 +9,7 @@ import CoutureImpressionPanel from "../../components/couture/CoutureImpressionPa
 import CoutureImpressionForm from "../../components/couture/CoutureImpressionForm.astro";
 import CoutureAtelierCTA from "../../components/couture/CoutureAtelierCTA.astro";
 import CoutureRelated from "../../components/couture/CoutureRelated.astro";
+import ProductCommunity from "../../components/community/ProductCommunity.astro";
 import Footer from "../../sections/home/Footer.astro";
 import { getProductCoverImage, getProductImages, getPublishedCouturePieces, getRelatedCouturePieces } from "../../lib/couture";
 import type { CouturePiece } from "../../data/couture";
@@ -93,6 +94,7 @@ const breadcrumbJsonLd = {
       <CoutureCraftDetails product={product} />
       <CoutureImpressionForm product={product} />
       <CoutureAtelierCTA product={product} />
+      <ProductCommunity slug={product.slug} name={product.name} />
       <CoutureRelated products={relatedProducts} />
     </Container>
   </Section>
