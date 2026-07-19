@@ -1,0 +1,375 @@
+---
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import Eyebrow from "../../components/primitives/Eyebrow.astro";
+import {
+  getCloudinaryImageUrl,
+  getProductImages,
+  getCouturePieceBySlug,
+} from "../../lib/couture";
+const product = getCouturePieceBySlug("elara")!;
+const image =
+  getProductImages(product).find((item) => item.id === "detail") ??
+  getProductImages(product)[0];
+const details = [
+  {
+    x: 31,
+    y: 31,
+    label: "Detail One",
+    title: "Handworked surface",
+    copy: product.handwork
+      ? `${product.handwork} is placed to respond to light without overpowering the silhouette.`
+      : "The embroidery is balanced against movement and weight.",
+  },
+  {
+    x: 62,
+    y: 46,
+    label: "Detail Two",
+    title: "Tissue movement",
+    copy: `${product.fabric ?? "The chosen fabric"} is considered for structure, softness and how it changes as she moves.`,
+  },
+  {
+    x: 40,
+    y: 69,
+    label: "Detail Three",
+    title: "Proportion before ornament",
+    copy: "Placement follows the body and fall of the gown; detail is refined only after the silhouette feels resolved.",
+  },
+  {
+    x: 70,
+    y: 78,
+    label: "Detail Four",
+    title: "A fitting is part of the craft",
+    copy: "Length, balance and comfort are adjusted around the person—not inferred from a standard size alone.",
+  },
+];
+---
+
+<Section id="craft-details" class="craft-details-section"
+  ><Container class="craft-details-container">
+    <header>
+      <Eyebrow>Details that reward curiosity</Eyebrow><h2>
+        Look closer. <span class="heading-light-sweep"
+          >The craft has reasons.</span
+        >
+      </h2><p>
+        Explore a genuine detail view from {product.name}. Each note explains a
+        decision, not decoration for its own sake.
+      </p>
+    </header>
+    <div class="detail-experience" data-craft-details>
+      <figure>
+        <img
+          src={getCloudinaryImageUrl(image.src, 1100)}
+          alt={image.alt}
+          width={image.width ?? 900}
+          height={image.height ?? 1125}
+          loading="lazy"
+          decoding="async"
+        /><figcaption data-detail-caption>{details[0].title}</figcaption>{
+          details.map((detail, index) => (
+            <button
+              type="button"
+              style={`--x:${detail.x}%;--y:${detail.y}%`}
+              data-detail={index}
+              aria-label={`Show ${detail.label}: ${detail.title}`}
+              aria-pressed={index === 0 ? "true" : "false"}
+            >
+              <>
+                <span>{index + 1}</span>
+                <i aria-hidden="true" />
+              </>
+            </button>
+          ))
+        }
+      </figure>
+      <aside aria-live="polite">
+        <div class="detail-status">
+          <p>Explore all four details</p><span data-detail-progress
+            >1 of 4 explored</span
+          >
+        </div><div class="detail-panels">
+          {
+            details.map((detail, index) => (
+              <article data-detail-panel={index} hidden={index !== 0}>
+                <>
+                  <Eyebrow>{detail.label}</Eyebrow>
+                  <h3>{detail.title}</h3>
+                  <p>{detail.copy}</p>
+                </>
+              </article>
+            ))
+          }
+        </div><button class="next-detail" type="button" data-next-detail
+          >Next Detail</button
+        >
+      </aside>
+    </div>
+  </Container></Section
+>
+<script>
+  const initDetails = () =>
+    document
+      .querySelectorAll<HTMLElement>("[data-craft-details]")
+      .forEach((root) => {
+        if (root.dataset.ready) return;
+        root.dataset.ready = "true";
+        const buttons = [
+            ...root.querySelectorAll<HTMLButtonElement>("[data-detail]"),
+          ],
+          panels = [
+            ...root.querySelectorAll<HTMLElement>("[data-detail-panel]"),
+          ],
+          progress = root.querySelector<HTMLElement>("[data-detail-progress]"),
+          caption = root.querySelector<HTMLElement>("[data-detail-caption]"),
+          next = root.querySelector<HTMLButtonElement>("[data-next-detail]");
+        let active = 0;
+        const visited = new Set([0]);
+        const select = (selected: number) => {
+          if (selected === active && visited.has(selected)) return;
+          const direction = selected >= active ? "forward" : "backward";
+          active = selected;
+          visited.add(selected);
+          buttons.forEach((button, index) => {
+            button.setAttribute("aria-pressed", String(index === selected));
+            button.classList.toggle("is-visited", visited.has(index));
+            button.classList.toggle(
+              "is-next-unexplored",
+              index ===
+                buttons.findIndex((_, candidate) => !visited.has(candidate)),
+            );
+          });
+          panels.forEach((panel, index) => {
+            panel.hidden = index !== selected;
+            panel.dataset.direction = direction;
+            if (index === selected) {
+              panel.classList.remove("is-entering");
+              void panel.offsetWidth;
+              panel.classList.add("is-entering");
+            }
+          });
+          if (progress) progress.textContent = `${visited.size} of 4 explored`;
+          if (caption)
+            caption.textContent =
+              panels[selected]?.querySelector("h3")?.textContent ?? "";
+          window.RangbastraAudio?.detail();
+          document.dispatchEvent(
+            new CustomEvent("rangbastra:analytics", {
+              detail: {
+                name: "craft_detail_explored",
+                detail: String(selected + 1),
+              },
+            }),
+          );
+        };
+        buttons.forEach((button) =>
+          button.addEventListener("click", () =>
+            select(Number(button.dataset.detail)),
+          ),
+        );
+        next?.addEventListener("click", () =>
+          select((active + 1) % buttons.length),
+        );
+        buttons[0]?.classList.add("is-visited");
+        buttons[1]?.classList.add("is-next-unexplored");
+      });
+  initDetails();
+  document.addEventListener("astro:page-load", initDetails);
+</script>
+<style>
+  :global(.craft-details-section) {
+    overflow: clip;
+  }
+  :global(.craft-details-container) {
+    display: grid;
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+  }
+  header {
+    display: grid;
+    max-width: 60rem;
+    gap: var(--space-4);
+  }
+  header > h2 {
+    margin-top: var(--space-1);
+    font-family: var(--font-display);
+    font-size: var(--section-heading-statement);
+    font-weight: 300;
+    line-height: 0.96;
+  }
+  header > p:last-child {
+    max-width: 48rem;
+    margin-top: var(--space-2);
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .detail-experience {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+    gap: clamp(var(--space-5), 5vw, var(--space-9));
+    align-items: center;
+  }
+  figure {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-2xl);
+    background: #050505;
+  }
+  figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  figcaption {
+    position: absolute;
+    inset: auto var(--space-4) var(--space-4);
+    padding: 0.5rem 0.7rem;
+    background: rgba(2, 2, 2, 0.78);
+    color: var(--text-secondary);
+    font-size: var(--caption);
+  }
+  figure button {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid var(--cocoa-border);
+    border-radius: 50%;
+    background: rgba(2, 2, 2, 0.82);
+    color: var(--ivory-100);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
+  figure button::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--cocoa-300);
+    border-radius: 50%;
+  }
+  figure button[aria-pressed="true"] {
+    background: rgb(var(--cocoa-rgb));
+    box-shadow: 0 0 12px var(--cocoa-glow);
+  }
+  figure button i {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cocoa-300);
+    opacity: 0;
+  }
+  figure button.is-visited i {
+    opacity: 1;
+  }
+  figure button.is-next-unexplored:not([aria-pressed="true"]) {
+    animation: next-detail-pulse 1.8s ease-in-out infinite;
+  }
+  figure button:focus-visible,
+  .next-detail:focus-visible {
+    outline: 2px solid var(--cocoa-300);
+    outline-offset: 3px;
+  }
+  aside {
+    display: grid;
+    align-content: center;
+    gap: var(--space-5);
+    min-height: 20rem;
+    padding: clamp(var(--space-5), 4vw, var(--space-8));
+    border-left: 1px solid var(--cocoa-border);
+  }
+  .detail-status {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    color: var(--text-muted);
+    font-size: var(--caption);
+  }
+  .detail-status p {
+    color: inherit;
+  }
+  .detail-panels {
+    display: grid;
+    min-height: 14rem;
+    align-items: center;
+  }
+  .detail-panels article {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .detail-panels article[hidden] {
+    display: none;
+  }
+  .detail-panels article.is-entering {
+    animation: detail-forward 420ms var(--ease-luxury) both;
+  }
+  .detail-panels article[data-direction="backward"].is-entering {
+    animation-name: detail-backward;
+  }
+  h3 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 4rem);
+    font-weight: 300;
+    line-height: 1.05;
+  }
+  .detail-panels p {
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+  .next-detail {
+    justify-self: start;
+    min-height: 44px;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--cocoa-border);
+    border-radius: var(--radius-md);
+    color: var(--ivory-100);
+  }
+  @keyframes detail-forward {
+    from {
+      opacity: 0;
+      transform: translateX(1rem);
+    }
+  }
+  @keyframes detail-backward {
+    from {
+      opacity: 0;
+      transform: translateX(-1rem);
+    }
+  }
+  @keyframes next-detail-pulse {
+    50% {
+      border-color: var(--cocoa-border-strong);
+      box-shadow: 0 0 8px var(--cocoa-glow-soft);
+    }
+  }
+  @media (max-width: 767px) {
+    .detail-experience {
+      grid-template-columns: 1fr;
+    }
+    figure {
+      width: calc(100% + 2rem);
+      margin-left: -1rem;
+      border-radius: var(--radius-lg);
+    }
+    aside {
+      min-height: 17rem;
+      border-left: 0;
+      border-top: 1px solid var(--cocoa-border);
+    }
+    .detail-status {
+      flex-direction: column;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .detail-panels article.is-entering,
+    figure button.is-next-unexplored {
+      animation: none;
+    }
+  }
+</style>

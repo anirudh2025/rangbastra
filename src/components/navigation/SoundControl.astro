@@ -1,0 +1,19 @@
+---
+import Icon from "../primitives/Icon.astro";
+interface Props { id: string; compact?: boolean; }
+const { id, compact=false }=Astro.props;
+---
+<div class:list={["sound-control",compact&&"sound-control--compact"]} data-sound-control>
+  <button class:list={[compact?"nav-link":"utility-nav__link","sound-control__trigger"]} type="button" aria-expanded="false" aria-controls={id} data-sound-trigger>
+    <Icon name="volume" size={18}/><span data-sound-trigger-label>Website sounds</span>
+  </button>
+  <div class="sound-control__popover" id={id} data-sound-popover hidden>
+    <div class="sound-control__heading"><strong>Website sounds</strong><span data-sound-percent>72%</span></div>
+    <input type="range" min="0" max="100" step="1" value="72" aria-label="Website sound volume" data-sound-slider />
+    <div class="sound-control__actions">
+      <button type="button" data-sound-mute aria-pressed="false">Mute</button>
+      <button type="button" data-sound-preview>Preview sound</button>
+    </div>
+    <p>Quiet, optional cues. No ambient audio.</p>
+  </div>
+</div>

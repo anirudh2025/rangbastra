@@ -1,44 +1,84 @@
 ---
 import PageLayout from "../layouts/PageLayout.astro";
+import JourneyThread from "../components/layout/JourneyThread.astro";
 
 import Hero from "../sections/home/Hero.astro";
+import RangbastraPurpose from "../sections/home/RangbastraPurpose.astro";
 import FeaturedCollections from "../sections/home/FeaturedCollections.astro";
+import CoutureFinder from "../sections/home/CoutureFinder.astro";
+import RangbastraDifference from "../sections/home/RangbastraDifference.astro";
+import CraftDetails from "../sections/home/CraftDetails.astro";
 import Journey from "../components/journey/Journey.astro";
-import AtelierExperience from "../sections/home/AtelierExperience.astro";
-import BrideStories from "../sections/home/BrideStories.astro";
-import Craftsmanship from "../sections/home/Craftsmanship.astro";
-import SignatureCustomization from "../sections/home/SignatureCustomization.astro";
-import EditorialLookbook from "../sections/home/EditorialLookbook.astro";
 import LuxuryConsultationCTA from "../sections/home/LuxuryConsultationCTA.astro";
 import Footer from "../sections/home/Footer.astro";
 ---
 
 <PageLayout
-title="Rangbastra | Luxury Bridal Couture & Custom Occasion Wear"
-description="Discover Rangbastra, a luxury custom couture boutique in Anand, Gujarat for bridal lehengas, occasion wear and handcrafted design journeys shaped around your story."
-canonical="/"
-image="https://res.cloudinary.com/dfxlm7z58/image/upload/v1782614896/Hero_Desktop_klovjb.webp"
-keywords="Rangbastra, luxury couture India, custom bridal lehenga, designer bridal wear Gujarat, couture boutique Anand, handcrafted occasion wear"
+  title="Rangbastra | Luxury Bridal Couture & Custom Occasion Wear"
+  description="Discover Rangbastra, a luxury custom couture boutique in Anand, Gujarat for bridal lehengas, occasion wear and handcrafted design journeys shaped around your story."
+  canonical="/"
+  image="https://res.cloudinary.com/dfxlm7z58/image/upload/v1782614896/Hero_Desktop_klovjb.webp"
+  keywords="Rangbastra, luxury couture India, custom bridal lehenga, designer bridal wear Gujarat, couture boutique Anand, handcrafted occasion wear"
 >
+  <div class="homepage-journey">
+    <JourneyThread />
 
-<Hero />
+    <Hero />
 
-<FeaturedCollections />
+    <RangbastraPurpose />
 
-<Journey />
+    <FeaturedCollections />
 
-<AtelierExperience />
+    <CoutureFinder />
 
-<BrideStories />
+    <RangbastraDifference />
 
-<Craftsmanship />
+    <CraftDetails />
 
-<SignatureCustomization />
+    <Journey />
 
-<EditorialLookbook />
+    <LuxuryConsultationCTA />
 
-<LuxuryConsultationCTA />
-
-<Footer />
-
+    <Footer />
+  </div>
 </PageLayout>
+
+<script>
+  import { initSectionEntry } from "../lib/animations/sectionEntry";
+  import { initHomepageAnalytics } from "../lib/analytics/homepage";
+  initSectionEntry();
+  initHomepageAnalytics();
+  document.addEventListener("astro:page-load", initSectionEntry);
+  document.addEventListener("astro:page-load", initHomepageAnalytics);
+</script>
+
+<style>
+  .homepage-journey {
+    position: relative;
+    width: 100%;
+    overflow: visible;
+  }
+  .homepage-journey > :global(.section) {
+    --section-padding-block: var(--homepage-section-spacing);
+  }
+  .homepage-journey > :global(.luxury-consultation-section) {
+    --section-padding-block: clamp(var(--space-9), 8vw, var(--space-11));
+  }
+  .homepage-journey[data-entry-ready] > :global(section),
+  .homepage-journey[data-entry-ready] > :global(footer) {
+    --entry-glow: 0;
+  }
+  .homepage-journey[data-entry-ready] > :global(.is-section-current) {
+    --entry-glow: 1;
+  }
+  .homepage-journey :global(.title-highlight) {
+    filter: saturate(calc(0.82 + 0.18 * var(--entry-glow, 0)))
+      brightness(calc(0.88 + 0.12 * var(--entry-glow, 0)));
+    transition: filter var(--motion-luxury) var(--ease-luxury);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .homepage-journey :global(*) {
+      animation: none !important;
+    }
+  }
+</style>

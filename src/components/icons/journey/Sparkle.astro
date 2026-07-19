@@ -35,3 +35,9 @@ const{
   <path d="M5 15l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6L5 15z"/>
 
 </svg>
+
+<style>
+  svg{filter:drop-shadow(0 0 5px rgba(181,147,130,.24));animation:rangbastra-sparkle-breathe 4.6s var(--ease-luxury) infinite;transform-origin:center;}
+  @keyframes rangbastra-sparkle-breathe{0%,100%{opacity:.76;transform:scale(.97)}50%{opacity:1;transform:scale(1.02)}}
+  @media(prefers-reduced-motion:reduce){svg{animation:none;opacity:.9;transform:none}}
+</style>

@@ -3,7 +3,7 @@ import { atelierExperience } from "../../data/atelierExperience";
 import AtelierCard from "./AtelierCard.astro";
 ---
 
-<div class="atelier-timeline">
+<div class="atelier-timeline" data-scroll-timeline>
   {
     atelierExperience.map((item, index) => (
       <div
@@ -12,6 +12,11 @@ import AtelierCard from "./AtelierCard.astro";
           index % 2 === 0 ? "timeline-item--left" : "timeline-item--right",
         ]}
       >
+        <span
+          class="atelier-milestone"
+          data-timeline-milestone
+          aria-hidden="true"
+        />
         <AtelierCard
           step={item.id}
           title={item.title}
@@ -21,6 +26,12 @@ import AtelierCard from "./AtelierCard.astro";
     ))
   }
 </div>
+
+<script>
+  import { initTimelineProgress } from "../../lib/animations/timelineProgress";
+  initTimelineProgress();
+  document.addEventListener("astro:page-load", initTimelineProgress);
+</script>
 
 <style>
   .atelier-timeline {
@@ -35,16 +46,49 @@ import AtelierCard from "./AtelierCard.astro";
     inset-block: clamp(var(--space-8), 9vw, var(--space-12));
     left: 50%;
     width: 1px;
-    background: linear-gradient(
-      180deg,
-      transparent,
-      rgba(106, 78, 66, .52) 18%,
-      rgba(221, 208, 198, .28) 50%,
-      rgba(106, 78, 66, .52) 82%,
-      transparent
-    );
-    box-shadow: 0 0 24px rgba(181, 147, 130, .13);
+    background: rgba(var(--cocoa-rgb), 0.26);
+    box-shadow: none;
     transform: translateX(-50%);
+  }
+  .atelier-timeline::after {
+    content: "";
+    position: absolute;
+    inset-block: clamp(var(--space-8), 9vw, var(--space-12));
+    left: 50%;
+    width: 1.5px;
+    background: rgb(var(--cocoa-rgb));
+    box-shadow: 0 0 4px var(--cocoa-glow-soft);
+    transform: translate3d(-50%, 0, 0) scaleY(var(--timeline-progress, 0));
+    transform-origin: top;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .atelier-milestone {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: 50%;
+    background: #030303;
+    transform: translateY(-50%);
+  }
+  .timeline-item--left .atelier-milestone {
+    right: -6px;
+  }
+  .timeline-item--right .atelier-milestone {
+    left: -6px;
+  }
+  .atelier-milestone.is-complete {
+    border-color: var(--cocoa-border);
+    background: rgb(var(--cocoa-rgb));
+    box-shadow: 0 0 4px var(--cocoa-glow-soft);
+  }
+  .atelier-milestone.is-current {
+    border-color: var(--cocoa-border-strong);
+    background: rgb(var(--cocoa-rgb));
+    box-shadow: 0 0 5px var(--cocoa-glow-soft);
   }
 
   .timeline-item {
@@ -96,6 +140,14 @@ import AtelierCard from "./AtelierCard.astro";
     .atelier-timeline::before {
       left: clamp(2rem, 9vw, 2.75rem);
       transform: none;
+    }
+    .atelier-timeline::after {
+      left: clamp(2rem, 9vw, 2.75rem);
+      transform: scaleY(var(--timeline-progress, 0));
+    }
+    .timeline-item .atelier-milestone {
+      left: calc(clamp(2rem, 9vw, 2.75rem) - 6px);
+      right: auto;
     }
 
     .timeline-item,

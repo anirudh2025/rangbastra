@@ -3,6 +3,7 @@ import "../styles/globals.css";
 
 import SEOHead from "../components/layout/SEOHead.astro";
 import Navbar from "../components/navigation/Navbar.astro";
+import HomepageAtmosphere from "../components/layout/HomepageAtmosphere.astro";
 
 interface Props {
   title?: string;
@@ -19,13 +20,20 @@ const {
   canonical,
   image,
   keywords,
-  robots
+  robots,
 } = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
+    <link
+      rel="preload"
+      href="/fonts/Segoe-script.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <SEOHead
       title={title}
       description={description}
@@ -37,20 +45,24 @@ const {
   </head>
 
   <body>
+    <div class="site-grid" aria-hidden="true"></div>
+    <HomepageAtmosphere />
 
     <Navbar />
 
     <main>
-
-<slot />
-
-</main>
+      <slot />
+    </main>
 
     <div class="page-transition" aria-hidden="true">
       <span>Rangbastra</span>
     </div>
 
     <script>
+      import { initCoutureInteractions } from "../lib/interactions/coutureInteractions";
+      document.addEventListener("astro:page-load", initCoutureInteractions);
+      initCoutureInteractions();
+
       const transition = document.querySelector(".page-transition");
 
       const settlePage = () => {
@@ -66,7 +78,6 @@ const {
 
       window.setTimeout(settlePage, 900);
     </script>
-
   </body>
 </html>
 
@@ -90,7 +101,9 @@ const {
     text-transform: uppercase;
     pointer-events: none;
     opacity: 1;
-    transition: opacity 520ms var(--ease-luxury), visibility 520ms var(--ease-luxury);
+    transition:
+      opacity 520ms var(--ease-luxury),
+      visibility 520ms var(--ease-luxury);
   }
 
   .page-transition--ready {

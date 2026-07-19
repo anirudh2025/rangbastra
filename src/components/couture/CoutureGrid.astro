@@ -22,6 +22,7 @@ const products = getPublishedCouturePieces();
   </div>
 
   <CoutureFilter categories={coutureCategories} />
+  <p class="result-count" data-result-count>{products.length} couture stories</p>
 
   <div class="product-grid" aria-live="polite">
     {
@@ -30,6 +31,7 @@ const products = getPublishedCouturePieces();
       ))
     }
   </div>
+  <p class="empty-state" data-empty-state hidden>No couture stories are currently available in this collection. Explore All Products or begin a private consultation.</p>
 </section>
 
 <style>
@@ -87,18 +89,8 @@ const products = getPublishedCouturePieces();
     align-items: start;
   }
 
-  .product-catalog:has(:global(#product-filter-bridal:checked))
-    :global(.product-card:not([data-category="Bridal"])),
-  .product-catalog:has(:global(#product-filter-festive:checked))
-    :global(.product-card:not([data-category="Festive"])),
-  .product-catalog:has(:global(#product-filter-reception:checked))
-    :global(.product-card:not([data-category="Reception"])),
-  .product-catalog:has(:global(#product-filter-engagement:checked))
-    :global(.product-card:not([data-category="Engagement"])),
-  .product-catalog:has(:global(#product-filter-custom-couture:checked))
-    :global(.product-card:not([data-category="Custom Couture"])) {
-    display: none;
-  }
+  .result-count,.empty-state{color:var(--text-muted);font-size:var(--caption)}
+  .empty-state{max-width:36rem;padding:var(--space-6);border:1px solid var(--cocoa-border-soft);border-radius:var(--radius-md);background:rgba(5,5,5,.96)}
 
   @media (max-width: 1279px) {
     .product-grid {

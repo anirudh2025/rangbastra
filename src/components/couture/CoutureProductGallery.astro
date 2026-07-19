@@ -1,0 +1,1068 @@
+---
+import type { CouturePiece } from "../../data/couture";
+import {
+  getCloudinaryImageUrl,
+  getLiveInterest,
+  getProductImages,
+  isConfirmedFourByFive,
+} from "../../lib/couture";
+
+interface Props {
+  product: CouturePiece;
+}
+
+const { product } = Astro.props;
+const images = getProductImages(product);
+const liveInterest = getLiveInterest(product);
+const interestUrl = import.meta.env.PUBLIC_SUPABASE_URL ?? "";
+const interestKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
+const serializedImages = JSON.stringify(
+  images.map((image) => ({
+    ...image,
+    confirmedFourByFive: isConfirmedFourByFive(image),
+    displaySrc: getCloudinaryImageUrl(image.src, 1100),
+    zoomSrc: getCloudinaryImageUrl(image.src, 2000),
+  })),
+);
+---
+
+<div
+  class="couture-viewer"
+  data-product-gallery
+  data-images={serializedImages}
+  data-product-slug={product.slug}
+  data-interest-url={interestUrl}
+  data-interest-key={interestKey}
+>
+  <div
+    class="viewer-stage"
+    data-stage
+    data-image-fit={isConfirmedFourByFive(images[0]) ? "cover" : "contain"}
+  >
+    <button
+      class="viewer-open"
+      type="button"
+      data-open
+      aria-label={`Open fullscreen gallery for ${product.name}`}
+    >
+      <img
+        src={getCloudinaryImageUrl(images[0].src, 1100)}
+        srcset={`${getCloudinaryImageUrl(images[0].src, 720)} 720w, ${getCloudinaryImageUrl(images[0].src, 1100)} 1100w`}
+        sizes="(max-width: 1023px) 100vw, 58vw"
+        alt={images[0].alt}
+        width={images[0].width ?? 900}
+        height={images[0].height ?? 1200}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        data-main-image
+      />
+    </button>
+    <button
+      class="stage-arrow stage-arrow--previous"
+      type="button"
+      data-stage-previous
+      aria-label="Previous product image"
+      ><svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="m14.5 6-6 6 6 6"></path></svg
+      ></button
+    >
+    <button
+      class="stage-arrow stage-arrow--next"
+      type="button"
+      data-stage-next
+      aria-label="Next product image"
+      ><svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="m9.5 6 6 6-6 6"></path></svg
+      ></button
+    >
+    <span class="stage-counter" data-stage-counter>1 / {images.length}</span>
+    <span class="zoom-lens" data-lens aria-hidden="true"></span>
+    <span
+      class="live-interest"
+      data-interest
+      aria-label="Recent couture interest"
+      ><i aria-hidden="true"></i><span data-interest-label
+        >{liveInterest.text}</span
+      ></span
+    >
+    <p class="image-error" data-error hidden>
+      Photography is being prepared by our atelier.
+    </p>
+  </div>
+
+  <div class="thumbnail-navigation">
+    <button
+      class="thumbnail-arrow"
+      type="button"
+      data-thumbnail-previous
+      aria-label="Previous product image"
+      ><svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="m14.5 6-6 6 6 6"></path></svg
+      ></button
+    >
+    <div
+      class="thumbnail-viewport"
+      data-thumbnails
+      role="group"
+      aria-label={`${product.name} image gallery`}
+    >
+      <div class="thumbnail-track">
+        {
+          images.map((image, index) => (
+            <button
+              class="thumbnail"
+              data-image-fit={
+                isConfirmedFourByFive(image) ? "cover" : "contain"
+              }
+              type="button"
+              data-index={index}
+              aria-label={`View ${image.alt}`}
+              aria-pressed={index === 0 ? "true" : "false"}
+            >
+              <img
+                src={getCloudinaryImageUrl(image.src, 180)}
+                alt=""
+                width={image.width ?? 216}
+                height={image.height ?? 270}
+                loading={index < 6 ? "eager" : "lazy"}
+                decoding="async"
+              />
+            </button>
+          ))
+        }
+      </div>
+    </div>
+    <button
+      class="thumbnail-arrow"
+      type="button"
+      data-thumbnail-next
+      aria-label="Next product image"
+      ><svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="m9.5 6 6 6-6 6"></path></svg
+      ></button
+    >
+  </div>
+
+  <div class="zoom-panel" data-zoom-panel aria-hidden="true"></div>
+
+  <dialog
+    class="lightbox"
+    data-lightbox
+    aria-label={`${product.name} fullscreen gallery`}
+  >
+    <div class="lightbox-toolbar">
+      <span data-counter>1 / {images.length}</span>
+      <button type="button" data-close aria-label="Close fullscreen gallery"
+        >&#215;</button
+      >
+    </div>
+    <div class="lightbox-stage" data-lightbox-stage>
+      <button
+        type="button"
+        class="lightbox-arrow lightbox-arrow--previous"
+        data-previous
+        aria-label="Previous product image"
+        ><svg viewBox="0 0 24 24" aria-hidden="true"
+          ><path d="m14.5 6-6 6 6 6"></path></svg
+        ></button
+      >
+      <img
+        src={getCloudinaryImageUrl(images[0].src, 1600)}
+        alt={images[0].alt}
+        width="1200"
+        height="1600"
+        data-lightbox-image
+      />
+      <button
+        type="button"
+        class="lightbox-arrow lightbox-arrow--next"
+        data-next
+        aria-label="Next product image"
+        ><svg viewBox="0 0 24 24" aria-hidden="true"
+          ><path d="m9.5 6 6 6-6 6"></path></svg
+        ></button
+      >
+    </div>
+    <button
+      class="lightbox-zoom"
+      type="button"
+      data-lightbox-zoom
+      aria-pressed="false">Zoom image</button
+    >
+  </dialog>
+</div>
+
+<script>
+  type GalleryImage = {
+    src: string;
+    alt: string;
+    displaySrc: string;
+    zoomSrc: string;
+    confirmedFourByFive: boolean;
+  };
+
+  document
+    .querySelectorAll<HTMLElement>("[data-product-gallery]")
+    .forEach((gallery) => {
+      const images = JSON.parse(
+        gallery.dataset.images ?? "[]",
+      ) as GalleryImage[];
+      const stage = gallery.querySelector<HTMLElement>("[data-stage]");
+      const mainImage =
+        gallery.querySelector<HTMLImageElement>("[data-main-image]");
+      const lens = gallery.querySelector<HTMLElement>("[data-lens]");
+      const zoomPanel = gallery.querySelector<HTMLElement>("[data-zoom-panel]");
+      const thumbnails =
+        gallery.querySelector<HTMLElement>("[data-thumbnails]");
+      const buttons = [
+        ...gallery.querySelectorAll<HTMLButtonElement>("[data-index]"),
+      ];
+      const lightbox =
+        gallery.querySelector<HTMLDialogElement>("[data-lightbox]");
+      const lightboxImage = gallery.querySelector<HTMLImageElement>(
+        "[data-lightbox-image]",
+      );
+      const lightboxStage = gallery.querySelector<HTMLElement>(
+        "[data-lightbox-stage]",
+      );
+      const counter = gallery.querySelector<HTMLElement>("[data-counter]");
+      const error = gallery.querySelector<HTMLElement>("[data-error]");
+      const interest = gallery.querySelector<HTMLElement>("[data-interest]");
+      const recordInterest = () => {
+        if (document.visibilityState !== "visible") return;
+        const url = gallery.dataset.interestUrl,
+          key = gallery.dataset.interestKey,
+          slug = gallery.dataset.productSlug;
+        if (!url || !key || !slug) return;
+        const sessionKey = "rangbastraInterestSession";
+        let session = localStorage.getItem(sessionKey);
+        if (!session) {
+          session = crypto.randomUUID();
+          localStorage.setItem(sessionKey, session);
+        }
+        fetch(`${url}/functions/v1/record-product-interest`, {
+          method: "POST",
+          headers: {
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productSlug: slug,
+            anonymousSession: session,
+          }),
+        })
+          .then((response) => (response.ok ? response.json() : null))
+          .then((result) => {
+            if (!interest || !result) return;
+            const label = interest.querySelector<HTMLElement>(
+              "[data-interest-label]",
+            );
+            if (label && typeof result.text === "string")
+              label.textContent = result.text;
+          })
+          .catch(() => {});
+      };
+      const summary = gallery
+        .closest(".product-detail-hero")
+        ?.querySelector<HTMLElement>("[data-product-summary]");
+      let selected = 0;
+      let frame = 0;
+      let pointerX = 0;
+      let pointerY = 0;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let suppressOpen = false;
+      let opener: HTMLElement | null = null;
+      let zoomSessionActive = false;
+      let zoomAnchorTop = 0;
+      let zoomAnchorLeft = 0;
+      let imageSufficientlyVisible = true;
+      const zoomScale = 2.35;
+
+      if (
+        !images.length ||
+        !stage ||
+        !mainImage ||
+        !lens ||
+        !zoomPanel ||
+        !thumbnails ||
+        !lightbox ||
+        !lightboxImage ||
+        !lightboxStage ||
+        !summary
+      )
+        return;
+      summary.appendChild(zoomPanel);
+
+      const preloadNext = () => {
+        const preload = new Image();
+        preload.src = images[(selected + 1) % images.length].displaySrc;
+      };
+
+      const updateLightbox = () => {
+        lightboxImage.src = images[selected].zoomSrc;
+        lightboxImage.alt = images[selected].alt;
+        counter && (counter.textContent = `${selected + 1} / ${images.length}`);
+        lightboxImage.classList.remove("is-zoomed");
+        gallery
+          .querySelector<HTMLButtonElement>("[data-lightbox-zoom]")
+          ?.setAttribute("aria-pressed", "false");
+      };
+
+      const selectImage = (index: number, focus = false) => {
+        selected = (index + images.length) % images.length;
+        mainImage.classList.add("is-changing");
+        mainImage.src = images[selected].displaySrc;
+        mainImage.removeAttribute("srcset");
+        mainImage.alt = images[selected].alt;
+        stage.dataset.imageFit = images[selected].confirmedFourByFive
+          ? "cover"
+          : "contain";
+        error?.setAttribute("hidden", "");
+        buttons.forEach((button, buttonIndex) => {
+          button.setAttribute("aria-pressed", String(buttonIndex === selected));
+          button.dataset.distance = String(
+            Math.min(Math.abs(buttonIndex - selected), 3),
+          );
+          button.dataset.side =
+            buttonIndex < selected
+              ? "left"
+              : buttonIndex > selected
+                ? "right"
+                : "center";
+        });
+        const active = buttons[selected];
+        if (active)
+          thumbnails.scrollTo({
+            left:
+              active.offsetLeft +
+              active.offsetWidth / 2 -
+              thumbnails.clientWidth / 2,
+            behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+              ? "auto"
+              : "smooth",
+          });
+        if (focus) buttons[selected]?.focus();
+        updateLightbox();
+        const stageCounter = gallery.querySelector<HTMLElement>(
+          "[data-stage-counter]",
+        );
+        if (stageCounter)
+          stageCounter.textContent = `${selected + 1} / ${images.length}`;
+        preloadNext();
+      };
+
+      mainImage.addEventListener("load", () => {
+        mainImage.classList.remove("is-changing");
+        closeZoom();
+        positionInterest();
+      });
+      mainImage.addEventListener("error", () => {
+        mainImage.classList.remove("is-changing");
+        error?.removeAttribute("hidden");
+      });
+      buttons.forEach((button) =>
+        button.addEventListener("click", () =>
+          selectImage(Number(button.dataset.index)),
+        ),
+      );
+      gallery
+        .querySelector("[data-thumbnail-previous]")
+        ?.addEventListener("click", () =>
+          thumbnails.scrollBy({
+            left: -thumbnails.clientWidth * 0.75,
+            behavior: "smooth",
+          }),
+        );
+      gallery
+        .querySelector("[data-thumbnail-next]")
+        ?.addEventListener("click", () =>
+          thumbnails.scrollBy({
+            left: thumbnails.clientWidth * 0.75,
+            behavior: "smooth",
+          }),
+        );
+      gallery
+        .querySelector("[data-stage-previous]")
+        ?.addEventListener("click", () => {
+          selectImage(selected - 1);
+          window.RangbastraAudio?.imageSlide();
+        });
+      gallery
+        .querySelector("[data-stage-next]")
+        ?.addEventListener("click", () => {
+          selectImage(selected + 1);
+          window.RangbastraAudio?.imageSlide();
+        });
+      stage.addEventListener(
+        "touchstart",
+        (event) => {
+          touchStartX = event.changedTouches[0]?.clientX ?? 0;
+          touchStartY = event.changedTouches[0]?.clientY ?? 0;
+          closeZoom();
+        },
+        { passive: true },
+      );
+      stage.addEventListener(
+        "touchend",
+        (event) => {
+          const dx = (event.changedTouches[0]?.clientX ?? 0) - touchStartX,
+            dy = (event.changedTouches[0]?.clientY ?? 0) - touchStartY;
+          if (Math.abs(dx) < 48 || Math.abs(dx) <= Math.abs(dy) * 1.25) return;
+          suppressOpen = true;
+          selectImage(selected + (dx < 0 ? 1 : -1));
+          window.RangbastraAudio?.imageSlide();
+          window.setTimeout(() => (suppressOpen = false), 350);
+        },
+        { passive: true },
+      );
+
+      gallery.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        selectImage(selected + (event.key === "ArrowRight" ? 1 : -1), true);
+      });
+
+      const closeZoom = () => {
+        zoomSessionActive = false;
+        lens.classList.remove("is-visible");
+        zoomPanel.classList.remove("is-visible");
+      };
+
+      const anchorZoomPanel = (
+        imageRect: { left: number; top: number; width: number; height: number },
+        panelWidth: number,
+        panelHeight: number,
+      ) => {
+        const navbarHeight =
+          Number.parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue(
+              "--navbar-height",
+            ),
+          ) || 52;
+        const navbarBottom =
+          document
+            .querySelector<HTMLElement>("[data-navbar]")
+            ?.getBoundingClientRect().bottom ?? navbarHeight;
+        const safeGap = 20;
+        const minimumTop = Math.max(
+          navbarHeight + safeGap,
+          navbarBottom + safeGap,
+        );
+        const maximumTop = Math.max(
+          minimumTop,
+          innerHeight - panelHeight - safeGap,
+        );
+        zoomAnchorTop = Math.max(
+          minimumTop,
+          Math.min(
+            imageRect.top + imageRect.height / 2 - panelHeight / 2,
+            maximumTop,
+          ),
+        );
+        const summaryRect = summary.getBoundingClientRect();
+        zoomAnchorLeft = Math.max(
+          16,
+          Math.min(summaryRect.left, innerWidth - panelWidth - 16),
+        );
+      };
+
+      const getRenderedImageRect = () => {
+        const box = mainImage.getBoundingClientRect();
+        if (!mainImage.naturalWidth || !mainImage.naturalHeight) return null;
+        const scale = Math.min(
+          box.width / mainImage.naturalWidth,
+          box.height / mainImage.naturalHeight,
+        );
+        const width = mainImage.naturalWidth * scale;
+        const height = mainImage.naturalHeight * scale;
+        return {
+          left: box.left + (box.width - width) / 2,
+          top: box.top + (box.height - height) / 2,
+          width,
+          height,
+        };
+      };
+
+      const positionInterest = () => {
+        const stageRect = stage.getBoundingClientRect();
+        const imageRect = getRenderedImageRect();
+        if (!imageRect || !interest) return;
+        interest.style.right = `${Math.max(12, stageRect.right - imageRect.left - imageRect.width + 12)}px`;
+        interest.style.bottom = `${Math.max(12, stageRect.bottom - imageRect.top - imageRect.height + 12)}px`;
+      };
+
+      const renderZoom = () => {
+        frame = 0;
+        const stageRect = stage.getBoundingClientRect();
+        const imageRect = getRenderedImageRect();
+        if (
+          !imageRect ||
+          !imageSufficientlyVisible ||
+          !matchMedia(
+            "(hover: hover) and (pointer: fine) and (min-width: 1280px)",
+          ).matches
+        )
+          return closeZoom();
+        const insideImage =
+          pointerX >= imageRect.left &&
+          pointerX <= imageRect.left + imageRect.width &&
+          pointerY >= imageRect.top &&
+          pointerY <= imageRect.top + imageRect.height;
+        if (!insideImage || stageRect.width < 300) return closeZoom();
+        const xRatio = Math.max(
+          0,
+          Math.min((pointerX - imageRect.left) / imageRect.width, 1),
+        );
+        const yRatio = Math.max(
+          0,
+          Math.min((pointerY - imageRect.top) / imageRect.height, 1),
+        );
+        const x = xRatio * imageRect.width + imageRect.left - stageRect.left;
+        const y = yRatio * imageRect.height + imageRect.top - stageRect.top;
+        const lensWidth = Math.min(128, imageRect.width / zoomScale);
+        const lensHeight = Math.min(86, imageRect.height / zoomScale);
+        lens.style.width = `${lensWidth}px`;
+        lens.style.height = `${lensHeight}px`;
+        const lensLeft = Math.max(
+          imageRect.left - stageRect.left,
+          Math.min(
+            x - lensWidth / 2,
+            imageRect.left - stageRect.left + imageRect.width - lensWidth,
+          ),
+        );
+        const lensTop = Math.max(
+          imageRect.top - stageRect.top,
+          Math.min(
+            y - lensHeight / 2,
+            imageRect.top - stageRect.top + imageRect.height - lensHeight,
+          ),
+        );
+        lens.style.transform = `translate3d(${lensLeft}px, ${lensTop}px, 0)`;
+        const summaryRect = summary.getBoundingClientRect();
+        const panelWidth = Math.max(320, Math.min(420, summaryRect.width));
+        const panelHeight = (panelWidth * 9) / 16;
+        if (!zoomSessionActive) {
+          anchorZoomPanel(imageRect, panelWidth, panelHeight);
+          zoomSessionActive = true;
+        }
+        zoomPanel.style.width = `${panelWidth}px`;
+        zoomPanel.style.height = `${panelHeight}px`;
+        zoomPanel.style.top = `${zoomAnchorTop}px`;
+        zoomPanel.style.left = `${zoomAnchorLeft}px`;
+        zoomPanel.style.backgroundImage = `url("${images[selected].zoomSrc.replace(/"/g, "%22")}")`;
+        zoomPanel.style.backgroundSize = `${imageRect.width * zoomScale}px ${imageRect.height * zoomScale}px`;
+        zoomPanel.style.backgroundPosition = `${xRatio * 100}% ${yRatio * 100}%`;
+        lens.classList.add("is-visible");
+        zoomPanel.classList.add("is-visible");
+      };
+
+      stage.addEventListener("pointermove", (event) => {
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+        if (!frame) frame = requestAnimationFrame(renderZoom);
+      });
+      stage.addEventListener("pointerleave", closeZoom);
+      window.addEventListener(
+        "resize",
+        () => {
+          closeZoom();
+          positionInterest();
+        },
+        { passive: true },
+      );
+      new IntersectionObserver(
+        ([entry]) => {
+          imageSufficientlyVisible = entry.intersectionRatio >= 0.35;
+          if (!imageSufficientlyVisible) closeZoom();
+        },
+        { threshold: [0.35] },
+      ).observe(stage);
+
+      const openLightbox = (event: Event) => {
+        if (
+          matchMedia(
+            "(hover: hover) and (pointer: fine) and (min-width: 1280px)",
+          ).matches
+        )
+          return;
+        opener = event.currentTarget as HTMLElement;
+        updateLightbox();
+        lightbox.showModal();
+        document.documentElement.classList.add("gallery-open");
+        gallery.querySelector<HTMLButtonElement>("[data-close]")?.focus();
+      };
+      const closeLightbox = () => {
+        lightbox.close();
+        document.documentElement.classList.remove("gallery-open");
+        opener?.focus();
+      };
+      gallery
+        .querySelector("[data-open]")
+        ?.addEventListener("click", (event) => {
+          if (suppressOpen) {
+            event.preventDefault();
+            return;
+          }
+          openLightbox(event);
+        });
+      gallery
+        .querySelector("[data-close]")
+        ?.addEventListener("click", closeLightbox);
+      gallery
+        .querySelector("[data-previous]")
+        ?.addEventListener("click", () => selectImage(selected - 1));
+      gallery
+        .querySelector("[data-next]")
+        ?.addEventListener("click", () => selectImage(selected + 1));
+      lightbox.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        closeLightbox();
+      });
+      lightbox.addEventListener("close", () =>
+        document.documentElement.classList.remove("gallery-open"),
+      );
+      lightbox.addEventListener("click", (event) => {
+        if (event.target === lightbox) closeLightbox();
+      });
+      lightboxStage.addEventListener(
+        "touchstart",
+        (event) => {
+          touchStartX = event.changedTouches[0].clientX;
+        },
+        { passive: true },
+      );
+      lightboxStage.addEventListener(
+        "touchend",
+        (event) => {
+          const distance = event.changedTouches[0].clientX - touchStartX;
+          if (Math.abs(distance) > 45)
+            selectImage(selected + (distance < 0 ? 1 : -1));
+        },
+        { passive: true },
+      );
+      gallery
+        .querySelector("[data-lightbox-zoom]")
+        ?.addEventListener("click", (event) => {
+          const button = event.currentTarget as HTMLButtonElement;
+          const zoomed = !lightboxImage.classList.contains("is-zoomed");
+          lightboxImage.classList.toggle("is-zoomed", zoomed);
+          button.setAttribute("aria-pressed", String(zoomed));
+        });
+      positionInterest();
+      selectImage(0);
+      preloadNext();
+      let interestTimer = 0;
+      const interestObserver = new IntersectionObserver(
+        (entries) => {
+          const meaningful = entries.some(
+            (entry) => entry.isIntersecting && entry.intersectionRatio >= 0.6,
+          );
+          if (meaningful && !interestTimer)
+            interestTimer = window.setTimeout(() => {
+              recordInterest();
+              interestObserver.disconnect();
+            }, 8000);
+          else if (!meaningful && interestTimer) {
+            clearTimeout(interestTimer);
+            interestTimer = 0;
+          }
+        },
+        { threshold: 0.6 },
+      );
+      interestObserver.observe(stage);
+    });
+</script>
+
+<style>
+  .couture-viewer {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+  .viewer-stage {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    touch-action: pan-y;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: var(--surface-raised);
+    box-shadow: none;
+  }
+  .viewer-open {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+  }
+  .viewer-open:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: -4px;
+  }
+  .viewer-stage img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    transition: opacity var(--motion-normal) var(--ease-luxury);
+  }
+  .viewer-stage[data-image-fit="cover"] img {
+    object-fit: cover;
+  }
+  .viewer-stage img.is-changing {
+    opacity: 0.42;
+  }
+  .image-error {
+    position: absolute;
+    inset: auto var(--space-4) var(--space-4);
+    padding: var(--space-3);
+    background: rgba(8, 8, 9, 0.82);
+    color: var(--text-secondary);
+    text-align: center;
+    pointer-events: none;
+  }
+  .live-interest {
+    position: absolute;
+    z-index: 2;
+    display: inline-flex;
+    max-width: calc(100% - 1.5rem);
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.82);
+    color: var(--text-secondary);
+    font-size: var(--caption);
+    line-height: 1.35;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
+  }
+  .live-interest i {
+    width: 0.35rem;
+    height: 0.35rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: rgb(var(--cocoa-rgb));
+    animation: interest-breathe 2.2s ease-in-out infinite;
+  }
+  @keyframes interest-breathe {
+    0%,
+    100% {
+      opacity: 0.42;
+      transform: scale(0.82);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .zoom-lens {
+    position: absolute;
+    z-index: 2;
+    inset: 0 auto auto 0;
+    border: 1px solid rgba(var(--cocoa-rgb), 0.72);
+    background: rgba(var(--cocoa-rgb), 0.07);
+    box-shadow: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--motion-fast) var(--ease-luxury);
+  }
+  .zoom-lens.is-visible {
+    opacity: 1;
+  }
+  .zoom-panel {
+    position: fixed;
+    z-index: calc(var(--z-navbar) - 1);
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-lg);
+    background-color: var(--surface-raised);
+    background-repeat: no-repeat;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--motion-fast) var(--ease-luxury),
+      visibility var(--motion-fast) var(--ease-luxury);
+  }
+  .zoom-panel.is-visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  .thumbnail-navigation {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: var(--space-2);
+    align-items: center;
+  }
+  .thumbnail-viewport {
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-block: 0.55rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 12%,
+      #000 88%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 12%,
+      #000 88%,
+      transparent 100%
+    );
+  }
+  .thumbnail-track {
+    display: flex;
+    width: max-content;
+    min-width: 100%;
+    justify-content: flex-start;
+    gap: var(--space-2);
+    padding-inline: calc(50% - clamp(4.25rem, 7vw, 5.5rem) / 2);
+    perspective: 700px;
+  }
+  .thumbnail-viewport::-webkit-scrollbar {
+    display: none;
+  }
+  .thumbnail,
+  .thumbnail-arrow {
+    min-width: 44px;
+    min-height: 44px;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-raised);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .thumbnail {
+    width: clamp(4.25rem, 7vw, 5.5rem);
+    height: auto;
+    aspect-ratio: 4 / 5;
+    flex: 0 0 auto;
+    overflow: hidden;
+    padding: 0;
+    border-radius: var(--radius-md);
+    opacity: 0.25;
+    scroll-snap-align: center;
+    transform: scale(0.86);
+    filter: blur(1px);
+    transition:
+      opacity var(--motion-button) var(--ease-luxury),
+      border-color var(--motion-button) var(--ease-luxury),
+      transform var(--motion-button) var(--ease-luxury),
+      filter var(--motion-button) var(--ease-luxury);
+  }
+  .thumbnail[data-distance="1"] {
+    opacity: 0.68;
+    filter: none;
+    transform: scale(0.94) rotateY(4deg);
+  }
+  .thumbnail[data-distance="1"][data-side="right"] {
+    transform: scale(0.94) rotateY(-4deg);
+  }
+  .thumbnail[data-distance="2"] {
+    opacity: 0.42;
+    filter: blur(0.45px);
+    transform: scale(0.9);
+  }
+  .thumbnail[aria-pressed="true"] {
+    border-color: var(--cocoa-border-strong);
+    box-shadow: none;
+    opacity: 1;
+    filter: none;
+    transform: scale(1.04);
+  }
+  .thumbnail img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    background: #050505;
+  }
+  .thumbnail[data-image-fit="cover"] img {
+    object-fit: cover;
+  }
+  .stage-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    display: grid;
+    width: 44px;
+    height: 52px;
+    place-items: center;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-md);
+    background: rgba(3, 3, 3, 0.72);
+    color: var(--ivory-100);
+    transform: translateY(-50%);
+  }
+  .stage-arrow--previous {
+    left: var(--space-3);
+  }
+  .stage-arrow--next {
+    right: var(--space-3);
+  }
+  .stage-arrow svg {
+    width: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+  }
+  .stage-counter {
+    position: absolute;
+    right: var(--space-3);
+    bottom: var(--space-3);
+    z-index: 3;
+    padding: 0.35rem 0.55rem;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-sm);
+    background: rgba(3, 3, 3, 0.78);
+    color: var(--text-secondary);
+    font-size: var(--caption);
+  }
+  .thumbnail-arrow {
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-pill);
+    box-shadow: none;
+  }
+  .thumbnail-arrow svg,
+  .lightbox-arrow svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .thumbnail-arrow:hover,
+  .lightbox-arrow:hover {
+    border-color: var(--cocoa-border-strong);
+    color: rgb(var(--cocoa-rgb));
+    box-shadow: none;
+  }
+  .thumbnail:focus-visible,
+  .thumbnail-arrow:focus-visible,
+  .lightbox button:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .lightbox {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    padding: max(var(--space-4), env(safe-area-inset-top))
+      max(var(--space-4), env(safe-area-inset-right))
+      max(var(--space-4), env(safe-area-inset-bottom))
+      max(var(--space-4), env(safe-area-inset-left));
+    border: 0;
+    background: rgba(3, 3, 3, 0.97);
+    color: var(--text-primary);
+  }
+  .lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.9);
+  }
+  .lightbox-toolbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    min-height: 44px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .lightbox-toolbar button,
+  .lightbox-arrow,
+  .lightbox-zoom {
+    min-width: 44px;
+    min-height: 44px;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-md);
+    background: #090909;
+    color: inherit;
+    cursor: pointer;
+    box-shadow: none;
+  }
+  .lightbox-stage {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: var(--space-2);
+    align-items: center;
+    height: calc(100% - 7rem);
+    overflow: auto;
+    touch-action: pan-y;
+  }
+  .lightbox-stage img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform-origin: center;
+    transition: transform var(--motion-normal) var(--ease-luxury);
+  }
+  .lightbox-stage img.is-zoomed {
+    transform: scale(1.8);
+    cursor: zoom-out;
+  }
+  .lightbox-zoom {
+    display: block;
+    margin: var(--space-2) auto 0;
+    padding-inline: var(--space-5);
+  }
+  :global(html.gallery-open) {
+    overflow: hidden;
+  }
+  @media (max-width: 640px) {
+    .viewer-stage {
+      border-radius: var(--radius-lg);
+    }
+    .thumbnail-navigation {
+      grid-template-columns: 1fr;
+    }
+    .thumbnail-arrow {
+      display: none;
+    }
+    .stage-arrow {
+      display: none;
+    }
+    .thumbnail {
+      width: 4.25rem;
+      height: auto;
+    }
+    .lightbox-stage {
+      grid-template-columns: 44px minmax(0, 1fr) 44px;
+    }
+  }
+  @media (hover: none), (pointer: coarse) {
+    .stage-arrow {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .viewer-stage img,
+    .zoom-lens,
+    .zoom-panel,
+    .thumbnail,
+    .lightbox-stage img {
+      transition: none;
+    }
+    .live-interest i {
+      animation: none;
+      opacity: 0.8;
+      transform: none;
+    }
+  }
+</style>

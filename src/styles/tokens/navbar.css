@@ -23,16 +23,26 @@ NAVBAR TOKENS
     /* Appearance */
 
     --navbar-background:rgba(5,5,5,.15);
+    --navbar-glass-background:rgba(3,3,3,.62);
+    --nav-glass-blur:var(--glass-blur-md);
+    --nav-glass-saturation:115%;
+    --navbar-glass-filter:blur(var(--nav-glass-blur)) saturate(var(--nav-glass-saturation));
 
     --navbar-background-scrolled:rgba(5,5,5,.60);
 
     --navbar-border:var(--glass-border);
 
-    --navbar-blur:var(--glass-blur-md);
+    --navbar-blur:var(--nav-glass-blur);
 
     --navbar-radius:var(--radius-lg);
 
     --navbar-shadow:var(--glass-shadow);
+
+    --navbar-dropdown-background:rgba(3,3,3,.76);
+
+    --navbar-dropdown-blur:var(--nav-glass-blur);
+
+    --navbar-dropdown-border:var(--cocoa-border-soft);
 
     /* Navigation */
 

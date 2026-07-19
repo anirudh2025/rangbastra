@@ -1,40 +1,48 @@
 ---
 import EditorialInfoPage from "../components/support/EditorialInfoPage.astro";
+import { contact } from "../data/contact";
 
 const blocks = [
   {
+    title: "Customer Accounts And Google Sign-In",
+    body: [
+      "Rangbastra provides customer accounts using Supabase Authentication. You may create an account with email credentials or Google sign-in to access saved inspiration and couture requests.",
+      "When you choose Google sign-in, Google may provide your name, email address, profile photograph and the Google account identifier required for authentication. Rangbastra does not receive or store your Google password.",
+    ],
+  },
+  {
     title: "Information We Receive",
     body: [
-      "When you contact Rangbastra through the website, WhatsApp, email, Instagram or the Design Your Outfit inquiry flow, you may share details such as your name, contact information, event date, outfit references, measurements, budget direction, city and design preferences.",
-      "This website currently does not process online payments or run a customer backend account system for completed transactions. Any couture discussion continues through direct atelier communication.",
+      "In addition to account information, Rangbastra may store information you submit, including your phone number, saved products or wishlist, couture preferences, measurements, appointment information, uploaded reference images, and consultation or customization requests.",
+      "Information may be received through the website, your customer account, WhatsApp, email, Instagram, or the Design Your Outfit inquiry flow. Please submit only information relevant to your couture request.",
     ],
   },
   {
     title: "How We Use Information",
     body: [
-      "We use inquiry details to understand your couture requirement, respond to your questions, prepare for design discussions, suggest suitable craft directions and coordinate appointments, fittings or delivery conversations.",
-      "Reference images and design notes are used only to guide the custom couture process and are not treated as permission to publicly display your personal materials.",
+      "We use personal information for account authentication, maintaining saved inspiration, responding to couture enquiries, providing personalised consultations, processing customization requests, coordinating appointments and protecting the website from abuse.",
+      "Uploaded references, measurements and design notes help the atelier understand your request. They are not treated as permission to publicly display your personal materials.",
     ],
   },
   {
-    title: "WhatsApp, Email And Social Communication",
+    title: "Service Providers And Communication",
     body: [
-      "Rangbastra may communicate with you through WhatsApp, email, phone or Instagram when you choose those channels. Messages sent through those services are also subject to their own privacy practices.",
-      "Please avoid sending sensitive financial information, identity documents or payment credentials through casual messaging channels unless a secure process is specifically confirmed.",
+      "Supabase is Rangbastra's authentication and database service provider and processes account and stored application information on our behalf. Communications sent through Google, WhatsApp, email, phone or Instagram are also subject to those providers' privacy practices.",
+      "We do not sell personal information. Information may be available to trusted team members or service partners only when needed to operate the account service, protect the website or support your couture journey.",
     ],
   },
   {
-    title: "Sharing And Retention",
+    title: "Retention And Your Rights",
     body: [
-      "We do not sell personal information. Details may be shared only with trusted team members, designers, artisans or service partners when needed to support your couture journey.",
-      "Inquiry and design communication may be retained for continuity, moderation, record keeping and future reference unless you ask us to delete information we are no longer required to keep.",
+      "We retain account, inquiry and design information for as long as it is reasonably needed to provide the requested service, maintain continuity, protect the website and meet applicable record-keeping requirements. Retention may vary according to the information and the status of your couture conversation.",
+      `You may request access, correction, export or deletion of your account and personal information by emailing ${contact.email} from the email address associated with your account. State that your request concerns account or personal-data deletion and include enough information for us to identify the account. We may need to verify your identity before completing the request.`,
+      "A deletion request may not remove information that must reasonably be retained for security, dispute prevention or applicable legal obligations. You may also ask us to stop optional promotional communication.",
     ],
   },
   {
-    title: "Your Choices",
+    title: "Privacy Contact",
     body: [
-      "You may ask us to update, correct or delete your contact details by emailing the atelier. You may also request that we stop promotional communication.",
-      "For privacy questions, contact Rangbastra through the email listed on the Contact page.",
+      `For privacy questions, account access requests or personal-data deletion, contact Rangbastra at ${contact.email}.`,
     ],
   },
 ];
@@ -42,10 +50,10 @@ const blocks = [
 
 <EditorialInfoPage
   title="Privacy Policy | Rangbastra"
-  description="Rangbastra privacy policy for custom couture inquiries, WhatsApp and email communication, design discussions and appointment-led boutique experiences."
+  description="Rangbastra privacy policy for customer accounts, Google sign-in, saved couture inspiration, consultations and customization requests."
   canonical="/privacy-policy"
   eyebrow="Privacy Policy"
   heading="How We Protect Your Couture Notes"
-  intro="A clear privacy note for visitors beginning a custom couture conversation with Rangbastra."
+  intro="A clear account and privacy notice for everyone exploring or beginning a couture conversation with Rangbastra."
   blocks={blocks}
 />

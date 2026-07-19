@@ -1,0 +1,25 @@
+---
+import type { CouturePaletteOption } from "../../data/couture";
+interface Props { palette:CouturePaletteOption[] }
+const {palette}=Astro.props;
+---
+<fieldset class="palette-selector" data-palette-selector>
+  <legend>Choose a colour direction</legend>
+  <div class="palette-grid">
+    {palette.map((colour,index)=><label class="palette-option" data-selection-sound>
+      <input type="radio" name="paletteId" value={colour.id} data-palette-name={colour.name} checked={index===0} required />
+      <span class="palette-option__surface">
+        <span class="palette-option__swatch" style={`--swatch:${colour.value};--swatch-secondary:${colour.secondaryValue??colour.value}`} aria-hidden="true"><span>✓</span></span>
+        <span>{colour.type==="original"&&<em>Original</em>}<strong>{colour.name}</strong><small>{colour.availability}</small></span>
+      </span>
+    </label>)}
+  </div>
+  <p>Final fabric colour may vary slightly by display, weave, dye lot and material finish.</p>
+</fieldset>
+<script>document.querySelectorAll<HTMLInputElement>("[data-palette-selector] input").forEach(input=>input.addEventListener("change",()=>input.closest("label")?.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"nearest",inline:"center"})))</script>
+<style>
+  .palette-selector{padding:clamp(1.2rem,3vw,2rem);border:1px solid var(--cocoa-border-soft);border-radius:var(--radius-lg);background:#070707}.palette-selector legend{padding:0 .5rem;color:var(--ivory-100);font-family:var(--font-display);font-size:clamp(1.35rem,2vw,1.8rem)}.palette-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}.palette-option{cursor:pointer}.palette-option input{position:absolute;opacity:0}.palette-option__surface{display:flex;align-items:center;gap:.85rem;min-height:5rem;padding:.8rem;border:1px solid var(--cocoa-border-soft);border-radius:var(--radius-md);background:#0a0909;transition:border-color var(--motion-fast),transform var(--motion-fast)}.palette-option__swatch{display:grid;flex:0 0 2.8rem;aspect-ratio:1;place-items:center;border:1px solid var(--cocoa-border);border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--swatch) 0 50%,var(--swatch-secondary) 50% 100%)}.palette-option__swatch span{opacity:0;color:white;text-shadow:0 1px 3px #000}.palette-option strong,.palette-option small{display:block}.palette-option strong{color:var(--ivory-100);font-size:.9rem}.palette-option small{margin-top:.25rem;color:var(--text-muted);font-size:.72rem}.palette-option input:checked+.palette-option__surface{border-color:var(--cocoa-border-strong);box-shadow:inset 0 0 0 1px rgba(var(--cocoa-rgb),.25)}.palette-option input:checked+.palette-option__surface .palette-option__swatch{border-width:2px}.palette-option input:checked+.palette-option__surface .palette-option__swatch span{opacity:1}.palette-option input:focus-visible+.palette-option__surface{outline:1px solid var(--cocoa-300);outline-offset:3px}.palette-selector>p{margin-top:1rem;color:var(--text-muted);font-size:.76rem}@media(max-width:760px){.palette-grid{grid-template-columns:1fr}}
+</style>
+<style>
+  .palette-grid{display:flex;grid-template-columns:none;overflow-x:auto;scroll-snap-type:x proximity;padding:.25rem;scrollbar-color:rgb(var(--cocoa-rgb)) transparent}.palette-option{flex:1 0 min(17rem,82vw);scroll-snap-align:center}.palette-option__swatch{flex-basis:2rem;width:2rem;border-radius:var(--radius-md);box-shadow:inset 0 1px rgba(255,255,255,.16),0 0 0 1px var(--cocoa-border)}.palette-option input:checked+.palette-option__surface .palette-option__swatch{box-shadow:inset 0 1px rgba(255,255,255,.18),0 0 0 2px rgb(var(--cocoa-rgb))}.palette-option em{display:block;margin-bottom:.25rem;color:var(--cocoa-300);font-size:.64rem;font-style:normal;font-weight:var(--weight-semibold);letter-spacing:.12em;text-transform:uppercase}@media(max-width:760px){.palette-grid{display:flex;grid-template-columns:none}}
+</style>

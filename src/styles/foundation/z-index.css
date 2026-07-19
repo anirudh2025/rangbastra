@@ -9,21 +9,36 @@ Z INDEX SYSTEM
 
 :root{
 
---z-base:1;
+--z-background:0;
+--z-grid:1;
+
+--z-atmosphere:2;
+
+--z-section:10;
+
+--z-surface:20;
+
+--z-base:2;
 
 --z-content:10;
 
+--z-card:20;
+
+--z-form-control:30;
+
 --z-sticky:100;
 
---z-navbar:500;
+--z-dropdown:100;
 
---z-dropdown:700;
+--z-navbar:200;
 
---z-overlay:900;
+--z-navbar-dropdown:220;
 
---z-modal:1000;
+--z-overlay:400;
 
---z-toast:1200;
+--z-modal:500;
+
+--z-toast:600;
 
 --z-loader:1400;
 

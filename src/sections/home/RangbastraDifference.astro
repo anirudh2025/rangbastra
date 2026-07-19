@@ -1,0 +1,273 @@
+---
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import Icon from "../../components/primitives/Icon.astro";
+import Eyebrow from "../../components/primitives/Eyebrow.astro";
+const points = [
+  {
+    icon: "confidentialDiscussion",
+    title: "We listen before we design",
+    copy: "The first conversation is about the person, the celebration and what she wants to carry into it.",
+  },
+  {
+    icon: "sketch",
+    title: "The silhouette becomes personal",
+    copy: "Colour, movement, proportion and detail respond to her comfort—not a fixed catalogue formula.",
+  },
+  {
+    icon: "needle",
+    title: "Hands refine what measurements begin",
+    copy: "Embroidery, drape and construction are considered together, then adjusted through fitting.",
+  },
+  {
+    icon: "dedicatedDesigner",
+    title: "One designer stays close",
+    copy: "Questions, revisions and private responses remain part of one calm, accountable relationship.",
+  },
+];
+---
+
+<Section id="rangbastra-difference" class="difference-section">
+  <Container class="difference-container">
+    <div class="difference-story" data-difference-story>
+      <div class="difference-sticky">
+        <header>
+          <Eyebrow>The Rangbastra difference</Eyebrow><h2>
+            Luxury becomes meaningful when it <span class="heading-light-sweep"
+              >belongs to you.</span
+            >
+          </h2><p>
+            We do not begin by asking what is trending. We begin by
+            understanding who will wear the piece.
+          </p>
+        </header>
+        <div class="difference-grid" role="list">
+          {
+            points.map((point, index) => (
+              <article
+                role="listitem"
+                tabindex="0"
+                style={`--card-index:${index}`}
+                data-difference-card
+              >
+                <>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <Icon name={point.icon} size={27} />
+                  <h3>{point.title}</h3>
+                  <p>{point.copy}</p>
+                </>
+              </article>
+            ))
+          }
+        </div>
+        <p class="difference-progress" aria-hidden="true">
+          <span data-difference-stage>1</span> / 4
+        </p>
+      </div>
+    </div>
+  </Container>
+</Section>
+<script>
+  const initDifferenceStories = () =>
+    document
+      .querySelectorAll<HTMLElement>("[data-difference-story]")
+      .forEach((root) => {
+        if (root.dataset.ready) return;
+        root.dataset.ready = "true";
+        const cards = [
+            ...root.querySelectorAll<HTMLElement>("[data-difference-card]"),
+          ],
+          label = root.querySelector<HTMLElement>("[data-difference-stage]"),
+          staticSequence = matchMedia("(prefers-reduced-motion: reduce), (max-width: 767px)").matches;
+        if (staticSequence) {
+          cards.forEach((card) => card.style.setProperty("--card-reveal", "1"));
+          if (label) label.textContent = "4";
+          return;
+        }
+        let frame = 0;
+        const render = () => {
+          frame = 0;
+          const rect = root.getBoundingClientRect(),
+            range = Math.max(1, root.offsetHeight - innerHeight),
+            progress = Math.max(0, Math.min(1, -rect.top / range));
+          cards.forEach((card, index) =>
+            card.style.setProperty(
+              "--card-reveal",
+              Math.max(0, Math.min(1, progress * 4 - index + 1)).toFixed(3),
+            ),
+          );
+          if (label)
+            label.textContent = String(
+              Math.min(4, Math.floor(progress * 4) + 1),
+            );
+        };
+        const queue = () => {
+          if (!frame) frame = requestAnimationFrame(render);
+        };
+        addEventListener("scroll", queue, { passive: true });
+        addEventListener("resize", queue, { passive: true });
+        render();
+        document.addEventListener(
+          "astro:before-swap",
+          () => {
+            removeEventListener("scroll", queue);
+            removeEventListener("resize", queue);
+            cancelAnimationFrame(frame);
+          },
+          { once: true },
+        );
+      });
+  initDifferenceStories();
+  document.addEventListener("astro:page-load", initDifferenceStories);
+</script>
+<style>
+  :global(.difference-section) {
+    overflow: visible;
+  }
+  :global(.difference-container) {
+    --container-default: var(--container-wide);
+  }
+  .difference-story {
+    height: 260vh;
+  }
+  .difference-sticky {
+    position: sticky;
+    top: clamp(5rem, 10vh, 8rem);
+    display: grid;
+    align-content: center;
+    gap: clamp(var(--space-6), 4vw, var(--space-8));
+    min-height: min(78vh, 52rem);
+  }
+  header {
+    display: grid;
+    max-width: 64rem;
+    gap: var(--space-4);
+  }
+  header h2 {
+    margin-top: var(--space-1);
+    font-family: var(--font-display);
+    font-size: var(--section-heading-statement);
+    font-weight: 300;
+    line-height: 0.96;
+  }
+  header > p:last-child {
+    max-width: 48rem;
+    margin-top: var(--space-3);
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .difference-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-3);
+  }
+  article {
+    --card-reveal: 0;
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    min-height: 20rem;
+    padding: clamp(var(--space-5), 2.5vw, var(--space-7));
+    border: 1px solid var(--cocoa-border-soft);
+    border-color: color-mix(
+      in srgb,
+      var(--cocoa-500) calc(16% + var(--card-reveal) * 28%),
+      transparent
+    );
+    background: rgba(4, 4, 4, 0.95);
+    box-shadow: 0 12px 34px
+      rgba(var(--cocoa-rgb), calc(var(--card-reveal) * 0.08));
+    opacity: calc(0.22 + var(--card-reveal) * 0.78);
+    transform: translate3d(calc((1 - var(--card-reveal)) * 1.4rem), 0, 0);
+    filter: saturate(calc(0.62 + var(--card-reveal) * 0.38));
+    will-change: opacity, transform;
+  }
+  article:focus-visible {
+    outline: 2px solid var(--cocoa-300);
+    outline-offset: 3px;
+  }
+  article > span {
+    color: var(--cocoa-500);
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+  }
+  article :global(svg),
+  h3 {
+    color: var(--cocoa-300);
+  }
+  h3 {
+    font-family: var(--font-display);
+    font-size: clamp(1.55rem, 2.25vw, 2.3rem);
+    font-weight: 300;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  article p {
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+  .difference-progress {
+    justify-self: end;
+    color: var(--text-muted);
+    font-size: var(--caption);
+    letter-spacing: var(--tracking-label);
+  }
+  @media (max-width: 1024px) {
+    .difference-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .difference-story {
+      height: 285vh;
+    }
+    .difference-sticky {
+      top: 5rem;
+    }
+    .difference-grid article {
+      min-height: 14rem;
+    }
+  }
+  @media (max-width: 767px) {
+    .difference-story {
+      height: auto;
+    }
+    .difference-sticky {
+      position: relative;
+      top: auto;
+      min-height: 0;
+    }
+    .difference-grid {
+      grid-template-columns: 1fr;
+    }
+    .difference-grid article {
+      --card-reveal: 1 !important;
+      min-height: 0;
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+    .difference-progress {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .difference-story {
+      height: auto;
+    }
+    .difference-sticky {
+      position: relative;
+      top: auto;
+      min-height: 0;
+    }
+    article {
+      --card-reveal: 1 !important;
+      opacity: 1;
+      transform: none;
+      filter: none;
+      will-change: auto;
+    }
+    .difference-progress {
+      display: none;
+    }
+  }
+</style>

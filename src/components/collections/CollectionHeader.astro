@@ -1,5 +1,6 @@
 ---
 import Eyebrow from "../primitives/Eyebrow.astro";
+import TypewriterText from "../primitives/TypewriterText.astro";
 ---
 
 <header class="header">
@@ -7,12 +8,15 @@ import Eyebrow from "../primitives/Eyebrow.astro";
 
   <h2>
     <span class="title-intro">Crafted For</span>
-    <span class="title-statement">Every Celebration</span>
+    <span class="title-statement title-highlight heading-light-sweep"
+      >Every Celebration</span
+    >
   </h2>
 
   <p>
-    Discover signature couture collections designed to celebrate every
-    unforgettable moment.
+    <TypewriterText
+      text="Discover signature couture collections designed to celebrate every unforgettable moment."
+    />
   </p>
 </header>
 
@@ -20,7 +24,7 @@ import Eyebrow from "../primitives/Eyebrow.astro";
   .header {
     display: grid;
     justify-items: center;
-    gap: var(--space-4);
+    gap: var(--editorial-header-gap);
     max-width: var(--measure-md);
     margin: 0 auto clamp(var(--space-8), 6vw, var(--space-11));
     text-align: center;
@@ -28,10 +32,11 @@ import Eyebrow from "../primitives/Eyebrow.astro";
 
   h2 {
     display: grid;
-    gap: var(--space-1);
+    gap: var(--editorial-title-gap);
     margin: 0;
     font-family: var(--font-display);
-    font-weight: var(--weight-light);
+    font-weight: var(--weight-editorial);
+    font-synthesis: none;
     text-align: center;
     justify-self: center;
     text-wrap: balance;
@@ -55,7 +60,7 @@ import Eyebrow from "../primitives/Eyebrow.astro";
     font-weight: 500;
     letter-spacing: -3.8px;
     line-height: 1.12;
-    padding-bottom: .08em;
+    padding-bottom: 0.08em;
     white-space: nowrap;
   }
 
@@ -72,10 +77,17 @@ import Eyebrow from "../primitives/Eyebrow.astro";
 
   @media (max-width: 767px) {
     .header {
-      justify-items: start;
+      justify-items: center;
       gap: var(--space-3);
       margin-bottom: var(--space-7);
-      text-align: left;
+      padding-inline: var(--mobile-collection-gutter, var(--space-4));
+      text-align: center;
+    }
+
+    .header :global(.eyebrow) {
+      width: fit-content;
+      margin-inline: auto;
+      border-radius: var(--radius-2xs);
     }
 
     .title-intro {

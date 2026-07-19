@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Completing Secure Sign-In | Rangbastra"
+  robots="noindex,nofollow"
+>
+  <section class="auth-callback">
+    <p role="status" data-auth-callback-status>
+      Completing your secure Google sign-in…
+    </p>
+  </section>
+</BaseLayout>
+
+<script>
+  import { getSupabaseBrowserClient } from "../../lib/auth/supabaseBrowser";
+
+  const completeAuth = async () => {
+    const status = document.querySelector<HTMLElement>(
+      "[data-auth-callback-status]",
+    );
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase.auth.getSession();
+      if (error || !data.session)
+        throw error ?? new Error("No session returned");
+      if (status)
+        status.textContent = "Welcome. Opening your private client room…";
+      window.RangbastraAudio?.success();
+      location.replace("/account");
+    } catch (error) {
+      if (import.meta.env.DEV && error instanceof Error)
+        console.error("Rangbastra auth callback:", error.message);
+      if (status)
+        status.textContent =
+          "Google sign-in could not be completed. Please return to Sign In and try again.";
+    }
+  };
+  completeAuth();
+</script>
+
+<style>
+  .auth-callback {
+    display: grid;
+    min-height: 100svh;
+    place-items: center;
+    padding: 2rem;
+    background: #050505;
+    color: var(--ivory-100);
+    text-align: center;
+  }
+</style>

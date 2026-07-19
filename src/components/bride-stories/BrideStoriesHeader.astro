@@ -7,7 +7,7 @@ import Eyebrow from "../primitives/Eyebrow.astro";
 
   <h2>
     <span class="title-intro">Moments Woven Into</span>
-    <span class="title-statement">Beautiful Memories</span>
+    <span class="title-statement title-highlight">Beautiful Memories</span>
   </h2>
 
   <p>
@@ -19,13 +19,13 @@ import Eyebrow from "../primitives/Eyebrow.astro";
 <style>
   .bride-stories-header {
     display: grid;
-    gap: var(--bride-stories-header-gap, var(--space-5));
+    gap:var(--bride-stories-header-gap,var(--editorial-header-gap));
     max-width: var(--bride-stories-header-width, var(--measure-md));
   }
 
   h2 {
     display: grid;
-    gap: var(--bride-stories-title-gap, var(--space-2));
+    gap:var(--bride-stories-title-gap,var(--editorial-title-gap));
     max-width: var(--bride-stories-title-width, min(100%, 54rem));
     color: var(--text-primary);
     font-family: var(--font-display);
@@ -50,6 +50,11 @@ import Eyebrow from "../primitives/Eyebrow.astro";
     letter-spacing: var(--tracking-heading);
     line-height: 1.12;
     padding-bottom: .08em;
+    width:max-content;
+    max-width:100%;
+    white-space:nowrap;
+    font-size:clamp(2.45rem,7.4vw,7.4rem);
+    letter-spacing:var(--title-tracking-premium);
   }
 
   p {

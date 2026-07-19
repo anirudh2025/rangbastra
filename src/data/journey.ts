@@ -60,11 +60,25 @@ image:journeyImages.consultation
 
 id:3,
 
+title:"Refine Colour And Measurements",
+
+description:"Palette, proportion and comfort are resolved around you before the detailed work begins.",
+
+icon:"measurements",
+
+image:journeyImages.vision
+
+},
+
+{
+
+id:4,
+
 title:"Crafted With Precision",
 
 description:"Every outfit is individually tailored with exceptional craftsmanship.",
 
-icon:"fabric",
+icon:"needle",
 
 image:journeyImages.craft
 
@@ -72,7 +86,21 @@ image:journeyImages.craft
 
 {
 
-id:4,
+id:5,
+
+title:"Final Fitting And Delivery",
+
+description:"Balance, length and finishing are reviewed with care before the piece leaves the atelier.",
+
+icon:"delivery",
+
+image:journeyImages.consultation
+
+},
+
+{
+
+id:6,
 
 title:"Celebrate Beautifully",
 

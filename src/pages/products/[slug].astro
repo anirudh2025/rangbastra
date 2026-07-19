@@ -6,12 +6,11 @@ import CoutureDetailHero from "../../components/couture/CoutureDetailHero.astro"
 import CoutureStory from "../../components/couture/CoutureStory.astro";
 import CoutureCraftDetails from "../../components/couture/CoutureCraftDetails.astro";
 import CoutureImpressionPanel from "../../components/couture/CoutureImpressionPanel.astro";
-import CoutureGallery from "../../components/couture/CoutureGallery.astro";
 import CoutureImpressionForm from "../../components/couture/CoutureImpressionForm.astro";
 import CoutureAtelierCTA from "../../components/couture/CoutureAtelierCTA.astro";
 import CoutureRelated from "../../components/couture/CoutureRelated.astro";
 import Footer from "../../sections/home/Footer.astro";
-import { getPublishedCouturePieces, getRelatedCouturePieces } from "../../lib/couture";
+import { getProductCoverImage, getProductImages, getPublishedCouturePieces, getRelatedCouturePieces } from "../../lib/couture";
 import type { CouturePiece } from "../../data/couture";
 
 interface Props {
@@ -28,12 +27,14 @@ export function getStaticPaths() {
 const { product } = Astro.props;
 const relatedProducts = getRelatedCouturePieces(product, 4);
 const canonical = `/products/${product.slug}`;
+const productImages = getProductImages(product);
+const productCover = getProductCoverImage(product);
 
 const productJsonLd = {
   "@context": "https://schema.org",
   "@type": "Product",
   name: product.name,
-  image: product.gallery,
+  image: productImages.map((image) => image.src),
   description: product.shortDescription,
   brand: {
     "@type": "Brand",
@@ -73,7 +74,7 @@ const breadcrumbJsonLd = {
   title={product.seo.title}
   description={product.seo.description}
   canonical={canonical}
-  image={product.featuredImage}
+  image={productCover.src}
 >
   <script
     type="application/ld+json"
@@ -90,7 +91,6 @@ const breadcrumbJsonLd = {
       </div>
 
       <CoutureCraftDetails product={product} />
-      <CoutureGallery product={product} />
       <CoutureImpressionForm product={product} />
       <CoutureAtelierCTA product={product} />
       <CoutureRelated products={relatedProducts} />
@@ -100,16 +100,27 @@ const breadcrumbJsonLd = {
   <Footer />
 </BaseLayout>
 
+<script define:vars={{ recentProduct: { slug: product.slug, name: product.name, category: product.category } }}>
+  try { sessionStorage.setItem("rangbastraRecentProduct", JSON.stringify(recentProduct)); } catch {}
+</script>
+
 <style>
   :global(.product-page-section) {
+    --navbar-fixed-gutter: calc((var(--navbar-padding-block) * 2) + var(--space-11));
+    --product-page-top-gap: var(--space-5);
     --section-padding-block: 0 clamp(var(--space-9), 10vw, var(--space-13));
 
     overflow: hidden;
     background:
-      radial-gradient(ellipse at 50% 18%, rgba(198, 169, 114, .11), transparent 36%),
+      radial-gradient(ellipse at 50% 18%, var(--cocoa-glow-soft), transparent 36%),
       radial-gradient(ellipse at 72% 20%, rgba(106, 78, 66, .2), transparent 38%),
       linear-gradient(180deg, rgba(0, 0, 0, .98), transparent 28%),
       var(--surface-canvas);
+  }
+
+  :global(.product-page-section),
+  :global(.product-page-section [id]) {
+    scroll-margin-top: calc(var(--navbar-height) + var(--navbar-fixed-gutter) + var(--product-page-top-gap));
   }
 
   :global(.product-page-section)::before {
@@ -119,17 +130,17 @@ const breadcrumbJsonLd = {
     z-index: 0;
     pointer-events: none;
     inset: clamp(var(--space-5), 5vw, var(--space-10));
-    border: 1px solid rgba(198, 169, 114, .1);
+    border:1px solid var(--cocoa-border-soft);
     background:
-      linear-gradient(135deg, rgba(255, 255, 255, .055), transparent 18%, transparent 82%, rgba(198, 169, 114, .08)),
+      linear-gradient(135deg,rgba(var(--cocoa-rgb),.055),transparent 18%,transparent 82%,rgba(var(--cocoa-rgb),.08)),
       var(--gradient-satin-fold);
     opacity: .2;
     transform: scale(1.02);
   }
 
   :global(.product-page-container) {
-    --container-default: var(--container-wide);
-    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+    --container-default: 1680px;
+    --container-padding-inline: clamp(var(--space-4), 3vw, var(--space-8));
 
     position: relative;
     z-index: var(--z-content);
@@ -139,7 +150,7 @@ const breadcrumbJsonLd = {
 
   .product-editorial-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(20rem, .42fr);
+    grid-template-columns:minmax(0,.9fr) minmax(24rem,.58fr);
     gap: clamp(var(--space-6), 5vw, var(--space-9));
     align-items: center;
   }
@@ -164,6 +175,12 @@ const breadcrumbJsonLd = {
 
     .product-editorial-row :global(.impression-panel) {
       justify-self: stretch;
+    }
+  }
+
+  @media (max-width: 768px) {
+    :global(.product-page-section) {
+      --navbar-fixed-gutter: calc((var(--navbar-padding-block) * 2) + var(--space-6));
     }
   }
 </style>

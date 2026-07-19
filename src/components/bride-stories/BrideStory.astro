@@ -63,8 +63,8 @@ const sizes = "(max-width: 767px) 92vw, (max-width: 1199px) 48vw, 44rem";
     --bride-story-grid: minmax(0, 1.06fr) minmax(20rem, .72fr);
     --bride-story-gap: clamp(var(--space-7), 7vw, var(--space-12));
     --bride-story-image-radius: var(--radius-2xl);
-    --bride-story-image-background: rgba(255, 255, 255, .025);
-    --bride-story-image-glow: var(--shadow-premium);
+    --bride-story-image-background:#000;
+    --bride-story-image-glow: inset 0 1px rgba(255,255,255,.035);
     --bride-story-copy-width: var(--measure-sm);
     --bride-story-quote-size: clamp(1.65rem, 3vw, 3.45rem);
     --bride-story-meta-gap: var(--space-2);
@@ -102,7 +102,7 @@ const sizes = "(max-width: 767px) 92vw, (max-width: 1199px) 48vw, 44rem";
     overflow: hidden;
     aspect-ratio: 1;
     min-height: 0;
-    padding: var(--bride-story-image-padding, clamp(var(--space-4), 2vw, var(--space-6)));
+    padding:var(--bride-story-image-padding,clamp(var(--space-4),2.4vw,var(--space-6)));
     border: 1px solid var(--border-default);
     border-radius: var(--bride-story-image-radius);
     background:
@@ -228,7 +228,8 @@ const sizes = "(max-width: 767px) 92vw, (max-width: 1199px) 48vw, 44rem";
   .bride-story:focus-within .media {
     transform: translate3d(0, var(--motion-card-lift), 0);
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-premium), var(--glow-soft), var(--shadow-inset-strong);
+    border-color:rgba(var(--cocoa-rgb),.42);
+    box-shadow:inset 0 0 26px rgba(var(--cocoa-rgb),.06);
   }
 
   .bride-story:hover .media::after,
@@ -301,7 +302,7 @@ const sizes = "(max-width: 767px) 92vw, (max-width: 1199px) 48vw, 44rem";
     }
 
     .media {
-      padding: var(--space-3);
+      padding:var(--space-4);
       border-radius: var(--radius-xl);
     }
 

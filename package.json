@@ -9,12 +9,23 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check",
+    "security:secrets": "node scripts/security-audit.mjs",
+    "security:bundle": "node scripts/check-client-bundle.mjs",
+    "security:dependencies": "npm audit --audit-level=high",
+    "security": "npm run security:secrets && npm run build && npm run security:bundle && npm run security:dependencies"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
+    "@supabase/supabase-js": "^2.110.7",
     "astro": "^7.0.0",
-    "gsap": "^3.15.0",
     "sharp": "^0.35.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "prettier": "^3.9.5",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^6.0.3"
   }
 }

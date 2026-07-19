@@ -22,19 +22,7 @@ import BrideStoriesList from "../../components/bride-stories/BrideStoriesList.as
     --bride-stories-container-gap: clamp(var(--space-8), 7vw, var(--space-12));
 
     overflow: hidden;
-    background:
-      radial-gradient(
-        circle at 18% 18%,
-        rgba(106, 78, 66, var(--bride-stories-cocoa-glow-opacity)),
-        transparent 34%
-      ),
-      radial-gradient(
-        circle at 86% 58%,
-        rgba(181, 147, 130, .1),
-        transparent 32%
-      ),
-      var(--bride-stories-background);
-    isolation: isolate;
+    background:rgba(0,0,0,.18);
   }
 
   :global(.bride-stories-section)::before,
@@ -60,10 +48,8 @@ import BrideStoriesList from "../../components/bride-stories/BrideStoriesList.as
     bottom: 8%;
     width: min(54rem, 68vw);
     height: min(36rem, 48vw);
-    background:
-      linear-gradient(145deg, transparent, rgba(181, 147, 130, .055), transparent),
-      var(--gradient-satin-fold);
-    opacity: calc(var(--bride-stories-satin-opacity) * .76);
+    background:none;
+    opacity:0;
     transform: rotate(-12deg);
   }
 

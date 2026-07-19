@@ -14,7 +14,7 @@ const whatsappHref = getWhatsAppHref(
 ---
 
 <section class="product-atelier-cta" aria-labelledby="product-atelier-heading">
-  <span>Custom Design Session</span>
+  <span class="product-atelier-eyebrow">Custom Design Session</span>
   <h2 id="product-atelier-heading">
     <span class="heading-soft">Begin Your</span>
     <span class="heading-strong">Couture Journey</span>
@@ -25,8 +25,8 @@ const whatsappHref = getWhatsAppHref(
     Your designer will guide fabric, fit, and personalization with calm attention.
   </p>
   <div class="product-atelier-actions">
-    <Button href={`/design-your-outfit?piece=${product.slug}`}>Start This Story</Button>
-    <Button href={whatsappHref} target="_blank">Ask On WhatsApp</Button>
+    <Button href={`/products/${product.slug}/customize`} variant="brand-mesh">Start This Story</Button>
+    <Button href={whatsappHref} target="_blank" variant="whatsapp">Ask On WhatsApp</Button>
   </div>
 </section>
 
@@ -35,23 +35,32 @@ const whatsappHref = getWhatsAppHref(
     display: grid;
     justify-items: center;
     gap: var(--space-5);
-    padding-block: clamp(var(--space-7), 7vw, var(--space-10));
+    width:min(100%,86rem);
+    margin-inline:auto;
+    padding:clamp(var(--space-7),7vw,var(--space-10)) clamp(var(--space-4),5vw,var(--space-9));
+    border:1px solid rgba(var(--cocoa-rgb),.24);
+    border-radius:var(--radius-2xl);
+    background:linear-gradient(135deg,rgba(78,55,45,.2),rgba(0,0,0,.5) 48%,rgba(106,78,66,.16));
     text-align: center;
   }
 
-  span {
+  .product-atelier-eyebrow {
     color: var(--text-muted);
     font-size: var(--caption);
     font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-label);
     line-height: var(--leading-caption);
     text-transform: uppercase;
+    padding:var(--space-1) var(--space-3);
+    border:1px solid rgba(var(--cocoa-rgb),.32);
+    border-radius:2px;
+    background:linear-gradient(135deg,rgba(78,55,45,.82),rgba(9,9,9,.92));
   }
 
   h2 {
     display: grid;
     gap: var(--space-1);
-    max-width: 18ch;
+    max-width: 28ch;
     color: var(--text-primary);
     font-family: var(--font-display);
     font-weight: var(--weight-light);
@@ -62,7 +71,7 @@ const whatsappHref = getWhatsAppHref(
 
   .heading-soft {
     color: var(--text-primary);
-    font-size: clamp(1.8rem, 3.2vw, 3.2rem);
+    font-size: clamp(1.8rem, 2.7vw, 3.2rem);
     line-height: 1.05;
   }
 
@@ -71,7 +80,7 @@ const whatsappHref = getWhatsAppHref(
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-    font-size: clamp(3rem, 6vw, 6.8rem);
+    font-size: clamp(3rem, 5vw, 6.2rem);
     font-weight: var(--weight-medium);
     letter-spacing: inherit;
     line-height: .92;
@@ -95,6 +104,7 @@ const whatsappHref = getWhatsAppHref(
   }
 
   @media (max-width: 560px) {
+    .product-atelier-cta{border-radius:var(--radius-xl);}
     .product-atelier-actions,
     .product-atelier-actions :global(.button) {
       width: 100%;

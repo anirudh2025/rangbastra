@@ -1,313 +1,539 @@
 ---
+import Sparkle from "../icons/journey/Sparkle.astro";
 interface Props {
-    href?: string;
-    type?: "button" | "submit" | "reset";
-    class?: string;
-    disabled?: boolean;
-    target?: string;
-    rel?: string;
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  class?: string;
+  disabled?: boolean;
+  target?: string;
+  rel?: string;
+  variant?:
+    "brand-mesh" | "cherry" | "neutral" | "google" | "whatsapp" | "instagram";
+  sparkle?: boolean;
 }
 
 const {
-    href,
-    type = "button",
-    class: className = "",
-    disabled = false,
-    target,
-    rel
+  href,
+  type = "button",
+  class: className = "",
+  disabled = false,
+  target,
+  rel,
+  variant,
+  sparkle,
 } = Astro.props;
 
-const computedRel = rel ?? (target === "_blank" ? "noopener noreferrer" : undefined);
+const resolvedVariant =
+  variant ??
+  (href?.includes("design-your-outfit") || href?.includes("/customize")
+    ? "brand-mesh"
+    : "neutral");
+const resolvedSparkle = sparkle ?? resolvedVariant === "brand-mesh";
+
+const computedRel =
+  rel ?? (target === "_blank" ? "noopener noreferrer" : undefined);
 ---
 
 {
-    href ? (
-
-        <a
-            href={disabled ? undefined : href}
-            aria-disabled={disabled}
-            target={target}
-            rel={computedRel}
-            class:list={[
-                "button",
-                className,
-                disabled && "button--disabled"
-            ]}
-        >
-            <span class="button__content"><slot /></span>
-        </a>
-
-    ) : (
-
-        <button
-            type={type}
-            disabled={disabled}
-            class:list={[
-                "button",
-                className
-            ]}
-        >
-            <span class="button__content"><slot /></span>
-        </button>
-
-    )
+  href ? (
+    <a
+      href={disabled ? undefined : href}
+      aria-disabled={disabled}
+      target={target}
+      rel={computedRel}
+      class:list={[
+        "button",
+        `button--${resolvedVariant}`,
+        resolvedSparkle && "button--sparkle-enabled",
+        className,
+        disabled && "button--disabled",
+      ]}
+    >
+      <span class="button__surface">
+        <span class="button__shimmer" aria-hidden="true" />
+        <span class="button__content">
+          <slot />
+        </span>
+      </span>
+      {resolvedSparkle && (
+        <span class="button__sparkles" aria-hidden="true">
+          {Array.from({ length: 24 }, (_, index) => (
+            <i
+              style={`--angle:${index * 15}deg;--distance:${24 + (index % 6) * 4}px;--delay:${(index % 6) * 35}ms`}
+            >
+              <Sparkle
+                size={
+                  index % 6 === 0
+                    ? 16
+                    : index % 3 === 0
+                      ? 11
+                      : index % 2 === 0
+                        ? 8
+                        : 6
+                }
+              />
+            </i>
+          ))}
+        </span>
+      )}
+    </a>
+  ) : (
+    <button
+      type={type}
+      disabled={disabled}
+      class:list={[
+        "button",
+        `button--${resolvedVariant}`,
+        resolvedSparkle && "button--sparkle-enabled",
+        className,
+      ]}
+    >
+      <span class="button__surface">
+        <span class="button__shimmer" aria-hidden="true" />
+        <span class="button__content">
+          <slot />
+        </span>
+      </span>
+      {resolvedSparkle && (
+        <span class="button__sparkles" aria-hidden="true">
+          {Array.from({ length: 24 }, (_, index) => (
+            <i
+              style={`--angle:${index * 15}deg;--distance:${24 + (index % 6) * 4}px;--delay:${(index % 6) * 35}ms`}
+            >
+              <Sparkle
+                size={
+                  index % 6 === 0
+                    ? 16
+                    : index % 3 === 0
+                      ? 11
+                      : index % 2 === 0
+                        ? 8
+                        : 6
+                }
+              />
+            </i>
+          ))}
+        </span>
+      )}
+    </button>
+  )
 }
 
 <style>
+  .button {
+    position: relative;
 
-.button{
+    display: inline-flex;
 
-    position:relative;
+    align-items: center;
 
-    display:inline-flex;
+    justify-content: center;
 
-    align-items:center;
+    gap: 0.6rem;
 
-    justify-content:center;
+    overflow: visible;
 
-    gap:.6rem;
+    padding: 0;
 
-    overflow:hidden;
+    border: 1px solid var(--cocoa-border-soft);
 
-    padding:
-        var(--button-padding-y)
-        var(--button-padding-x);
+    border-radius: var(--radius-md);
 
-    border:1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(5, 5, 5, 0.94);
 
-    border-radius:var(--radius-md);
+    color: var(--ivory-50);
 
-    background:
-        linear-gradient(135deg,rgba(255,255,255,.08),transparent 34%),
-        var(--gradient-obsidian);
+    text-decoration: none;
 
-    color:var(--ivory-50);
+    font-family: inherit;
 
-    text-decoration:none;
+    font-size: var(--label-md);
 
-    font-family:inherit;
+    font-weight: var(--weight-semibold);
 
-    font-size:var(--label-md);
+    line-height: 1;
 
-    font-weight:var(--weight-semibold);
+    white-space: nowrap;
 
-    line-height:1;
+    cursor: pointer;
 
-    white-space:nowrap;
-
-    cursor:pointer;
-
-    isolation:isolate;
+    isolation: isolate;
 
     box-shadow:
-        0 18px 44px rgba(0,0,0,.34),
-        0 0 0 1px rgba(255,255,255,.035) inset,
-        var(--shadow-inset);
+      0 10px 28px rgba(0, 0, 0, 0.22),
+      var(--shadow-inset);
 
     transition:
-        background 320ms var(--ease-luxury),
-        border-color 320ms var(--ease-luxury),
-        color 320ms var(--ease-luxury),
-        transform 320ms var(--ease-luxury),
-        box-shadow 320ms var(--ease-luxury);
+      background 320ms var(--ease-luxury),
+      border-color 320ms var(--ease-luxury),
+      color 320ms var(--ease-luxury),
+      transform 320ms var(--ease-luxury),
+      box-shadow 320ms var(--ease-luxury);
+  }
 
-}
+  .button__content {
+    position: relative;
 
-.button__content{
+    z-index: 3;
 
-    position:relative;
+    display: inline-flex;
 
-    z-index:1;
+    align-items: center;
 
-    display:inline-flex;
+    justify-content: center;
 
-    align-items:center;
+    gap: 0.6rem;
 
-    justify-content:center;
+    width: 100%;
 
-    gap:.6rem;
+    min-width: 0;
 
-    width:100%;
+    text-align: center;
 
-    min-width:0;
+    transition: transform 360ms var(--ease-luxury);
+  }
 
-    text-align:center;
+  .button__surface {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    padding: var(--button-padding-y) var(--button-padding-x);
+    border-radius: inherit;
+    pointer-events: none;
+  }
 
-    transition:transform 360ms var(--ease-luxury);
+  .button__shimmer {
+    position: absolute;
+    inset: 1px auto 1px 1px;
+    z-index: 2;
+    width: 40%;
+    border-radius: calc(var(--radius-md) - 1px);
+    background: linear-gradient(
+      105deg,
+      transparent 0%,
+      rgba(var(--cocoa-rgb), 0.06) 16%,
+      rgba(var(--cocoa-rgb), 0.24) 38%,
+      rgba(var(--cocoa-rgb), 0.48) 50%,
+      rgba(var(--cocoa-rgb), 0.22) 64%,
+      transparent 100%
+    );
+    filter: blur(3px);
+    clip-path: inset(0 round calc(var(--radius-md) - 1px));
+    transform: translateX(-180%) skewX(-14deg);
+    pointer-events: none;
+    opacity: 0;
+  }
+  .button.is-shimmering .button__shimmer {
+    animation: cta-shimmer-sweep 1.6s cubic-bezier(0.22, 1, 0.36, 1) 1;
+  }
+  .button__sparkles {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    z-index: 5;
+    width: 1px;
+    height: 1px;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .button__sparkles i {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--ivory-100);
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(0) scale(0.45);
+  }
+  .button__sparkles i:nth-child(3n) {
+    color: rgb(var(--cocoa-rgb));
+  }
+  .button__sparkles i:nth-child(4n) {
+    color: var(--ivory-100);
+    filter: drop-shadow(0 0 5px rgba(var(--cocoa-rgb), 0.5));
+  }
+  .button.is-sparkling .button__sparkles i {
+    animation: cta-particle-burst 1.7s cubic-bezier(0.22, 1, 0.36, 1)
+      var(--delay) 1;
+  }
+  @keyframes cta-shimmer-sweep {
+    0% {
+      opacity: 0;
+      transform: translateX(-180%) skewX(-14deg);
+    }
+    18% {
+      opacity: 0.72;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(780%) skewX(-14deg);
+    }
+  }
+  @keyframes cta-particle-burst {
+    0% {
+      opacity: 0;
+      transform: rotate(var(--angle)) translateX(0) scale(0.4);
+    }
+    20% {
+      opacity: 0.88;
+    }
+    72% {
+      opacity: 0.55;
+    }
+    100% {
+      opacity: 0;
+      transform: rotate(var(--angle)) translateX(var(--distance)) scale(1);
+    }
+  }
 
-}
+  .button__content :global(.label) {
+    display: inline-flex;
 
-.button__content :global(.label){
+    align-items: center;
 
-    display:inline-flex;
+    justify-content: center;
 
-    align-items:center;
+    text-align: center;
 
-    justify-content:center;
+    padding-inline: 0;
 
-    text-align:center;
+    transition: transform 360ms var(--ease-luxury);
+  }
 
-    padding-inline:0;
+  .button__content :global(.label__icon) {
+    display: inline-flex;
+    flex: 0 0 auto;
+    transition:
+      max-width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      margin 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 420ms;
+  }
 
-    transition:transform 360ms var(--ease-luxury);
+  .button::before {
+    content: "";
 
-}
+    position: absolute;
 
-.button__content :global(.label__icon){
+    inset: 1px;
 
-    display:none;
+    z-index: 1;
 
-}
+    border-radius: calc(var(--button-radius) - 1px);
 
-.button::before{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='140' viewBox='0 0 180 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.038 .072' numOctaves='4' seed='17' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.52'/%3E%3C/svg%3E");
+    background-size: 180px 140px;
+    background-position: center;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
 
-    content:"";
+    opacity: 0.1;
 
-    position:absolute;
+    transition: opacity var(--motion-button) var(--ease-luxury);
+  }
 
-    inset:1px;
+  .button::after {
+    content: none;
 
-    z-index:-1;
+    position: absolute;
 
-    border-radius:calc(var(--button-radius) - 1px);
+    top: 50%;
+    right: 1.05rem;
 
-    background:
-        linear-gradient(120deg,rgba(0, 0, 0, 0.18),transparent 38%,rgba(0,0,0,.12));
+    z-index: 1;
 
-    opacity:.55;
+    color: var(--sand-200);
 
-    transition:opacity var(--motion-button) var(--ease-luxury);
+    font-size: 0.82rem;
+    line-height: 1;
 
-}
+    opacity: 0;
 
-.button::after{
-
-    content:"✦";
-
-    position:absolute;
-
-    top:50%;
-    right:1.05rem;
-
-    z-index:1;
-
-    color:var(--sand-200);
-
-    font-size:.82rem;
-    line-height:1;
-
-    opacity:0;
-
-    transform:translate3d(.5rem,-50%,0) scale(.88) rotate(-10deg);
+    transform: translate3d(0.5rem, -50%, 0) scale(0.88) rotate(-10deg);
 
     transition:
-        opacity 360ms var(--ease-luxury),
-        transform 420ms var(--ease-luxury);
+      opacity 360ms var(--ease-luxury),
+      transform 420ms var(--ease-luxury);
+  }
 
-}
-
-.button:hover{
-
-    border-color:rgba(221,208,198,.34);
+  .button:hover {
+    border-color: rgba(221, 208, 198, 0.34);
 
     background:
-        linear-gradient(135deg,rgba(0,0,0,.18),transparent 34%),
-        var(--button-primary-gradient-hover);
+      radial-gradient(
+        circle at 24% 18%,
+        rgba(157, 123, 105, 0.54),
+        transparent 36%
+      ),
+      radial-gradient(
+        circle at 72% 76%,
+        rgba(62, 43, 35, 0.76),
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 78% 14%,
+        rgba(181, 147, 130, 0.16),
+        transparent 25%
+      ),
+      var(--obsidian-1000);
 
     box-shadow:
-        0 20px 48px rgba(0,0,0,.4),
-        0 0 0 1px rgba(255,255,255,.04) inset,
-        var(--shadow-inset-strong);
+      0 13px 30px rgba(0, 0, 0, 0.25),
+      var(--shadow-inset-strong);
 
-    transform:translate3d(0,-2px,0);
+    transform: translate3d(0, -2px, 0);
+  }
 
-}
+  .button--cherry {
+    background: linear-gradient(135deg, #511322, #8d1f39 55%, #65162b);
+  }
+  .button--neutral {
+    border-color: var(--cocoa-border);
+    background: rgba(5, 5, 5, 0.92);
+    box-shadow: var(--shadow-inset);
+  }
+  .button--google {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: #101010;
+    color: #fff;
+    box-shadow: var(--shadow-inset);
+  }
+  .button--whatsapp {
+    border-color: rgba(37, 211, 102, 0.48);
+    background: linear-gradient(135deg, #128c7e, #1aad68 58%, #25d366);
+    background-clip: padding-box;
+  }
+  .button--instagram {
+    border-color: transparent;
+    background: linear-gradient(
+      135deg,
+      #515bd4 0%,
+      #8134af 28%,
+      #dd2a7b 58%,
+      #f58529 100%
+    );
+    background-clip: padding-box;
+  }
+  .button--whatsapp,
+  .button--instagram {
+    min-height: 44px;
+    --button-padding-x: clamp(1.1rem, 2.4vw, 1.45rem);
+  }
+  .button--whatsapp .button__content :global(.label),
+  .button--instagram .button__content :global(.label) {
+    white-space: nowrap;
+  }
+  .button--whatsapp .button__content :global(.label__icon),
+  .button--instagram .button__content :global(.label__icon) {
+    color: #fff;
+  }
+  .button--brand-mesh {
+    background: var(--cta-mesh);
+  }
+  .button--cherry:hover {
+    background: linear-gradient(135deg, #65162b, #a12645 55%, #74192f);
+  }
+  .button--neutral:hover,
+  .button--google:hover {
+    background: #0b0909;
+    border-color: var(--cocoa-border-strong);
+  }
+  .button--whatsapp:hover {
+    background: linear-gradient(135deg, #0e756b, #159d5c 58%, #20bd5a);
+  }
+  .button--instagram:hover {
+    background: linear-gradient(
+      125deg,
+      #4852c8 0%,
+      #752da1 30%,
+      #c92570 62%,
+      #dc7625 100%
+    );
+  }
 
-.button:hover .button__content,
-.button:focus-visible .button__content{
+  .button:hover .button__content,
+  .button:focus-visible .button__content {
+    transform: none;
+  }
 
-    transform:translate3d(-.42rem,0,0);
+  .button:hover .button__content :global(.label),
+  .button:focus-visible .button__content :global(.label) {
+    transform: none;
+  }
 
-}
+  .button:hover::after,
+  .button:focus-visible::after {
+    opacity: 0.95;
 
-.button:hover .button__content :global(.label),
-.button:focus-visible .button__content :global(.label){
+    transform: translate3d(0, -50%, 0) scale(1) rotate(0deg);
+  }
 
-    transform:none;
+  .button:hover::before {
+    opacity: 0.14;
+  }
 
-}
+  .button:active {
+    transform: translate3d(0, 0, 0);
+  }
 
-.button:hover::after,
-.button:focus-visible::after{
+  .button:focus-visible {
+    outline: 1px solid var(--cocoa-300);
 
-    opacity:.95;
-
-    transform:translate3d(0,-50%,0) scale(1) rotate(0deg);
-
-}
-
-.button:hover::before{
-
-    opacity:.78;
-
-}
-
-.button:active{
-
-    transform:translate3d(0,0,0);
-
-}
-
-.button:focus-visible{
-
-    outline:1px solid var(--sand-200);
-
-    outline-offset:5px;
+    outline-offset: 5px;
 
     box-shadow:
-        0 22px 54px rgba(0,0,0,.42),
-        0 0 0 1px rgba(255,255,255,.12) inset,
-        var(--glow-medium);
+      0 12px 30px rgba(0, 0, 0, 0.26),
+      0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  }
 
-}
+  .button:disabled,
+  .button--disabled {
+    opacity: 0.55;
 
-.button:disabled,
-.button--disabled{
+    cursor: not-allowed;
 
-    opacity:.55;
+    pointer-events: none;
+  }
 
-    cursor:not-allowed;
+  @media (prefers-reduced-motion: reduce) {
+    .button,
+    .button:hover,
+    .button:active,
+    .button__content,
+    .button__content :global(.label__icon) {
+      transform: none;
 
-    pointer-events:none;
+      transition: none;
+    }
 
-}
+    .button::after {
+      transition: none;
+    }
 
-@media (prefers-reduced-motion:reduce){
+    .button__shimmer,
+    .button__sparkles {
+      display: none;
+    }
 
-.button,
-.button:hover,
-.button:active,
-.button__content{
+    .button:hover::after,
+    .button:focus-visible::after {
+      transform: translate3d(0, -50%, 0) scale(1);
+    }
+  }
 
-    transform:none;
+  .button::after {
+    content: none;
+    display: none;
+  }
 
-    transition:none;
-
-}
-
-.button::after{
-
-    transition:none;
-
-}
-
-.button:hover::after,
-.button:focus-visible::after{
-
-    transform:translate3d(0,-50%,0) scale(1);
-
-}
-
-}
-
+  @media (hover: none), (pointer: coarse) {
+    .button:hover,
+    .button:active {
+      transform: none;
+    }
+    .button__content {
+      transform: none !important;
+    }
+  }
 </style>

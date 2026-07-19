@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Completing Secure Sign In | Rangbastra"
+  robots="noindex,nofollow"
+>
+  <section class="oauth-callback">
+    <p role="status" data-oauth-status>
+      Completing your secure Google sign-in…
+    </p>
+  </section>
+  <script>
+    import { createClient } from "@supabase/supabase-js";
+    const url = import.meta.env.PUBLIC_SUPABASE_URL,
+      key = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      status = document.querySelector<HTMLElement>("[data-oauth-status]");
+    if (!url || !key) {
+      if (status) status.textContent = "Supabase is not configured.";
+    } else {
+      const supabase = createClient(url, key, {
+        auth: {
+          flowType: "pkce",
+          persistSession: true,
+          detectSessionInUrl: true,
+        },
+      });
+      supabase.auth.getSession().then(({ data, error }) => {
+        if (error || !data.session) {
+          if (status)
+            status.textContent =
+              "Google sign-in could not be completed. You may close this window.";
+          return;
+        }
+        if (window.opener && window.opener !== window) {
+          window.opener.postMessage(
+            "rangbastra-oauth-complete",
+            location.origin,
+          );
+          window.close();
+        } else {
+          location.replace("/account");
+        }
+      });
+    }
+  </script>
+</BaseLayout>
+<style>
+  .oauth-callback {
+    display: grid;
+    min-height: 100svh;
+    place-items: center;
+    padding: 2rem;
+    background: #050505;
+    color: var(--ivory-100);
+    text-align: center;
+  }
+</style>

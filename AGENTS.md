@@ -187,3 +187,13 @@ Use background mode when starting Astro locally:
 
 ```bash
 astro dev --background
+```
+
+## Security Guardrails
+
+- Run `npm run security` before release; secret, bundle, build, or high-severity dependency failures block release.
+- Only `PUBLIC_*` publishable values may enter browser code. Service-role, provider, webhook, and database credentials are server-only and must never be logged.
+- Every exposed database object requires explicit least-privilege grants, RLS in the same migration, and positive/negative cross-user tests.
+- Client-side UI state is not authorization. Protected customer/operator functionality requires server-validated sessions and no-store responses.
+- Uploads require byte/count limits, signature allowlists, private randomized storage, and an explicit malware/quarantine decision.
+- Security-sensitive changes must update the security architecture, checklist, and dated audit or ADR.

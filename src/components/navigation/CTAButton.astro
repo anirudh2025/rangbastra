@@ -1,6 +1,7 @@
 ---
 import Button from "../primitives/Button.astro";
 import Label from "../primitives/Label.astro";
+import {ctaActions} from "../../data/ctaActions";
 
 interface Props{
     href?:string;
@@ -19,10 +20,11 @@ const{
         "navbar__cta",
         className
     ]}
+    sparkle={false}
 >
 
     <Label
-        icon="handcraftedPlanning"
+        icon={ctaActions.create.icon}
         iconSize={16}
     >
         Create Yours

@@ -2,6 +2,7 @@
 import Icon from "../primitives/Icon.astro";
 import Label from "../primitives/Label.astro";
 import DesignYourOutfitHeader from "./DesignYourOutfitHeader.astro";
+import CoutureSelect from "../forms/CoutureSelect.astro";
 import {
   appointmentPreferences,
   designOccasions,
@@ -63,14 +64,7 @@ import {
           <small data-error-for="country"></small>
         </label>
 
-        <label>
-          <span>Event Type</span>
-          <select name="eventType" required>
-            <option value="">Select occasion</option>
-            {eventTypes.map((eventType) => <option value={eventType}>{eventType}</option>)}
-          </select>
-          <small data-error-for="eventType"></small>
-        </label>
+        <CoutureSelect name="eventType" label="Event Type" placeholder="Select occasion" required options={eventTypes.map(value=>({value,label:value}))} />
 
         <label>
           <span>Preferred Date</span>
@@ -78,35 +72,16 @@ import {
           <small data-error-for="preferredDate"></small>
         </label>
 
-        <label>
-          <span>Preferred Communication</span>
-          <select name="preferredCommunication" required>
-            <option value="">Select preference</option>
-            {communicationPreferences.map((preference) => <option value={preference.value}>{preference.title}</option>)}
-          </select>
-          <small data-error-for="preferredCommunication"></small>
-        </label>
+        <CoutureSelect name="preferredCommunication" label="Preferred Communication" placeholder="Select preference" required options={communicationPreferences.map(preference=>({value:preference.value,label:preference.title}))} />
 
         <label class="field-wide">
           <span>Pinterest / Instagram Inspiration URL</span>
           <input name="inspirationUrl" type="url" inputmode="url" placeholder="https://" />
         </label>
 
-        <label>
-          <span>Budget Preference</span>
-          <select name="budgetPreference">
-            <option value="">Select privately</option>
-            {budgetPreferences.map((preference) => <option value={preference}>{preference}</option>)}
-          </select>
-        </label>
+        <CoutureSelect name="budgetPreference" label="Budget Preference" placeholder="Select privately" options={budgetPreferences.map(value=>({value,label:value}))} />
 
-        <label>
-          <span>Preferred Appointment</span>
-          <select name="preferredAppointment">
-            <option value="">Select appointment style</option>
-            {appointmentPreferences.map((preference) => <option value={preference}>{preference}</option>)}
-          </select>
-        </label>
+        <CoutureSelect name="preferredAppointment" label="Preferred Appointment" placeholder="Select appointment style" options={appointmentPreferences.map(value=>({value,label:value}))} />
 
         <label class="field-wide">
           <span>Message</span>
@@ -134,7 +109,7 @@ import {
       <div class="choice-grid choice-grid--occasion">
         {
           designOccasions.map((occasion, index) => (
-            <label class="choice-card">
+            <label class="choice-card" data-selection-sound>
               <input type="radio" name="selectedOccasion" value={occasion.value} required checked={index === 0} />
               <span class="choice-card__surface">
                 <Icon name={occasion.icon} size={24} />
@@ -154,7 +129,7 @@ import {
       <div class="choice-grid">
         {
           communicationPreferences.map((preference, index) => (
-            <label class="choice-card">
+            <label class="choice-card" data-selection-sound>
               <input type="radio" name="selectedCommunication" value={preference.value} required checked={index === 0} />
               <span class="choice-card__surface">
                 <Icon name={preference.icon} size={24} />
@@ -169,7 +144,7 @@ import {
 
     <div class="submit-row">
       <button type="submit" class="submit-button">
-        <Label icon="sparkle">Begin Your Custom Journey</Label>
+        <Label icon="sketch">Begin Your Custom Journey</Label>
       </button>
 
       <p class="form-note">
@@ -188,7 +163,7 @@ import {
   if (form instanceof HTMLFormElement) {
     const status = form.querySelector(".form-status");
 
-    const setError = (name, message) => {
+    const setError = (name: string, message: string) => {
       const field = form.elements.namedItem(name);
       const error = form.querySelector(`[data-error-for="${name}"]`);
 
@@ -201,7 +176,7 @@ import {
       }
     };
 
-    const getValue = (formData, name) => String(formData.get(name) ?? "").trim();
+    const getValue = (formData: FormData, name: string) => String(formData.get(name) ?? "").trim();
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -247,46 +222,8 @@ import {
         return;
       }
 
-      const payload = {
-        source: "design-your-outfit",
-        submittedAt: new Date().toISOString(),
-        client: {
-          firstName: getValue(formData, "firstName"),
-          lastName: getValue(formData, "lastName"),
-          email,
-          phone: getValue(formData, "phone"),
-          whatsapp: getValue(formData, "whatsapp"),
-          city: getValue(formData, "city"),
-          country: getValue(formData, "country"),
-        },
-        couture: {
-          eventType: getValue(formData, "eventType"),
-          selectedOccasion: getValue(formData, "selectedOccasion"),
-          preferredDate: getValue(formData, "preferredDate"),
-          preferredCommunication: getValue(formData, "preferredCommunication"),
-          selectedCommunication: getValue(formData, "selectedCommunication"),
-          budgetPreference: getValue(formData, "budgetPreference"),
-          preferredAppointment: getValue(formData, "preferredAppointment"),
-          inspirationUrl: getValue(formData, "inspirationUrl"),
-          message: getValue(formData, "message"),
-        },
-        files: {
-          inspirationImageName:
-            formData.get("inspirationImage") instanceof File
-              ? formData.get("inspirationImage").name
-              : "",
-        },
-      };
-
-      // TODO: Connect payload to Resend or an email API.
-      // TODO: Add moderation/storage through Supabase, Firebase, CRM or webhook.
-      // TODO: Upload inspirationImage only after secure storage is configured.
-      console.info("Design your outfit enquiry prepared", payload);
-
-      form.reset();
-
       if (status instanceof HTMLElement) {
-        status.textContent = "Your design note is ready for private atelier follow-up.";
+        status.textContent = "Secure online delivery is not active yet. Please use the consultation link so your private details are not retained in this browser.";
       }
     });
   }

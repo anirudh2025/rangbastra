@@ -1,0 +1,33 @@
+<div class="global-cursor-glow" data-homepage-glow aria-hidden="true"></div>
+
+<script>
+  import { initHomepageGlow } from "../../lib/animations/homepageGlow";
+  document.addEventListener("astro:page-load", initHomepageGlow);
+  initHomepageGlow();
+</script>
+
+<style>
+  .global-cursor-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-atmosphere);
+    width: clamp(32rem, 56vw, 56rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    border:0;
+    box-shadow:none;
+    background:radial-gradient(circle,rgba(var(--cocoa-rgb),.155) 0%,rgba(var(--cocoa-rgb),.095) 28%,rgba(var(--cocoa-rgb),.043) 58%,rgba(var(--cocoa-rgb),.013) 78%,transparent 100%);
+    transform: translate3d(-100vw,-100vh,0) translate(-50%,-50%);
+    transition: opacity var(--motion-medium) var(--ease-luxury);
+    will-change: transform;
+  }
+
+  .global-cursor-glow.is-visible { opacity: 1; }
+
+  @media (hover:none), (pointer:coarse), (prefers-reduced-motion:reduce) {
+    .global-cursor-glow { display:none; }
+  }
+</style>

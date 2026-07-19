@@ -1,20 +1,30 @@
 ---
 import Icon from "../primitives/Icon.astro";
+import SoundControl from "./SoundControl.astro";
 
 const utilityLinks = [
   { href: "/search", label: "Search", icon: "search" },
   { href: "/wishlist", label: "Wishlist", icon: "heart" },
-  { href: "/account", label: "Account", icon: "account" },
+  { href: "/account/login", label: "Sign In", icon: "account", account: true },
+  { href: "/account/signup", label: "Create Account", icon: "userPlus" },
 ];
 ---
 
 <nav class="utility-nav" aria-label="Utility navigation">
   {
     utilityLinks.map((link) => (
-      <a href={link.href} class="utility-nav__link" aria-label={link.label}>
+      <a
+        href={link.href}
+        class="utility-nav__link"
+        aria-label={link.label}
+        data-account-nav={link.account ? "" : undefined}
+      >
         <Icon name={link.icon} size={18} />
-        <span>{link.label}</span>
+        <span data-account-nav-label={link.account ? "" : undefined}>
+          {link.label}
+        </span>
       </a>
     ))
   }
+  <SoundControl id="desktop-sound-controls" />
 </nav>

@@ -39,6 +39,8 @@ export type LuxuryIconName =
   | "search"
   | "heart"
   | "account"
+  | "userPlus"
+  | "volume"
   | "journal";
 
 export const luxuryIconPaths: Record<LuxuryIconName, string[]> = {
@@ -180,8 +182,7 @@ export const luxuryIconPaths: Record<LuxuryIconName, string[]> = {
     "M8.4 11.2h3.2",
   ],
   phoneCall: [
-    "M8.4 5.8c.4 4.4 3.4 8.8 7.8 10l1.4-1.8",
-    "M8.4 5.8 6.8 7.2c-.8.8-.4 2.8.8 5 1.4 2.8 3.6 5 6.4 6.2 2.2 1 4 .8 4.8 0l1.4-1.6",
+    "M7.1 5.5 9.6 5l1.6 4.1-1.7 1.2a13.1 13.1 0 0 0 4.2 4.2l1.2-1.7 4.1 1.6-.5 2.5c-.2 1-1.1 1.7-2.1 1.6C10.8 18 6 13.2 5.5 7.6c-.1-1 .6-1.9 1.6-2.1Z",
   ],
   studioVisit: [
     "M6 19V8.8L12 5l6 3.8V19",
@@ -267,6 +268,13 @@ export const luxuryIconPaths: Record<LuxuryIconName, string[]> = {
     "M12 6.4a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4Z",
     "M6.4 18.2c1.2-3 3-4.4 5.6-4.4s4.4 1.4 5.6 4.4",
   ],
+  userPlus: [
+    "M10.2 6.2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
+    "M4.8 18.4c.9-3 2.8-4.4 5.4-4.4 1.5 0 2.8.5 3.8 1.5",
+    "M17.2 11.8v6.4",
+    "M14 15h6.4",
+  ],
+  volume: ["M5.2 10h3l4-3.2v10.4l-4-3.2h-3V10Z","M15 9.2c1.4 1.5 1.4 4.1 0 5.6","M17.4 7c2.8 2.8 2.8 7.2 0 10"],
   journal: [
     "M7.2 5.8h8.8a1.6 1.6 0 0 1 1.6 1.6v11H8.4a2 2 0 0 1-2-2V7a1.2 1.2 0 0 1 .8-1.2Z",
     "M8.4 5.8v10.6",

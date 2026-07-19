@@ -4,47 +4,37 @@ import Eyebrow from "../primitives/Eyebrow.astro";
 import Icon from "../primitives/Icon.astro";
 import WishlistButton from "../wishlist/WishlistButton.astro";
 import type { CouturePiece } from "../../data/couture";
-import { getLiveInterest } from "../../lib/couture";
 import { getWhatsAppHref } from "../../data/contact";
+import CoutureProductGallery from "./CoutureProductGallery.astro";
 
 interface Props {
   product: CouturePiece;
 }
 
 const { product } = Astro.props;
-const liveInterest = getLiveInterest(product);
-const inquiryHref = `/design-your-outfit?piece=${product.slug}`;
+const inquiryHref = `/products/${product.slug}/customize`;
 const whatsappHref = getWhatsAppHref(
   `Hello Rangbastra, I am interested in ${product.name} and would like to know more about customization.`,
 );
 const priceValue = product.priceLabel
   .replace(/^From\s+/i, "");
+const hasRating =
+  typeof product.rating === "number" && product.rating > 0 && product.rating <= 5 &&
+  typeof product.reviewCount === "number" && product.reviewCount > 0;
 ---
 
 <section class="product-detail-hero" aria-labelledby="product-title">
-  <figure class="hero-media">
+  <div class="hero-media">
     <WishlistButton slug={product.slug} name={product.name} />
 
-    <img
-      src={product.featuredImage}
-      alt={`${product.name} couture piece by Rangbastra`}
-      width="900"
-      height="1200"
-      loading="eager"
-      decoding="async"
-    />
+    <CoutureProductGallery product={product} />
 
-    <figcaption class="live-interest" aria-label="Recent couture interest">
-      <span class="live-interest__dot" aria-hidden="true"></span>
-      <span>{liveInterest.text}</span>
-    </figcaption>
-  </figure>
+  </div>
 
-  <div class="hero-summary">
+  <div class="hero-summary" data-product-summary>
     <Eyebrow>{product.collection}</Eyebrow>
 
     <div class="hero-title-group">
-      <p>{product.category}</p>
       <h1 id="product-title">
         <span>{product.name}</span>
         <Icon name="sparkle" size={22} class="title-sparkle" />
@@ -52,6 +42,15 @@ const priceValue = product.priceLabel
     </div>
 
     <p class="hero-description">{product.shortDescription}</p>
+
+    <div class="product-rating" aria-label={hasRating ? `${product.rating} out of 5 stars from ${product.reviewCount} reviews` : "Not yet rated"}>
+        <span class="product-rating__stars" aria-hidden="true">
+          {Array.from({ length: 5 }, (_, index) => (
+            <svg viewBox="0 0 24 24" width="15" height="15"><path d="m12 3.8 2.45 4.96 5.48.8-3.97 3.86.94 5.46L12 16.3l-4.9 2.58.94-5.46-3.97-3.86 5.48-.8L12 3.8Z" fill={hasRating && index < Math.round(product.rating!) ? "currentColor" : "none"} stroke="currentColor" stroke-width="1.4" /></svg>
+          ))}
+        </span>
+        {hasRating ? <><span>{product.rating?.toFixed(1)}</span><span class="product-rating__count">{product.reviewCount} reviews</span></> : <span class="product-rating__count">Not yet rated</span>}
+      </div>
 
     <dl class="summary-list" aria-label={`${product.name} summary`}>
       <div class="price-note">
@@ -75,9 +74,9 @@ const priceValue = product.priceLabel
     </dl>
 
     <div class="hero-actions" aria-label={`${product.name} actions`}>
-      <Button href={inquiryHref}>Start This Story</Button>
+      <Button href={inquiryHref} variant="brand-mesh">Start This Story</Button>
       <WishlistButton slug={product.slug} name={product.name} variant="inline" />
-      <Button href={whatsappHref} target="_blank">Ask On WhatsApp</Button>
+      <Button href={whatsappHref} target="_blank" variant="whatsapp">Ask On WhatsApp</Button>
       <a href="/collections" class="secondary-link">Return to Collections</a>
     </div>
   </div>
@@ -86,74 +85,25 @@ const priceValue = product.priceLabel
 <style>
   .product-detail-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1.04fr) minmax(22rem, .68fr);
-    gap: clamp(var(--space-6), 5.5vw, var(--space-10));
-    align-items: center;
+    grid-template-columns: minmax(340px, 40%) minmax(0, 1fr);
+    column-gap: clamp(var(--space-6), 4vw, var(--space-10));
+    align-items: start;
     min-height: min(48rem, calc(100svh - var(--navbar-height)));
-    padding-top: clamp(var(--space-9), 7.5vw, var(--space-11));
+    padding-top: calc(var(--navbar-height) + var(--navbar-fixed-gutter) + var(--product-page-top-gap) + env(safe-area-inset-top));
   }
 
   .hero-media {
     position: relative;
-    overflow: hidden;
-    min-height: clamp(30rem, 58vw, 43.5rem);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-xl);
-    background: var(--surface-raised);
-    box-shadow: var(--shadow-premium), var(--shadow-inset);
-  }
-
-  .hero-media::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(180deg, transparent 52%, rgba(0, 0, 0, .7)),
-      var(--gradient-glass);
-    opacity: .68;
-    pointer-events: none;
-  }
-
-  .hero-media img {
-    width: 100%;
-    height: 100%;
-    min-height: inherit;
-    object-fit: cover;
-  }
-
-  .live-interest {
-    position: absolute;
-    right: clamp(var(--space-4), 4vw, var(--space-6));
-    bottom: clamp(var(--space-4), 4vw, var(--space-6));
-    z-index: 1;
-    display: inline-flex;
-    max-width: min(18rem, calc(100% - var(--space-8)));
-    align-items: center;
-    gap: var(--space-2);
-    padding: .55rem .8rem;
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-pill);
-    background: rgba(8, 8, 9, .72);
-    color: var(--text-secondary);
-    font-size: var(--caption);
-    line-height: var(--leading-caption);
-    backdrop-filter: blur(16px);
-  }
-
-  .live-interest__dot {
-    width: .38rem;
-    height: .38rem;
-    flex: 0 0 auto;
-    border-radius: var(--radius-pill);
-    background: var(--sand-200);
-    box-shadow: 0 0 18px rgba(198, 169, 114, .4);
+    min-width: 0;
   }
 
   .hero-summary {
+    position: relative;
     display: grid;
     gap: clamp(var(--space-4), 3vw, var(--space-6));
-    align-content: center;
-    max-width: 38rem;
+    align-content: start;
+    align-self: start;
+    max-width: none;
   }
 
   .hero-title-group {
@@ -183,22 +133,27 @@ const priceValue = product.priceLabel
     line-height: 1;
     overflow-wrap: anywhere;
     text-wrap: balance;
+    text-shadow:0 0 7px var(--cocoa-glow-soft);
   }
 
   h1 :global(.title-sparkle) {
     flex: 0 0 auto;
-    color: var(--sand-200);
+    color:rgb(var(--cocoa-rgb));
     opacity: .78;
     transform: translateY(.08em);
   }
 
   .hero-description {
-    max-width: var(--measure-sm);
+    max-width: 42rem;
     color: var(--text-secondary);
     font-size: clamp(var(--body-md), 1.55vw, var(--body-lg));
     line-height: var(--leading-body);
     text-wrap: pretty;
   }
+
+  .product-rating { display: inline-flex; width: fit-content; align-items: center; gap: var(--space-2); color:rgb(var(--cocoa-rgb)); font-size: var(--body-sm); }
+  .product-rating__stars { display: inline-flex; gap: .15rem; }
+  .product-rating__count { color: var(--text-muted); }
 
   .summary-list {
     display: grid;
@@ -216,16 +171,16 @@ const priceValue = product.priceLabel
 
   .summary-list .price-note {
     padding: var(--space-4);
-    border: 1px solid var(--border-default);
+    border:1px solid var(--cocoa-border-soft);
     border-radius: var(--radius-lg);
     background:
       linear-gradient(135deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .012)),
       rgba(255, 255, 255, .02);
-    box-shadow: var(--shadow-inset);
+    box-shadow: none;
   }
 
   .price-note dt {
-    color: var(--sand-200);
+    color:rgb(var(--cocoa-rgb));
   }
 
   dd {
@@ -236,16 +191,18 @@ const priceValue = product.priceLabel
 
   .price-note dd {
     width: fit-content;
-    background: var(--gradient-brand-text);
+    background:none;
     background-clip: text;
     -webkit-background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
+    color:var(--ivory-100);
+    -webkit-text-fill-color:currentColor;
     font-family: var(--font-display);
     font-size: clamp(1.55rem, 2.2vw, 2.35rem);
     font-weight: var(--weight-light);
     letter-spacing: var(--tracking-title);
     line-height: var(--leading-title);
+    text-shadow:0 0 8px var(--cocoa-glow);
+    border-bottom:1px solid var(--cocoa-border);
   }
 
   .hero-actions {
@@ -254,14 +211,24 @@ const priceValue = product.priceLabel
     gap: var(--space-4);
     align-items: center;
   }
+  .hero-actions .secondary-link{flex-basis:100%;width:fit-content;}
+
+  .hero-actions :global(.button),
+  .hero-actions :global(.wishlist-toggle) { box-shadow: none; }
+  .hero-actions :global(.button:hover) { box-shadow: 0 10px 28px rgba(0, 0, 0, .14); transform: translate3d(0, -1px, 0); }
+  .hero-actions :global(.button:focus-visible) { outline:1px solid var(--cocoa-border-strong);outline-offset:4px;box-shadow:none; }
 
   .secondary-link {
+    position: relative;
     color: var(--text-secondary);
     font-size: var(--label-md);
     font-weight: var(--weight-semibold);
     text-decoration: none;
     transition: color var(--motion-button) var(--ease-luxury);
   }
+
+  .secondary-link::after { content:"";position:absolute;left:0;right:0;bottom:-.3rem;height:1px;background:rgb(var(--cocoa-rgb));transform:scaleX(0);transform-origin:left;transition:transform var(--duration-medium) var(--ease-premium); }
+  .secondary-link:hover::after,.secondary-link:focus-visible::after { transform:scaleX(1); }
 
   .secondary-link:hover,
   .secondary-link:focus-visible {
@@ -274,7 +241,7 @@ const priceValue = product.priceLabel
     border-radius: var(--radius-sm);
   }
 
-  @media (max-width: 1023px) {
+  @media (max-width: 900px) {
     .product-detail-hero {
       grid-template-columns: 1fr;
       min-height: auto;
@@ -288,19 +255,7 @@ const priceValue = product.priceLabel
   @media (max-width: 640px) {
     .product-detail-hero {
       gap: var(--space-7);
-      padding-top: clamp(var(--space-7), 17vw, var(--space-10));
-    }
-
-    .hero-media {
-      min-height: clamp(26rem, 116vw, 35rem);
-      border-radius: var(--radius-lg);
-    }
-
-    .live-interest {
-      left: var(--space-4);
-      right: var(--space-4);
-      justify-content: center;
-      text-align: center;
+      padding-top: calc(var(--navbar-height) + var(--navbar-fixed-gutter) + var(--product-page-top-gap) + env(safe-area-inset-top));
     }
 
     h1 {

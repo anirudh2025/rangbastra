@@ -3,40 +3,118 @@ import Section from "../../components/primitives/Section.astro";
 import Container from "../../components/primitives/Container.astro";
 
 import CollectionHeader from "../../components/collections/CollectionHeader.astro";
-import CollectionGrid from "../../components/collections/CollectionGrid.astro";
+import CoutureCard from "../../components/couture/CoutureCard.astro";
+import { getPublishedCouturePieces } from "../../lib/couture";
+const products = getPublishedCouturePieces();
+const featured = ["Bridal", "Reception", "Engagement", "Festive"].flatMap(
+  (category) => products.find((product) => product.category === category) ?? [],
+);
 ---
 
-<Section class="featured-collections-section">
+<Section id="featured-collections" class="featured-collections-section">
+  <Container class="featured-collections-container">
+    <CollectionHeader />
 
-    <Container class="featured-collections-container">
-
-        <CollectionHeader />
-
-        <CollectionGrid />
-
-    </Container>
-
+    <div class="featured-product-rail" aria-label="Featured couture directions">
+      <div class="featured-product-track">
+        {
+          featured.map((product, index) => (
+            <CoutureCard product={product} index={index} animateEntrance />
+          ))
+        }
+      </div>
+    </div>
+  </Container>
 </Section>
 
-<style>
-    :global(.featured-collections-section) {
-        --section-padding-block: clamp(var(--space-8), 8vw, var(--space-11));
+<script>
+  const initFeaturedStages = () =>
+    document
+      .querySelectorAll<HTMLElement>(".featured-collections-section")
+      .forEach((section) => {
+        if (section.dataset.stagesReady) return;
+        section.dataset.stagesReady = "true";
+        const cards = [
+          ...section.querySelectorAll<HTMLElement>("[data-featured-stage]"),
+        ];
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          cards.forEach((card) => card.classList.add("is-settled"));
+          return;
+        }
+        const observer = new IntersectionObserver(
+          (entries) =>
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              const card = entry.target as HTMLElement;
+              card.classList.add("is-settled");
+              observer.unobserve(card);
+              const stage = Number(card.dataset.featuredStage);
+              setTimeout(
+                () => window.RangbastraAudio?.stageTick(stage === cards.length),
+                Math.min(stage - 1, 3) * 150 + 700,
+              );
+            }),
+          { threshold: 0.3, rootMargin: "0px 0px -8%" },
+        );
+        cards.forEach((card) => observer.observe(card));
+      });
+  initFeaturedStages();
+  document.addEventListener("astro:page-load", initFeaturedStages);
+</script>
 
-        overflow: hidden;
+<style>
+  :global(.featured-collections-section) {
+    --section-padding-block: clamp(var(--space-8), 8vw, var(--space-11));
+
+    overflow: hidden;
+  }
+
+  :global(.featured-collections-container) {
+    --container-default: var(--container-wide);
+    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+  }
+  :global(.featured-collections-container) {
+    opacity: var(--featured-content-opacity, 1);
+    transform: translateY(var(--featured-content-translate, 0));
+    will-change: opacity, transform;
+  }
+  .featured-product-rail {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+    padding: var(--space-2) 0 var(--space-7);
+  }
+  .featured-product-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .featured-product-track {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(var(--space-4), 2vw, var(--space-6));
+  }
+  .featured-product-track > :global(*) {
+    scroll-snap-align: start;
+  }
+
+  @media (max-width: 767px) {
+    :global(.featured-collections-section) {
+      --section-padding-block: clamp(var(--space-8), 15vw, var(--space-11));
     }
 
     :global(.featured-collections-container) {
-        --container-default: var(--container-wide);
-        --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+      --container-padding-inline: 0;
+      --mobile-collection-gutter: var(--space-4);
     }
-
-    @media (max-width: 767px) {
-        :global(.featured-collections-section) {
-            --section-padding-block: clamp(var(--space-8), 15vw, var(--space-11));
-        }
-
-        :global(.featured-collections-container) {
-            --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
-        }
+    .featured-product-rail {
+      padding-inline: var(--space-4);
+      scroll-padding-inline: var(--space-4);
     }
+    .featured-product-track {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: min(82vw, 21rem);
+      gap: var(--space-4);
+    }
+  }
 </style>

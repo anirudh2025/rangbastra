@@ -92,7 +92,7 @@ const {
     --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
     overflow: hidden;
     background:
-      linear-gradient(90deg, rgba(198, 169, 114, .07) 0 1px, transparent 1px 12rem),
+      linear-gradient(90deg,rgba(var(--cocoa-rgb),.07) 0 1px,transparent 1px 12rem),
       radial-gradient(circle at 78% 18%, rgba(106, 78, 66, .18), transparent 34%),
       var(--surface-canvas);
   }
@@ -120,7 +120,7 @@ const {
     gap: var(--space-4);
     min-height: 24rem;
     padding: var(--space-5);
-    border-inline: 1px solid rgba(198, 169, 114, .2);
+    border-inline:1px solid var(--cocoa-border-soft);
     color: var(--sand-200);
   }
 
@@ -170,7 +170,7 @@ const {
     display: grid;
     gap: var(--space-4);
     padding: var(--space-5);
-    border: 1px solid rgba(198, 169, 114, .18);
+    border:1px solid var(--cocoa-border-soft);
     background: rgba(255, 255, 255, .025);
   }
 

@@ -1,67 +1,182 @@
 ---
 import Button from "../primitives/Button.astro";
-import Eyebrow from "../primitives/Eyebrow.astro";
 import Icon from "../primitives/Icon.astro";
+import Label from "../primitives/Label.astro";
+import GoogleG from "../icons/brands/GoogleG.astro";
 
 interface Props {
   mode: "dashboard" | "login" | "signup";
 }
 
 const { mode } = Astro.props;
-
-const copy = {
-  dashboard: {
-    eyebrow: "Private Client Room",
-    title: "A Quieter Place For Your Couture Story",
-    text: "A future home for saved inspirations, design notes, appointments and private responses from the Rangbastra team.",
-  },
-  login: {
-    eyebrow: "Client Room Access",
-    title: "Return To Your Private Room",
-    text: "A private doorway for returning clients to continue saved inspirations, references and atelier conversations.",
-  },
-  signup: {
-    eyebrow: "Begin A Client Room",
-    title: "Create Your Private Couture Space",
-    text: "A calm first step for future saved designs, references, measurements and conversation history.",
-  },
-}[mode];
 ---
 
 <section class="account-room" aria-labelledby="account-heading">
-  <div class="account-room__statement">
-    <Eyebrow>{copy.eyebrow}</Eyebrow>
-    <h1 id="account-heading">{copy.title}</h1>
-    <p>{copy.text}</p>
-
-    <div class="account-room__keys" aria-hidden="true">
-      <span>Measurements</span>
-      <span>References</span>
-      <span>Appointments</span>
-    </div>
-  </div>
+  <header class="portal-header">
+    <a href="/" class="portal-wordmark" aria-label="Rangbastra home"
+      >Rangbastra</a
+    ><span id="account-heading">Private Client Portal</span>
+  </header>
 
   <div class="account-room__panel">
     {
       mode === "dashboard" ? (
-        <div class="dashboard-panel">
-          <Icon name="account" size={38} />
-          <h2>Your client room is reserved.</h2>
-          <p>This room is designed for saved inspirations, enquiry history and private atelier guidance as your journey grows.</p>
-          <div class="dashboard-actions">
-            <Button href="/wishlist">Open Wishlist</Button>
-            <Button href="/design-your-outfit">Design Your Outfit</Button>
+        <div class="dashboard-shell" data-account-dashboard>
+          <nav class="dashboard-nav" aria-label="Client portal">
+            <>
+              <a class="is-active" href="#overview">
+                Overview
+              </a>
+              <a href="#profile">My Profile</a>
+              <a href="/wishlist">Saved Inspirations</a>
+              <a href="#requests">Couture Requests</a>
+              <a href="#appointments">Appointments</a>
+              <a href="#settings">Account Settings</a>
+              <button type="button" data-signout hidden>
+                Sign Out
+              </button>
+            </>
+          </nav>
+          <div class="dashboard-panel" id="overview">
+            <div class="dashboard-heading">
+              <>
+                <img data-account-avatar alt="" hidden />
+                <Icon name="account" size={28} />
+                <div>
+                  <>
+                    <small>Overview</small>
+                    <h2>Welcome to your private room.</h2>
+                  </>
+                </div>
+              </>
+            </div>
+            <p data-account-identity>
+              Sign in or create an account to enter your private dashboard.
+            </p>
+            <div class="portal-metrics">
+              <>
+                <a href="/wishlist">
+                  <>
+                    <strong>Saved</strong>
+                    <span>Inspirations</span>
+                  </>
+                </a>
+                <span>
+                  <>
+                    <strong>—</strong>
+                    <span>Active requests</span>
+                  </>
+                </span>
+                <span>
+                  <>
+                    <strong>—</strong>
+                    <span>Upcoming consultation</span>
+                  </>
+                </span>
+              </>
+            </div>
+            <form class="profile-form" data-profile-form hidden>
+              <label>
+                Full name
+                <input name="full_name" autocomplete="name" />
+              </label>
+              <label>
+                Phone / WhatsApp
+                <input name="phone" type="tel" autocomplete="tel" />
+              </label>
+              <label>
+                City
+                <input name="city" autocomplete="address-level2" />
+              </label>
+              <label>
+                Country
+                <input name="country" autocomplete="country-name" />
+              </label>
+              <label>
+                Preferred contact
+                <input name="preferred_contact_method" />
+              </label>
+              <label class="consent">
+                <input name="marketing_consent" type="checkbox" /> Optional
+                marketing updates
+              </label>
+              <label>
+                Sound volume
+                <input
+                  type="range"
+                  min="20"
+                  max="100"
+                  value="72"
+                  data-sound-volume
+                />
+              </label>
+              <>
+                <Button type="submit">Save Profile</Button>
+                <p data-profile-note role="status" />
+              </>
+            </form>
+            <div class="dashboard-actions">
+              <Button href="/wishlist" variant="cherry" sparkle={false}>
+                <Label icon="heart">Open Wishlist</Label>
+              </Button>
+              <Button href="/design-your-outfit">
+                <Label icon="sketch">Design Your Outfit</Label>
+              </Button>
+              <Button
+                href="/account/login"
+                class="account-login"
+                variant="neutral"
+                sparkle={false}
+              >
+                <Label icon="account">Sign In</Label>
+              </Button>
+              <Button
+                href="/account/signup"
+                class="account-login"
+                variant="neutral"
+                sparkle={false}
+              >
+                <Label icon="userPlus">Create Account</Label>
+              </Button>
+            </div>
           </div>
         </div>
       ) : (
-        <form class="account-form" data-account-form>
-          {/* TODO: Connect this form to the future authentication provider. */}
-          <h2>{mode === "login" ? "Client Login" : "Create Access"}</h2>
+        <form class="account-form" data-account-form data-mode={mode}>
+          <div class="auth-tabs" aria-label="Account access">
+            <>
+              <a
+                class:list={[mode === "login" && "is-active"]}
+                href="/account/login"
+              >
+                Sign In
+              </a>
+              <a
+                class:list={[mode === "signup" && "is-active"]}
+                href="/account/signup"
+              >
+                Create Account
+              </a>
+            </>
+          </div>
+          <div>
+            <>
+              <small>Secure workspace</small>
+              <h2>{mode === "login" ? "Sign in" : "Create your account"}</h2>
+            </>
+          </div>
 
           {mode === "signup" && (
             <label>
               Name
               <input name="name" autocomplete="name" required />
+            </label>
+          )}
+
+          {mode === "signup" && (
+            <label>
+              Phone / WhatsApp (optional)
+              <input name="phone" type="tel" autocomplete="tel" />
             </label>
           )}
 
@@ -72,24 +187,105 @@ const copy = {
 
           <label>
             Password
-            <input
-              name="password"
-              type="password"
-              autocomplete={mode === "login" ? "current-password" : "new-password"}
-              required
-            />
+            <span class="password-field">
+              <>
+                <input
+                  name="password"
+                  type="password"
+                  autocomplete={
+                    mode === "login" ? "current-password" : "new-password"
+                  }
+                  required
+                  minlength={mode === "signup" ? 8 : undefined}
+                />
+                <button
+                  type="button"
+                  data-password-toggle
+                  aria-label="Show password"
+                >
+                  Show
+                </button>
+              </>
+            </span>
           </label>
 
-          {mode === "login" && <a class="forgot-link" href="/account/login#forgot">Forgot password?</a>}
+          {mode === "signup" && (
+            <label>
+              Confirm password
+              <span class="password-field">
+                <input
+                  name="confirmPassword"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+                />
+                <button
+                  type="button"
+                  data-password-toggle
+                  aria-label="Show password"
+                >
+                  Show
+                </button>
+              </span>
+            </label>
+          )}
+          {mode === "login" && (
+            <label class="consent">
+              <input name="remember" type="checkbox" /> Remember this session
+            </label>
+          )}
+          {mode === "signup" && (
+            <>
+              <label class="consent">
+                <input name="legalConsent" type="checkbox" required /> I agree
+                to the <a href="/terms-and-conditions">Terms</a> and{" "}
+                <a href="/privacy-policy">Privacy Policy</a>.
+              </label>
+              <label class="consent">
+                <input name="marketingConsent" type="checkbox" /> Send
+                occasional Rangbastra updates. Optional.
+              </label>
+            </>
+          )}
 
-          <Button type="submit">{mode === "login" ? "Enter Client Room" : "Create Client Room"}</Button>
+          {mode === "login" && (
+            <button class="forgot-link" type="button" data-forgot>
+              Forgot password?
+            </button>
+          )}
+
+          <Button type="submit" variant="neutral" sparkle={false}>
+            <Label icon={mode === "login" ? "account" : "userPlus"}>
+              {mode === "login" ? "Sign In" : "Create Account"}
+            </Label>
+          </Button>
+
+          <Button
+            type="button"
+            variant="google"
+            sparkle={false}
+            class="google-auth"
+          >
+            <span class="google-icon">
+              <GoogleG />
+            </span>
+            <span>Continue with Google</span>
+          </Button>
 
           <p class="form-note" data-account-note>
-            {mode === "login" ? "Private access is not active yet." : "Private access will be confirmed by the atelier."}
+            {mode === "login"
+              ? "Use your verified email to continue."
+              : "We will email a secure verification link."}
           </p>
 
-          <a class="switch-link" href={mode === "login" ? "/account/signup" : "/account/login"}>
-            {mode === "login" ? "Create private access" : "Already have access?"}
+          <a
+            class="switch-link"
+            href={mode === "login" ? "/account/signup" : "/account/login"}
+          >
+            {mode === "login"
+              ? "Create private access"
+              : "Already have access?"}
           </a>
         </form>
       )
@@ -98,21 +294,277 @@ const copy = {
 </section>
 
 <script>
-  document.querySelectorAll("[data-account-form]").forEach((form) => {
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const note = form.querySelector("[data-account-note]");
-      if (note) {
-        note.textContent = "Private access is reserved for the next atelier step.";
+  import { initAccountExperience } from "../../lib/auth/accountClient";
+  initAccountExperience();
+  document.addEventListener("astro:page-load", initAccountExperience);
+  /* Legacy client removed from execution after migration to the shared Supabase client.
+  // @ts-nocheck -- Supabase REST responses are runtime-validated and intentionally schema-flexible here.
+  import { createClient } from "@supabase/supabase-js";
+  const config = document.querySelector<HTMLElement>("[data-account-config]"),
+    url = config?.dataset.url ?? "",
+    key = config?.dataset.key ?? "";
+  const sessionKey = "legacySessionStorageDisabled";
+  const requestedNext = new URLSearchParams(location.search).get("next");
+  const safeNext = requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
+    ? requestedNext
+    : "/account";
+  const supabase =
+    url && key
+      ? createClient(url, key, {
+          auth: {
+            flowType: "pkce",
+            persistSession: true,
+            detectSessionInUrl: true,
+          },
+        })
+      : null;
+  const request = async (path: string, options: RequestInit = {}) => {
+    if (!url || !key)
+      throw new Error(
+        "Add Supabase public credentials to activate your client room.",
+      );
+    const response = await fetch(`${url}${path}`, {
+      ...options,
+      headers: {
+        apikey: key,
+        "Content-Type": "application/json",
+        ...(options.headers ?? {}),
+      },
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok)
+      throw new Error(
+        result.msg ??
+          result.error_description ??
+          result.message ??
+          "Unable to complete this request.",
+      );
+    return result;
+  };
+  document
+    .querySelectorAll<HTMLFormElement>("[data-account-form]")
+    .forEach((form) => {
+      let submitting = false;
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (submitting) return;
+        const note = form.querySelector<HTMLElement>("[data-account-note]")!,
+          data = new FormData(form),
+          email = String(data.get("email") ?? ""),
+          password = String(data.get("password") ?? "");
+        if (form.dataset.mode === "signup" && password !== String(data.get("confirmPassword") ?? "")) { note.textContent = "Passwords must match."; form.querySelector<HTMLInputElement>("[name=confirmPassword]")?.focus(); return; }
+        if (form.dataset.mode === "signup" && password.length < 8) { note.textContent = "Use at least 8 characters for your password."; return; }
+        submitting = true;
+        const submit = form.querySelector<HTMLButtonElement>("button[type=submit]");
+        if (submit) submit.disabled = true;
+        note.textContent = "Preparing secure access…";
+        try {
+          if (form.dataset.mode === "signup") {
+            await request("/auth/v1/signup", {
+              method: "POST",
+              body: JSON.stringify({
+                email,
+                password,
+                data: {
+                  full_name: String(data.get("name") ?? ""),
+                  phone: String(data.get("phone") ?? ""),
+                  marketing_consent: data.get("marketingConsent") === "on",
+                },
+              }),
+            });
+            note.textContent =
+              "Check your email to verify and activate your client room.";
+          } else {
+            const session = await request(
+              "/auth/v1/token?grant_type=password",
+              { method: "POST", body: JSON.stringify({ email, password }) },
+            );
+            localStorage.setItem(sessionKey, JSON.stringify(session));
+            window.RangbastraAudio?.portal();
+            location.href = safeNext;
+          }
+        } catch (error) {
+          note.textContent =
+            error instanceof Error ? error.message : "Unable to continue.";
+          submitting = false;
+          if (submit) submit.disabled = false;
+        }
+      });
+    });
+  document.querySelectorAll<HTMLButtonElement>("[data-password-toggle]").forEach((button) => button.addEventListener("click", () => { const input = button.parentElement?.querySelector<HTMLInputElement>("input"); if (!input) return; const show = input.type === "password"; input.type = show ? "text" : "password"; button.textContent = show ? "Hide" : "Show"; button.setAttribute("aria-label", `${show ? "Hide" : "Show"} password`); }));
+  document.querySelector<HTMLInputElement>("[data-sound-volume]")?.addEventListener("input",event=>window.RangbastraAudio?.setVolume(Number((event.currentTarget as HTMLInputElement).value)/100));
+  document
+    .querySelector<HTMLElement>("[data-forgot]")
+    ?.addEventListener("click", async () => {
+      const form = document.querySelector<HTMLFormElement>(
+          "[data-account-form]",
+        )!,
+        email = String(new FormData(form).get("email") ?? ""),
+        note = form.querySelector<HTMLElement>("[data-account-note]")!;
+      if (!email) {
+        note.textContent = "Enter your email first.";
+        return;
+      }
+      try {
+        await request("/auth/v1/recover", {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+            redirect_to: `${location.origin}/account/login`,
+          }),
+        });
+        note.textContent = "A password recovery link is on its way.";
+      } catch (error) {
+        note.textContent =
+          error instanceof Error
+            ? error.message
+            : "Unable to send recovery email.";
       }
     });
-  });
+  document
+    .querySelector<HTMLButtonElement>(".google-auth")
+    ?.addEventListener("click", async (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const note = document.querySelector<HTMLElement>("[data-account-note]")!;
+      if (!supabase) {
+        note.textContent =
+          "Add Supabase public credentials to activate Google sign-in.";
+        return;
+      }
+      button.disabled = true;
+      note.textContent = "Opening Google’s secure account chooser…";
+      const redirectTo = `${location.origin}/account/oauth-callback`;
+      const mobile = matchMedia("(max-width:700px),(pointer:coarse)").matches;
+      const { data, error } = await supabase.auth.legacyOAuthDisabled({
+        provider: "google",
+        options: { redirectTo, skipBrowserRedirect: true },
+      });
+      if (error || !data.url) {
+        button.disabled = false;
+        note.textContent = error?.message ?? "Google sign-in could not begin.";
+        return;
+      }
+      if (mobile) {
+        location.assign(data.url);
+        return;
+      }
+      const popup = window.open(
+        data.url,
+        "rangbastra-google-auth",
+        "popup=yes,width=520,height=680,resizable=yes,scrollbars=yes",
+      );
+      if (!popup) {
+        location.assign(data.url);
+        return;
+      }
+      const listener = (message: MessageEvent) => {
+        if (
+          message.origin !== location.origin ||
+          message.source !== popup ||
+          message.data !== "rangbastra-oauth-complete"
+        )
+          return;
+        window.removeEventListener("message", listener);
+        popup.close();
+        location.href = safeNext;
+      };
+      window.addEventListener("message", listener);
+      const timer = window.setInterval(() => {
+        if (!popup.closed) return;
+        clearInterval(timer);
+        window.removeEventListener("message", listener);
+        button.disabled = false;
+        note.textContent = "Google sign-in was closed before completion.";
+      }, 500);
+    });
+
+  if (supabase && !localStorage.getItem(sessionKey)) {
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) return;
+      localStorage.setItem(sessionKey, JSON.stringify(data.session));
+      if (location.pathname === "/account") location.reload();
+    });
+  }
+
+  const dashboard = document.querySelector<HTMLElement>(
+    "[data-account-dashboard]",
+  );
+  if (dashboard) {
+    let session: any = null;
+    try {
+      session = JSON.parse(localStorage.getItem(sessionKey) ?? "null");
+    } catch {}
+    const profileForm = dashboard.querySelector<HTMLFormElement>(
+        "[data-profile-form]",
+      ),
+      identity = dashboard.querySelector<HTMLElement>(
+        "[data-account-identity]",
+      ),
+      signout = dashboard.querySelector<HTMLButtonElement>("[data-signout]"),
+      login = dashboard.querySelector<HTMLElement>(".account-login");
+    if (session?.access_token && profileForm) {
+      const auth = { Authorization: `Bearer ${session.access_token}` };
+      request("/auth/v1/user", { headers: auth })
+        .then(async (user) => {
+          identity!.textContent = user.email;
+          profileForm.hidden = false;
+          signout!.hidden = false;
+          login?.setAttribute("hidden", "");
+          const profiles = await request(
+            `/rest/v1/profiles?id=eq.${user.id}&select=*`,
+            { headers: auth },
+          );
+          const profile = profiles[0] ?? {};
+          Object.entries(profile).forEach(([name, value]) => {
+            const field = profileForm.elements.namedItem(name);
+            if (field instanceof HTMLInputElement) {
+              if (field.type === "checkbox") field.checked = Boolean(value);
+              else field.value = String(value ?? "");
+            }
+          });
+        })
+        .catch(() => {
+          localStorage.removeItem(sessionKey);
+        });
+      profileForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(profileForm),
+          payload = Object.fromEntries(data.entries());
+        payload.marketing_consent = data.get("marketing_consent") === "on";
+        const note = profileForm.querySelector<HTMLElement>(
+          "[data-profile-note]",
+        )!;
+        try {
+          await request(`/rest/v1/profiles?id=eq.${session.user.id}`, {
+            method: "PATCH",
+            headers: { ...auth, Prefer: "return=minimal" },
+            body: JSON.stringify(payload),
+          });
+          note.textContent = "Profile updated securely.";
+        } catch (error) {
+          note.textContent =
+            error instanceof Error
+              ? error.message
+              : "Unable to update profile.";
+        }
+      });
+      signout?.addEventListener("click", async () => {
+        window.RangbastraAudio?.signout();
+        try {
+          await request("/auth/v1/logout", { method: "POST", headers: auth });
+        } catch {}
+        localStorage.removeItem(sessionKey);
+        location.href = "/account/login";
+      });
+    }
+  }
+  */
 </script>
 
 <style>
   .account-room {
     display: grid;
-    grid-template-columns: minmax(0, .72fr) minmax(20rem, .48fr);
+    grid-template-columns: minmax(0, 0.72fr) minmax(20rem, 0.48fr);
     gap: clamp(var(--space-6), 7vw, var(--space-11));
     align-items: center;
     min-height: min(52rem, calc(100svh - var(--navbar-height)));
@@ -132,7 +584,7 @@ const copy = {
     font-size: clamp(3rem, 7vw, 8rem);
     font-weight: var(--weight-light);
     letter-spacing: var(--tracking-heading);
-    line-height: .94;
+    line-height: 0.94;
     text-wrap: balance;
   }
 
@@ -151,7 +603,7 @@ const copy = {
   }
 
   .account-room__keys span {
-    border-bottom: 1px solid rgba(198, 169, 114, .35);
+    border-bottom: 1px solid var(--cocoa-border-soft);
     color: var(--text-muted);
     font-size: var(--caption);
     font-weight: var(--weight-semibold);
@@ -163,10 +615,15 @@ const copy = {
   .account-room__panel {
     min-height: clamp(28rem, 42vw, 38rem);
     padding: clamp(var(--space-5), 5vw, var(--space-8));
-    border: 1px solid rgba(198, 169, 114, .18);
+    border: 1px solid var(--cocoa-border-soft);
     background:
-      linear-gradient(135deg, rgba(255,255,255,.055), transparent 24%, rgba(106,78,66,.08)),
-      rgba(255,255,255,.025);
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.055),
+        transparent 24%,
+        rgba(106, 78, 66, 0.08)
+      ),
+      rgba(255, 255, 255, 0.025);
     box-shadow: var(--shadow-premium), var(--shadow-inset);
   }
 
@@ -192,6 +649,30 @@ const copy = {
     gap: var(--space-3);
     padding-top: var(--space-2);
   }
+  .profile-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+  .profile-form[hidden] {
+    display: none;
+  }
+  .profile-form .button,
+  .profile-form [data-profile-note] {
+    grid-column: 1/-1;
+  }
+  .consent {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .consent input {
+    min-height: auto;
+  }
+  .signout {
+    min-height: 44px;
+    color: var(--cocoa-300);
+  }
 
   label {
     display: grid;
@@ -207,14 +688,14 @@ const copy = {
     min-height: 3.75rem;
     border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
-    background: rgba(0,0,0,.32);
+    background: rgba(0, 0, 0, 0.32);
     color: var(--text-primary);
     font: inherit;
     padding-inline: var(--space-4);
   }
 
   input:focus-visible {
-    border-color: rgba(198, 169, 114, .5);
+    border-color: var(--cocoa-border-strong);
     outline: 1px solid var(--focus-ring);
     outline-offset: var(--space-1);
   }
@@ -239,6 +720,190 @@ const copy = {
 
     .account-room__panel {
       min-height: auto;
+    }
+  }
+</style>
+<style>
+  .account-room {
+    grid-template-columns: 1fr;
+    align-content: center;
+    min-height: calc(100svh - var(--navbar-height));
+    padding: clamp(6.5rem, 10vw, 9rem) 0 var(--space-8);
+  }
+  .portal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--cocoa-border-soft);
+    color: var(--text-muted);
+    font-size: var(--caption);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .portal-wordmark {
+    color: var(--ivory-100);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+  .account-room__panel {
+    width: min(100%, 64rem);
+    min-height: 0;
+    margin-inline: auto;
+    padding: clamp(var(--space-5), 5vw, var(--space-8));
+    border-radius: var(--radius-lg);
+    background: #050505;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+  }
+  .account-form {
+    width: min(100%, 32rem);
+    margin-inline: auto;
+  }
+  .auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--cocoa-border-soft);
+  }
+  .auth-tabs a {
+    min-height: 48px;
+    padding: var(--space-3);
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .auth-tabs a.is-active {
+    border-bottom: 2px solid rgb(var(--cocoa-rgb));
+    color: var(--ivory-100);
+  }
+  .account-form > div > small,
+  .dashboard-heading small {
+    color: var(--cocoa-300);
+    font-size: var(--caption);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .password-field {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: #080808;
+  }
+  .password-field input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+  }
+  .password-field button {
+    min-width: 52px;
+    min-height: 44px;
+    color: var(--cocoa-300);
+    font-size: var(--caption);
+  }
+  .dashboard-shell {
+    display: grid;
+    grid-template-columns: 14rem minmax(0, 1fr);
+    gap: var(--space-7);
+  }
+  .dashboard-nav {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--cocoa-border-soft);
+    padding-right: var(--space-4);
+  }
+  .dashboard-nav a,
+  .dashboard-nav button {
+    display: flex;
+    min-height: 46px;
+    align-items: center;
+    padding: 0 var(--space-3);
+    border-left: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: var(--body-sm);
+  }
+  .dashboard-nav .is-active {
+    border-left-color: rgb(var(--cocoa-rgb));
+    background: rgba(var(--cocoa-rgb), 0.1);
+    color: var(--ivory-100);
+  }
+  .dashboard-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .portal-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+  }
+  .portal-metrics > a,
+  .portal-metrics > span {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-md);
+    background: #080808;
+  }
+  .portal-metrics strong {
+    color: var(--ivory-100);
+    font-size: 1.3rem;
+  }
+  .portal-metrics span {
+    color: var(--text-muted);
+    font-size: var(--caption);
+  }
+  .consent {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .consent a {
+    color: var(--cocoa-300);
+    text-decoration: underline;
+  }
+  [data-account-avatar] {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-md);
+    object-fit: cover;
+  }
+  .google-auth {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .google-auth > div,
+  .google-auth iframe {
+    max-width: 100% !important;
+  }
+  @media (max-width: 760px) {
+    .portal-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .dashboard-shell {
+      grid-template-columns: 1fr;
+    }
+    .dashboard-nav {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      border-right: 0;
+      border-bottom: 1px solid var(--cocoa-border-soft);
+      padding: 0 0 var(--space-4);
+    }
+    .portal-metrics {
+      grid-template-columns: 1fr;
+    }
+    .profile-form {
+      grid-template-columns: 1fr;
     }
   }
 </style>

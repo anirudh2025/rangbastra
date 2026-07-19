@@ -1,0 +1,68 @@
+---
+import Container from "../../components/primitives/Container.astro";
+import Eyebrow from "../../components/primitives/Eyebrow.astro";
+import Section from "../../components/primitives/Section.astro";
+---
+
+<Section class="purpose-section" aria-labelledby="rangbastra-purpose-heading">
+  <Container class="purpose-container">
+    <div class="purpose-introduction">
+      <Eyebrow>Rangbastra · Private Couture Platform</Eyebrow>
+      <h2 id="rangbastra-purpose-heading">Couture discovery, made personal.</h2>
+    </div>
+    <div class="purpose-copy">
+      <p>
+        Rangbastra is a luxury custom couture platform based in Anand, Gujarat.
+        Customers can explore bridal and occasion-wear collections, create a
+        private account, save favourite pieces, and share their measurements,
+        preferences and design requirements for a personalised couture
+        consultation.
+      </p>
+      <p class="purpose-authentication">
+        Google sign-in is used to securely create and access your Rangbastra
+        account, saved inspiration and couture requests.
+      </p>
+    </div>
+  </Container>
+</Section>
+
+<style>
+  :global(.purpose-section) {
+    --section-padding-block: clamp(var(--space-8), 8vw, var(--space-11));
+    position: relative;
+    border-block: 1px solid var(--cocoa-border-soft);
+    background: radial-gradient(circle at 16% 28%, rgba(var(--cocoa-rgb), .12), transparent 34%), var(--surface-canvas);
+  }
+  :global(.purpose-container) {
+    display: grid;
+    grid-template-columns: minmax(16rem, .8fr) minmax(18rem, 1.2fr);
+    gap: clamp(var(--space-6), 8vw, var(--space-11));
+    align-items: start;
+  }
+  .purpose-introduction { display: grid; gap: var(--space-4); }
+  h2 {
+    max-width: 11ch;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 5.4rem);
+    font-weight: var(--weight-light);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1;
+  }
+  .purpose-copy { display: grid; gap: var(--space-5); max-width: 52rem; }
+  .purpose-copy p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: var(--body-lg);
+    line-height: var(--leading-body);
+  }
+  .purpose-authentication {
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--cocoa-border-soft);
+    color: var(--sand-200) !important;
+    font-size: var(--body-md) !important;
+  }
+  @media (max-width: 760px) {
+    :global(.purpose-container) { grid-template-columns: 1fr; gap: var(--space-7); }
+  }
+</style>

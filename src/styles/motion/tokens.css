@@ -8,6 +8,11 @@ MOTION TOKENS
 
 :root{
 
+--ease-premium:cubic-bezier(.22,1,.36,1);
+--duration-fast:180ms;
+--duration-medium:320ms;
+--duration-slow:520ms;
+
 /*========================================================
 TIMING
 ========================================================*/

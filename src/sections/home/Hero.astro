@@ -1,47 +1,576 @@
 ---
-import HeroDesktop from "../../components/hero/HeroDesktop.astro";
-import HeroMobile from "../../components/hero/HeroMobile.astro";
+import Button from "../../components/primitives/Button.astro";
+import Label from "../../components/primitives/Label.astro";
 ---
 
-<header class="hero">
-
-    <div class="desktop-layout">
-        <HeroDesktop />
+<header class="living-hero" data-living-hero aria-labelledby="hero-heading">
+  <div class="living-hero__stage">
+    <div class="living-hero__visual-mask">
+      <picture class="living-hero__media">
+        <source
+          media="(max-width:700px)"
+          srcset="https://res.cloudinary.com/dfxlm7z58/image/upload/v1782619685/Hero_Mobile_yt2m8f.webp"
+        />
+        <img
+          src="https://res.cloudinary.com/dfxlm7z58/image/upload/v1782614896/Hero_Desktop_klovjb.webp"
+          width="4096"
+          height="2731"
+          alt="Rangbastra couture model wearing an intricately handcrafted bridal ensemble"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          draggable="false"
+        />
+      </picture>
+      <div class="living-hero__atmosphere" aria-hidden="true"></div>
+      <div class="living-hero__grain" aria-hidden="true"></div>
+      <div class="living-hero__veil" aria-hidden="true"></div>
     </div>
 
-    <div class="mobile-layout">
-        <HeroMobile />
+    <div class="living-hero__content">
+      <p class="living-hero__eyebrow living-hero__eyebrow-legacy" aria-hidden="true">
+        Rangbastra <span aria-hidden="true">·</span> Private Couture
+      </p>
+      <p class="living-hero__eyebrow living-hero__eyebrow-location">
+        Rangbastra <span aria-hidden="true">&middot;</span> Luxury Custom Couture
+        <span aria-hidden="true">&middot;</span> Anand, Gujarat
+      </p>
+      <h1 id="hero-heading">
+        <span class="visually-hidden"
+          >Not Designed for Everyone. Crafted Around You.</span
+        >
+        <span class="hero-heading__visual" aria-hidden="true">
+          <span class="hero-heading__line"
+            ><span>Not Designed for Everyone.</span></span
+          >
+          <span class="hero-heading__line hero-heading__second"
+            ><span class="animated-phrase"
+              ><span class="hero-heading__word" data-changing-word
+                >Crafted<span class="hero-heading__caret"></span></span
+              ><span>Around You.</span></span
+            ></span
+          >
+        </span>
+      </h1>
+      <div class="living-hero__support">
+        <p class="living-hero__copy">
+          Couture shaped by your story, your presence, and the way you choose to
+          be remembered.
+        </p>
+        <div class="living-hero__actions">
+          <Button href="/design-your-outfit" class="living-hero__primary"
+            ><Label icon="sketch">Begin Yours</Label></Button
+          >
+          <a class="living-hero__secondary" href="/collections"
+            ><Label icon="journal">Explore the Collection</Label></a
+          >
+        </div>
+      </div>
     </div>
-
+  </div>
 </header>
 
+<script>
+  import { initLivingHero } from "../../lib/animations/livingHero";
+  document.addEventListener("astro:page-load", initLivingHero);
+  initLivingHero();
+</script>
+
 <style>
+  .living-hero {
+    --hero-progress: 0;
+    --image-scale: 1.035;
+    --image-y: 0px;
+    --content-y: 0px;
+    --support-y: 0px;
+    --support-opacity: 1;
+    --hero-image-opacity: 1;
+    --hero-darkness: 0;
+    position: relative;
+    height: 320svh;
+    background: var(--obsidian-1000);
+    color: var(--text-primary);
+  }
 
-.hero{
-    position:relative;
-    width:100%;
-    overflow:clip;
-    isolation:isolate;
-}
+  .living-hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.98) 0%,
+      rgba(0, 0, 0, 0.88) 14%,
+      rgba(0, 0, 0, 0.58) 38%,
+      rgba(0, 0, 0, 0.18) 68%,
+      transparent 90%
+    );
+    opacity: var(--hero-darkness);
+    will-change: opacity;
+  }
 
-.desktop-layout{
-    display:block;
-}
+  .living-hero__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 38rem;
+    overflow: visible;
+  }
 
-.mobile-layout{
-    display:none;
-}
+  .living-hero__visual-mask {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: var(--hero-image-opacity);
+    will-change: opacity;
+  }
 
-@media (max-width:1024px){
+  .living-hero__media,
+  .living-hero__media img,
+  .living-hero__atmosphere,
+  .living-hero__grain,
+  .living-hero__veil {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
 
-    .desktop-layout{
-        display:none;
+  .living-hero__media {
+    z-index: 0;
+  }
+  .living-hero__media img {
+    object-fit: cover;
+    object-position: center 30%;
+    transform: scale(1.02);
+  }
+
+  .living-hero__atmosphere {
+    z-index: 1;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.34),
+        transparent 25%,
+        transparent 75%,
+        rgba(0, 0, 0, 0.3)
+      ),
+      linear-gradient(0deg, rgba(0, 0, 0, 0.68), transparent 48%),
+      radial-gradient(
+        ellipse at center,
+        rgba(0, 0, 0, 0.04),
+        rgba(0, 0, 0, 0.46)
+      );
+    opacity: calc(1 - var(--hero-progress) * 0.12);
+  }
+
+  .living-hero__grain {
+    z-index: 2;
+    opacity: 0.03;
+    background-image: radial-gradient(#fff 0.55px, transparent 0.7px);
+    background-size: 7px 7px;
+  }
+
+  .living-hero__veil {
+    z-index: 6;
+    background: linear-gradient(112deg, #050202 5%, #1b080c 45%, #050505 80%);
+    transform: translateX(-105%);
+  }
+
+  .is-first-visit .living-hero__veil {
+    animation: veil-reveal 1.45s 0.32s var(--ease-luxury) both;
+  }
+
+  .living-hero__content {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: min(76rem, calc(100% - 4rem));
+    height: 100%;
+    margin: auto;
+    padding: clamp(7rem, 13vh, 10rem) 0 4rem;
+    text-align: center;
+    pointer-events: auto;
+    opacity: clamp(0, calc(1 - var(--hero-progress) * 1.42), 1);
+    transform: none;
+    will-change: opacity;
+  }
+
+  .living-hero__eyebrow {
+    margin: 0 0 clamp(1.5rem, 3vh, 2.5rem);
+    font-size: var(--caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--sand-200);
+    transform: none;
+  }
+
+  .living-hero__eyebrow-legacy {
+    display: none;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(3.7rem, 7.1vw, 8.2rem);
+    font-weight: var(--weight-editorial);
+    font-synthesis: none;
+    line-height: 0.88;
+    letter-spacing: -0.035em;
+    text-shadow: 0 5px 36px rgba(0, 0, 0, 0.64);
+  }
+
+  .hero-heading__visual,
+  .hero-heading__line {
+    display: block;
+  }
+  .hero-heading__line {
+    overflow: clip;
+    padding: 0.14em 0.08em 0.18em;
+  }
+  .hero-heading__line > span {
+    display: block;
+  }
+  .hero-heading__second {
+    margin-top: 0.04em;
+    color: var(--ivory-100);
+    font-size: 0.82em;
+    white-space: nowrap;
+  }
+  .hero-heading__caret {
+    display: inline-block;
+    width: 1px;
+    height: 0.74em;
+    background: rgb(var(--cocoa-rgb));
+    vertical-align: -0.02em;
+    animation: caret-fade 1.8s ease-in-out infinite;
+  }
+  @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+    .hero-heading__second {
+      background: var(--gradient-editorial);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
     }
+  }
 
-    .mobile-layout{
-        display:block;
+  .living-hero__support {
+    transform: translate3d(0, var(--support-y), 0);
+    opacity: var(--support-opacity);
+  }
+
+  .living-hero__copy {
+    max-width: 37rem;
+    margin: clamp(1.8rem, 4vh, 3rem) auto 0;
+    color: var(--text-secondary);
+    font-size: var(--body-md);
+    line-height: var(--leading-body);
+  }
+
+  .living-hero__actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+    pointer-events: auto;
+  }
+
+  :global(.living-hero__primary) {
+    min-height: 56px;
+    border-color: var(--cocoa-border);
+    border-radius: var(--radius-md);
+    background: var(--gradient-obsidian);
+    pointer-events: auto;
+  }
+
+  .living-hero__secondary {
+    position: relative;
+    padding: 0.8rem 0.1rem;
+    color: var(--ivory-100);
+    font-size: var(--label-md);
+    text-decoration: none;
+    pointer-events: auto;
+  }
+  .living-hero__secondary::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.35rem;
+    height: 1px;
+    background: var(--gradient-gold);
+    transform: scaleX(0.22);
+    transform-origin: left;
+    transition: transform var(--motion-medium) var(--ease-luxury);
+  }
+  .living-hero__secondary:hover::after,
+  .living-hero__secondary:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  @keyframes veil-reveal {
+    0%,
+    55% {
+      transform: translateX(0);
     }
+    100% {
+      transform: translateX(105%);
+    }
+  }
+  @keyframes caret-fade {
+    50% {
+      opacity: 0.28;
+    }
+  }
 
-}
+  @media (max-width: 700px) {
+    .living-hero {
+      height: 300svh;
+    }
+    .living-hero__stage {
+      min-height: 40rem;
+    }
+    .living-hero__media img {
+      object-position: center top;
+      transform: scale(1.02);
+    }
+    .living-hero__atmosphere {
+      background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.9) 2%,
+        rgba(0, 0, 0, 0.55) 48%,
+        rgba(0, 0, 0, 0.16) 78%
+      );
+    }
+    .living-hero__content {
+      justify-content: center;
+      width: calc(100% - 2rem);
+      padding: calc(var(--navbar-height) + 3rem) 0 1rem;
+      transform: none;
+    }
+    .living-hero__eyebrow {
+      margin-bottom: 1rem;
+      font-size: 0.63rem;
+    }
+    h1 {
+      font-size: clamp(2.55rem, 12.2vw, 4.2rem);
+      line-height: 0.9;
+    }
+    .hero-heading__second {
+      font-size: 0.72em;
+    }
+    .hero-heading__word {
+      min-width: 10.1ch;
+    }
+    .living-hero__copy {
+      max-width: 29rem;
+      margin-top: 1.2rem;
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+    .living-hero__actions {
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-top: 1rem;
+    }
+    :global(.living-hero__primary) {
+      min-height: 48px;
+      padding-inline: 1.05rem;
+      font-size: 0.76rem;
+    }
+    .living-hero__secondary {
+      font-size: 0.76rem;
+    }
+  }
 
+  @media (max-width: 360px) {
+    .living-hero__content {
+      width: calc(100% - 1.25rem);
+    }
+    h1 {
+      font-size: clamp(2.25rem, 11.8vw, 2.9rem);
+    }
+    .living-hero__eyebrow {
+      font-size: 0.56rem;
+    }
+    .living-hero__copy {
+      font-size: 0.77rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .living-hero {
+      height: 100svh;
+    }
+    .living-hero__stage {
+      position: relative;
+    }
+    .living-hero__visual-mask {
+      opacity: 1;
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        #000 0 72%,
+        rgba(0, 0, 0, 0.82) 84%,
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        to bottom,
+        #000 0 72%,
+        rgba(0, 0, 0, 0.82) 84%,
+        transparent 100%
+      );
+    }
+    .living-hero__veil {
+      display: none;
+    }
+    .living-hero__media img,
+    .living-hero__content,
+    .living-hero__eyebrow,
+    .living-hero__support {
+      transform: none;
+    }
+    .hero-heading__caret {
+      display: none;
+    }
+  }
+
+  .living-hero {
+    height: var(--hero-runway, 320svh);
+  }
+
+  .living-hero__eyebrow {
+    font-family: var(--font-ceremonial);
+    font-weight: 400;
+    letter-spacing: 0.8em;
+  }
+
+  h1 {
+    font-size: clamp(3.35rem, 5.25vw, 5.125rem);
+    font-weight: 400;
+    line-height: 0.98;
+  }
+
+  .hero-heading__line {
+    overflow: clip;
+    padding: 0.16em 0.1em 0.2em;
+    margin-block: -0.16em -0.2em;
+  }
+
+  .hero-heading__second {
+    font-size: 0.86em;
+    line-height: 1.06;
+    white-space: nowrap;
+  }
+
+  .animated-phrase {
+    display: inline-flex !important;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 0.18em;
+    white-space: nowrap;
+  }
+
+  .hero-heading__word {
+    position: relative;
+    display: inline-block !important;
+    min-width: 0 !important;
+    text-align: left;
+    line-height: inherit;
+    white-space: pre;
+  }
+
+  .hero-heading__caret {
+    position: absolute;
+    left: 100%;
+    bottom: 0.08em;
+    margin-left: 0.035em;
+    width: 1px;
+    height: 0.7em;
+    pointer-events: none;
+  }
+
+  @media (max-width: 1366px) {
+    h1 {
+      font-size: clamp(3.2rem, 4.8vw, 4.25rem);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .living-hero {
+      height: var(--hero-runway, 300svh);
+    }
+    h1 {
+      font-size: clamp(2.9rem, 5.5vw, 3.625rem);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .living-hero {
+      height: var(--hero-runway, 280svh);
+      min-height: 0;
+    }
+    .living-hero__stage {
+      position: sticky;
+      height: 100svh;
+      min-height: 38rem;
+    }
+    .living-hero__content {
+      transform: none !important;
+    }
+    .living-hero__media img {
+      transform: scale(1.02) !important;
+    }
+    h1 {
+      width: 100%;
+      font-size: clamp(2rem, 8.8vw, 2.45rem);
+      line-height: 1;
+    }
+    .hero-heading__line {
+      overflow: visible;
+    }
+    .hero-heading__line:first-child > span {
+      max-width: 15ch;
+      margin-inline: auto;
+      text-wrap: balance;
+    }
+    .hero-heading__second {
+      font-size: 0.82em;
+    }
+    .living-hero__eyebrow {
+      font-size: 0.61rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    h1 {
+      font-size: clamp(1.85rem, 8.8vw, 2.15rem);
+    }
+    .animated-phrase {
+      gap: 0.14em;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .living-hero {
+      height: 100svh;
+    }
+    .living-hero__stage {
+      position: relative;
+    }
+    .living-hero__content,
+    .living-hero__media img {
+      transform: none !important;
+    }
+  }
 </style>

@@ -41,10 +41,10 @@ COMPONENT TOKENS
 ========================================================*/
 
 --button-radius:
-var(--radius-pill);
+var(--radius-md);
 
 --navbar-radius:
-var(--radius-pill);
+var(--radius-lg);
 
 --card-radius:
 var(--radius-xl);
@@ -56,7 +56,7 @@ var(--radius-xl);
 var(--radius-lg);
 
 --badge-radius:
-var(--radius-pill);
+var(--radius-2xs);
 
 --modal-radius:
 var(--radius-2xl);

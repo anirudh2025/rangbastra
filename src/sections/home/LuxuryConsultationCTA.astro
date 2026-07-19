@@ -4,6 +4,7 @@ import Container from "../../components/primitives/Container.astro";
 import Button from "../../components/primitives/Button.astro";
 import Label from "../../components/primitives/Label.astro";
 import Eyebrow from "../../components/primitives/Eyebrow.astro";
+import { contact, getWhatsAppHref } from "../../data/contact";
 ---
 
 <Section class="luxury-consultation-section">
@@ -13,34 +14,106 @@ import Eyebrow from "../../components/primitives/Eyebrow.astro";
 
       <h2>
         <span class="title-intro">Every Extraordinary Story</span>
-        <span class="title-statement">Begins With A Conversation</span>
+        <span class="title-statement heading-light-sweep" data-invitation-title
+          >Begins With A Conversation</span
+        >
       </h2>
 
-      <p>
-        Step into a slower, more personal way of creating couture. In the quiet
-        intimacy of consultation, your traditions, memories and dreams begin to
-        take form as a Rangbastra piece made only for you.
+      <p data-invitation-copy>
+        Bring us the occasion, the feeling and the details that matter. We will
+        listen before suggesting what comes next.
       </p>
 
       <div class="actions" aria-label="Begin your Rangbastra couture journey">
         <Button href="/design-your-outfit" class="consultation-primary">
-          <Label icon="sparkle">Design Your Outfit</Label>
+          <Label icon="sketch"
+            ><span data-invitation-label>Begin Your Couture Story</span></Label
+          >
         </Button>
 
-        <Button href="/collections" class="consultation-secondary">
-          <Label icon="sparkle">Explore Collections</Label>
+        <Button
+          href={getWhatsAppHref("homepage")}
+          target="_blank"
+          variant="whatsapp"
+          class="consultation-secondary"
+        >
+          <Label icon="whatsapp">WhatsApp</Label>
         </Button>
       </div>
+      <nav class="supporting-actions" aria-label="Other ways to continue">
+        <a href={contact.instagramUrl} target="_blank" rel="noopener noreferrer"
+          >Instagram</a
+        ><a href="/wishlist">Save Inspirations</a><a
+          href="/account/login?next=/"
+          data-invitation-signin>Sign In</a
+        >
+      </nav>
     </div>
   </Container>
 </Section>
+
+<script>
+  const initInvitation = () => {
+    const root = document.querySelector<HTMLElement>(
+      ".luxury-consultation-section",
+    );
+    if (!root || root.dataset.contextReady) return;
+    root.dataset.contextReady = "true";
+    const primary = root.querySelector<HTMLAnchorElement>(
+        ".consultation-primary",
+      ),
+      signIn = root.querySelector<HTMLAnchorElement>(
+        "[data-invitation-signin]",
+      ),
+      label = root.querySelector<HTMLElement>("[data-invitation-label]"),
+      title = root.querySelector<HTMLElement>("[data-invitation-title]"),
+      copy = root.querySelector<HTMLElement>("[data-invitation-copy]");
+    const params = new URLSearchParams(location.search);
+    let product = params.get("product") ?? "",
+      category = params.get("occasion") ?? "";
+    try {
+      const recent = JSON.parse(
+        sessionStorage.getItem("rangbastraRecentProduct") ?? "null",
+      );
+      product ||= recent?.slug ?? "";
+      category ||= recent?.category ?? "";
+      const direction = JSON.parse(
+        sessionStorage.getItem("rangbastraCoutureDirection") ?? "null",
+      );
+      category ||= direction?.occasion ?? "";
+    } catch {}
+    if (product && /^[a-z0-9-]+$/.test(product)) {
+      const name = product
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (letter) => letter.toUpperCase()),
+        destination = `/products/${product}/customize`;
+      if (primary) primary.href = destination;
+      if (signIn)
+        signIn.href = `/account/login?next=${encodeURIComponent(destination)}`;
+      if (label) label.textContent = `Continue with ${name}`;
+      if (title) title.textContent = `Continue The Story You Began`;
+      if (copy)
+        copy.textContent = `${name} can remain the starting point. Share what you would preserve, change or make more personal.`;
+    } else if (category) {
+      const destination = `/design-your-outfit?occasion=${encodeURIComponent(category)}`;
+      if (primary) primary.href = destination;
+      if (signIn)
+        signIn.href = `/account/login?next=${encodeURIComponent(destination)}`;
+      if (label) label.textContent = `Begin A ${category} Conversation`;
+      if (copy)
+        copy.textContent = `Tell us what ${category.toLowerCase()} means to you. We will begin with the person, then shape the couture direction.`;
+    }
+  };
+  initInvitation();
+  document.addEventListener("astro:page-load", initInvitation);
+</script>
 
 <style>
   :global(.luxury-consultation-section) {
     --section-padding-block: clamp(var(--space-10), 12vw, var(--space-13));
     --consultation-background: #000000;
-    --consultation-glow-opacity: .18;
-    --consultation-satin-opacity: .34;
+    --consultation-glow-opacity: 0.18;
+    --consultation-satin-opacity: 0.34;
     --consultation-content-width: min(100%, 62rem);
     --consultation-body-width: var(--measure-sm);
     --consultation-action-gap: var(--space-4);
@@ -53,10 +126,17 @@ import Eyebrow from "../../components/primitives/Eyebrow.astro";
         rgba(106, 78, 66, var(--consultation-glow-opacity)),
         transparent 38%
       ),
-      radial-gradient(circle at 16% 82%, rgba(181, 147, 130, .08), transparent 28%),
-      radial-gradient(circle at 88% 18%, rgba(106, 78, 66, .1), transparent 30%),
-      var(--consultation-background);
-    isolation: isolate;
+      radial-gradient(
+        circle at 16% 82%,
+        rgba(181, 147, 130, 0.08),
+        transparent 28%
+      ),
+      radial-gradient(
+        circle at 88% 18%,
+        rgba(106, 78, 66, 0.1),
+        transparent 30%
+      ),
+      rgba(0, 0, 0, 0.24);
   }
 
   :global(.luxury-consultation-section)::before,
@@ -82,8 +162,12 @@ import Eyebrow from "../../components/primitives/Eyebrow.astro";
     bottom: -14%;
     width: min(44rem, 60vw);
     height: min(44rem, 60vw);
-    background: radial-gradient(circle, rgba(129, 99, 84, .16), transparent 68%);
-    opacity: .74;
+    background: radial-gradient(
+      circle,
+      rgba(129, 99, 84, 0.16),
+      transparent 68%
+    );
+    opacity: 0.74;
     filter: blur(10px);
   }
 
@@ -107,10 +191,11 @@ import Eyebrow from "../../components/primitives/Eyebrow.astro";
   h2 {
     display: grid;
     gap: var(--space-2);
-    max-width: min(100%, 64rem);
+    max-width: min(100%, 78rem);
     color: var(--text-primary);
     font-family: var(--font-display);
-    font-weight: var(--weight-light);
+    font-weight: var(--weight-editorial);
+    font-synthesis: none;
     text-align: center;
     text-wrap: balance;
   }
@@ -131,7 +216,8 @@ import Eyebrow from "../../components/primitives/Eyebrow.astro";
     font-size: var(--section-heading-statement);
     letter-spacing: var(--tracking-heading);
     line-height: 1.12;
-    padding-bottom: .08em;
+    padding-bottom: 0.08em;
+    white-space: nowrap;
   }
 
   p {
@@ -149,44 +235,65 @@ import Eyebrow from "../../components/primitives/Eyebrow.astro";
     gap: var(--consultation-action-gap);
     padding-top: var(--space-2);
   }
+  .supporting-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    margin-top: var(--space-4);
+  }
+  .supporting-actions a {
+    position: relative;
+    color: var(--text-muted);
+    font-size: var(--caption);
+    letter-spacing: var(--tracking-label);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .supporting-actions a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.38rem;
+    height: 1px;
+    background: rgb(var(--cocoa-rgb));
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .supporting-actions a:hover,
+  .supporting-actions a:focus-visible {
+    color: var(--cocoa-300);
+  }
+  .supporting-actions a:hover::after,
+  .supporting-actions a:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 
   :global(.consultation-primary),
   :global(.consultation-secondary) {
-    min-width: var(--consultation-button-min-width);
     min-height: var(--button-height);
     box-shadow: var(--glow-soft), var(--shadow-inset);
   }
 
   :global(.consultation-primary) {
-    background: var(--gradient-primary);
+    min-width: var(--consultation-button-min-width);
     isolation: isolate;
   }
 
-  :global(.consultation-primary:hover),
-  :global(.consultation-primary:focus-visible) {
-    background: var(--button-primary-gradient-hover);
-    box-shadow: var(--glow-medium), var(--button-shadow-hover), var(--shadow-inset-strong);
-  }
-
-  :global(.consultation-secondary) {
-    border: 1px solid var(--border-default);
-    background: rgba(255, 255, 255, .025);
-    color: var(--text-secondary);
-  }
-
-  :global(.consultation-secondary:hover),
-  :global(.consultation-secondary:focus-visible) {
-    border-color: var(--border-strong);
-    background: rgba(255, 255, 255, .045);
-    color: var(--text-primary);
-    box-shadow: var(--shadow-inset-strong);
+  @media (max-width: 1100px) {
+    .title-statement {
+      white-space: normal;
+    }
   }
 
   @media (max-width: 767px) {
     :global(.luxury-consultation-section) {
-      --section-padding-block: clamp(var(--space-10), 22vw, var(--space-13));
-      --consultation-glow-opacity: .14;
-      --consultation-satin-opacity: .24;
+      --section-padding-block: clamp(var(--space-9), 16vw, var(--space-11));
+      --consultation-glow-opacity: 0.14;
+      --consultation-satin-opacity: 0.24;
       --consultation-button-min-width: min(100%, 18rem);
     }
 
@@ -218,6 +325,7 @@ import Eyebrow from "../../components/primitives/Eyebrow.astro";
 
     .title-statement {
       font-size: var(--section-heading-statement-mobile);
+      white-space: normal;
     }
 
     .actions {
@@ -225,10 +333,8 @@ import Eyebrow from "../../components/primitives/Eyebrow.astro";
       gap: var(--space-3);
     }
 
-    :global(.consultation-primary),
-    :global(.consultation-secondary) {
+    :global(.consultation-primary) {
       width: min(100%, 20rem);
     }
   }
-
 </style>

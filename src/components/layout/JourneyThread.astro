@@ -1,0 +1,96 @@
+<div class="journey-thread" data-journey-thread aria-hidden="true">
+  <svg viewBox="0 0 1000 10000" preserveAspectRatio="none" focusable="false">
+    <defs>
+      <linearGradient id="journey-thread-metal" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="#501521" />
+        <stop offset=".48" stop-color="#8b2437" />
+        <stop offset="1" stop-color="var(--cocoa-500)" />
+      </linearGradient>
+    </defs>
+
+    <g class="journey-thread__route journey-thread__route--desktop">
+      <path class="journey-thread__line" pathLength="1" d="M130 0 C75 360 205 690 125 1050 C55 1390 85 1740 170 2050 C270 2390 850 2470 890 2920 C925 3370 830 3820 900 4250 C950 4700 720 4930 640 5310 C555 5730 105 5920 115 6400 C125 6880 210 7200 140 7600 C65 8060 845 8240 900 8700 C950 9160 820 9650 855 10000" />
+      <path class="journey-thread__highlight" pathLength="1" d="M130 0 C75 360 205 690 125 1050 C55 1390 85 1740 170 2050 C270 2390 850 2470 890 2920 C925 3370 830 3820 900 4250 C950 4700 720 4930 640 5310 C555 5730 105 5920 115 6400 C125 6880 210 7200 140 7600 C65 8060 845 8240 900 8700 C950 9160 820 9650 855 10000" />
+    </g>
+    <g class="journey-thread__route journey-thread__route--tablet">
+      <path class="journey-thread__line" pathLength="1" d="M105 0 C70 520 170 760 120 1220 C75 1680 120 2140 165 2550 C220 3020 825 3200 865 3720 C900 4250 820 4720 855 5200 C885 5720 170 6000 130 6520 C95 7060 155 7480 115 7900 C80 8380 810 8580 865 9100 C900 9480 850 9780 825 10000" />
+      <path class="journey-thread__highlight" pathLength="1" d="M105 0 C70 520 170 760 120 1220 C75 1680 120 2140 165 2550 C220 3020 825 3200 865 3720 C900 4250 820 4720 855 5200 C885 5720 170 6000 130 6520 C95 7060 155 7480 115 7900 C80 8380 810 8580 865 9100 C900 9480 850 9780 825 10000" />
+    </g>
+    <g class="journey-thread__route journey-thread__route--mobile">
+      <path class="journey-thread__line" pathLength="1" d="M72 0 C45 700 110 1190 75 1800 C42 2440 95 3020 70 3600 C45 4210 90 4800 74 5350 C58 5910 930 6200 938 6810 C945 7410 900 7960 930 8500 C955 9020 900 9560 920 10000" />
+      <path class="journey-thread__highlight" pathLength="1" d="M72 0 C45 700 110 1190 75 1800 C42 2440 95 3020 70 3600 C45 4210 90 4800 74 5350 C58 5910 930 6200 938 6810 C945 7410 900 7960 930 8500 C955 9020 900 9560 920 10000" />
+    </g>
+
+  </svg>
+</div>
+
+<script>
+  const initialiseJourneyThread = () => {
+    const thread = document.querySelector<HTMLElement>("[data-journey-thread]");
+    const wrapper = thread?.parentElement;
+    if (!thread || !wrapper || thread.dataset.ready === "true") return;
+    thread.dataset.ready = "true";
+
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    let top = 0;
+    let height = 1;
+    let frame = 0;
+    let resizeTimer = 0;
+
+    const render = () => {
+      frame = 0;
+      if (document.hidden || reducedMotion.matches) return;
+      const lead = innerHeight * .72;
+      const progress = Math.min(1, Math.max(.11, (scrollY + lead - top) / height));
+      thread.style.setProperty("--journey-progress", progress.toFixed(4));
+    };
+    const queueRender = () => { if (!frame) frame = requestAnimationFrame(render); };
+    const measure = () => {
+      const rect = wrapper.getBoundingClientRect();
+      top = rect.top + scrollY;
+      height = Math.max(1, wrapper.offsetHeight);
+      queueRender();
+    };
+    const queueMeasure = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(measure, 120);
+    };
+
+    const observer = new ResizeObserver(queueMeasure);
+    observer.observe(wrapper);
+    addEventListener("scroll", queueRender, { passive: true });
+    addEventListener("resize", queueMeasure, { passive: true });
+    addEventListener("orientationchange", queueMeasure, { passive: true });
+    document.fonts?.ready.then(measure);
+    wrapper.querySelectorAll("img").forEach((image) => {
+      if (!image.complete) image.addEventListener("load", queueMeasure, { once: true });
+    });
+    reducedMotion.addEventListener("change", () => { measure(); queueRender(); });
+    document.addEventListener("visibilitychange", queueRender);
+    measure();
+
+    document.addEventListener("astro:before-swap", () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      clearTimeout(resizeTimer);
+    }, { once: true });
+  };
+  document.addEventListener("astro:page-load", initialiseJourneyThread);
+  initialiseJourneyThread();
+</script>
+
+<style>
+  .journey-thread{--journey-progress:.11;position:absolute;inset:0;z-index:2;width:100%;height:100%;overflow:visible;pointer-events:none}
+  svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .journey-thread__route{display:none;fill:none;stroke:url(#journey-thread-metal);stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+  .journey-thread__route--desktop{display:block}
+  .journey-thread__line,.journey-thread__highlight{stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--journey-progress));vector-effect:non-scaling-stroke}
+  .journey-thread__line{stroke-width:1.05;opacity:.19}
+  .journey-thread__highlight{stroke-width:.45;opacity:.14}
+  .journey-thread__sparkle{fill:var(--sand-200);opacity:.22;transform-box:fill-box;transform-origin:center;animation:thread-sparkle 3.4s ease-in-out infinite}
+  .journey-thread__sparkle--two{animation-delay:-1.1s}.journey-thread__sparkle--three{animation-delay:-2.3s}.journey-thread__sparkle--four{animation-delay:-.55s}
+  @keyframes thread-sparkle{0%,100%{opacity:.16;transform:scale(.84)}50%{opacity:.52;transform:scale(1.06)}}
+  @media(max-width:1024px){.journey-thread__route--desktop{display:none}.journey-thread__route--tablet{display:block}.journey-thread__line{opacity:.16}.journey-thread__sparkle--four{display:none}}
+  @media(max-width:700px){.journey-thread__route--tablet{display:none}.journey-thread__route--mobile{display:block}.journey-thread__line{stroke-width:.85;opacity:.11}.journey-thread__highlight{opacity:.08}.journey-thread__sparkle{opacity:.16}.journey-thread__sparkle--two,.journey-thread__sparkle--four{display:none}}
+  @media(prefers-reduced-motion:reduce){.journey-thread{--journey-progress:1}.journey-thread__sparkle{animation:none;opacity:.2;transform:none}}
+</style>

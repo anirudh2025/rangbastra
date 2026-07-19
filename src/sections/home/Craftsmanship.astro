@@ -3,11 +3,15 @@ import Section from "../../components/primitives/Section.astro";
 import Container from "../../components/primitives/Container.astro";
 import CraftsmanshipHeader from "../../components/craftsmanship/CraftsmanshipHeader.astro";
 import CraftsmanshipList from "../../components/craftsmanship/CraftsmanshipList.astro";
+import { signatureCustomizationImage } from "../../data/signatureCustomization";
 ---
 
 <Section id="craftsmanship" class="craftsmanship-section">
   <Container class="craftsmanship-container">
-    <CraftsmanshipHeader />
+    <div class="craftsmanship-intro">
+      <CraftsmanshipHeader />
+      <figure class="craftsmanship-portrait"><img src={signatureCustomizationImage.src} alt={signatureCustomizationImage.alt} width="900" height="1200" loading="lazy" decoding="async" /></figure>
+    </div>
 
     <CraftsmanshipList />
   </Container>
@@ -19,6 +23,10 @@ import CraftsmanshipList from "../../components/craftsmanship/CraftsmanshipList.
 
     overflow: hidden;
   }
+
+  .craftsmanship-intro{display:grid;gap:var(--section-rhythm-content);}
+  .craftsmanship-portrait{overflow:hidden;width:min(100%,23rem);aspect-ratio:1;border:0;justify-self:start;background:var(--obsidian-900);mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='black' d='M13 8C29-3 43 10 57 5c18-7 36 5 38 22 2 15-12 20-8 35 5 19-11 35-29 31-15-4-24 9-39-2C5 81 13 68 7 54 0 38-2 19 13 8Z'/%3E%3C/svg%3E") center/100% 100% no-repeat;}
+  .craftsmanship-portrait img{width:100%;height:100%;object-fit:cover;}
 
   :global(.craftsmanship-container) {
     --container-default: var(--container-wide);
@@ -37,12 +45,15 @@ import CraftsmanshipList from "../../components/craftsmanship/CraftsmanshipList.
       grid-template-columns: 1fr;
       gap: var(--space-8);
     }
+    .craftsmanship-intro{grid-template-columns:minmax(0,1fr) minmax(13rem,.45fr);align-items:center;}
   }
 
   @media (max-width: 767px) {
     :global(.craftsmanship-section) {
       --section-padding-block: clamp(var(--space-9), 18vw, var(--space-12));
     }
+    .craftsmanship-intro{grid-template-columns:1fr;}
+    .craftsmanship-portrait{width:min(82vw,20rem);}
 
     :global(.craftsmanship-container) {
       --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));

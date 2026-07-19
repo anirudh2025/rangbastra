@@ -20,9 +20,8 @@ import SignatureCustomizationPrinciple from "./SignatureCustomizationPrinciple.a
   .principles {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: clamp(var(--space-4), 2vw, var(--space-6));
-    row-gap: clamp(var(--space-4), 2vw, var(--space-6));
-    column-gap: clamp(var(--space-4), 2vw, var(--space-6));
+    gap:clamp(var(--space-5),3vw,var(--space-7));
+    padding:clamp(var(--space-4),2vw,var(--space-6));
     align-items: stretch;
   }
 
@@ -32,17 +31,17 @@ import SignatureCustomizationPrinciple from "./SignatureCustomizationPrinciple.a
 
   .principles :global(.principle:nth-child(2)) {
     grid-column: 6 / span 7;
-    margin-top: var(--space-6);
+    margin-top:0;
   }
 
   .principles :global(.principle:nth-child(3)) {
     grid-column: 2 / span 6;
-    margin-top: calc(var(--space-6) * -1);
+    margin-top:0;
   }
 
   .principles :global(.principle:nth-child(4)) {
     grid-column: 8 / span 5;
-    margin-top: var(--space-6);
+    margin-top:0;
   }
 
   @media (max-width: 1023px) {

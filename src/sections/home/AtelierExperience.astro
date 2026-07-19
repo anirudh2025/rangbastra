@@ -16,39 +16,10 @@ import AtelierTimeline from "../../components/atelier/AtelierTimeline.astro";
 <style>
   :global(.atelier-experience-section) {
     --section-padding-block: clamp(var(--space-10), 10vw, var(--space-13));
-    --atelier-background-image: url("https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp");
-    --atelier-background-image-opacity: .08;
-
     overflow: hidden;
-    background:
-      radial-gradient(circle at 50% 42%, rgba(106, 78, 66, .18), transparent 42%),
-      linear-gradient(180deg, var(--obsidian-1000), rgba(0, 0, 0, .94) 44%, var(--obsidian-1000)),
-      #000000;
-    isolation: isolate;
+    background:transparent;
   }
 
-  :global(.atelier-experience-section)::before,
-  :global(.atelier-experience-section)::after {
-    content: "";
-    position: absolute;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  :global(.atelier-experience-section)::before {
-    inset: 0;
-    background: var(--atelier-background-image) center / cover no-repeat;
-    opacity: var(--atelier-background-image-opacity);
-    filter: saturate(.78) contrast(1.08);
-  }
-
-  :global(.atelier-experience-section)::after {
-    inset: 0;
-    background:
-      linear-gradient(180deg, rgba(0, 0, 0, .82), transparent 38%, rgba(0, 0, 0, .88)),
-      radial-gradient(circle at 50% 48%, rgba(181, 147, 130, .1), transparent 42%);
-    opacity: .92;
-  }
 
   :global(.atelier-experience-container) {
     --container-default: var(--container-wide);
@@ -64,7 +35,6 @@ import AtelierTimeline from "../../components/atelier/AtelierTimeline.astro";
   @media (max-width: 767px) {
     :global(.atelier-experience-section) {
       --section-padding-block: clamp(var(--space-9), 18vw, var(--space-12));
-      --atelier-background-image-opacity: .06;
     }
 
     :global(.atelier-experience-container) {

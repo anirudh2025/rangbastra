@@ -30,11 +30,11 @@ const currentYear = new Date().getFullYear();
           <Label icon="designer" iconSize={14}>Design Your Outfit</Label>
         </Button>
 
-        <Button href={contact.instagramUrl} target="_blank" class="footer-secondary">
+        <Button href={contact.instagramUrl} target="_blank" class="footer-secondary" variant="instagram">
           <Label icon="instagram" iconSize={14}>Visit Instagram</Label>
         </Button>
 
-        <Button href={getWhatsAppHref("homepage")} target="_blank" class="footer-secondary">
+        <Button href={getWhatsAppHref("homepage")} target="_blank" class="footer-secondary" variant="whatsapp">
           <Label icon="whatsapp" iconSize={14}>Message WhatsApp</Label>
         </Button>
       </div>
@@ -84,7 +84,7 @@ const currentYear = new Date().getFullYear();
         <p>Handcrafted for timeless celebrations.</p>
       </div>
 
-      <p class="copyright">&copy; {currentYear}</p>
+      <p class="copyright">&copy; {currentYear} Rangbastra</p>
     </div>
 
     <p class="footer-credit">Digital Experience by Cloutora</p>
@@ -116,8 +116,7 @@ const currentYear = new Date().getFullYear();
       ),
       radial-gradient(circle at 10% 82%, rgba(181, 147, 130, .07), transparent 30%),
       radial-gradient(circle at 92% 72%, rgba(106, 78, 66, .08), transparent 32%),
-      var(--footer-background);
-    isolation: isolate;
+      rgba(0,0,0,.28);
   }
 
   .site-footer::before,
@@ -175,7 +174,8 @@ const currentYear = new Date().getFullYear();
     max-width: min(100%, 58rem);
     color: var(--text-primary);
     font-family: var(--font-display);
-    font-weight: var(--weight-light);
+    font-weight: var(--weight-editorial);
+    font-synthesis: none;
     text-align: center;
     text-wrap: balance;
   }
@@ -226,6 +226,10 @@ const currentYear = new Date().getFullYear();
     background: var(--gradient-primary);
     isolation: isolate;
   }
+
+  :global(.footer-secondary.button--instagram){background:linear-gradient(135deg,#515BD4 0%,#8134AF 28%,#DD2A7B 58%,#F58529 100%);background-clip:padding-box;color:#fff;border-color:transparent;box-shadow:none;}
+  :global(.footer-secondary.button--whatsapp){background:linear-gradient(135deg,#128C7E 0%,#1dad68 58%,#25D366 100%);background-clip:padding-box;color:#fff;border-color:rgba(37,211,102,.48);box-shadow:none;}
+  :global(.footer-secondary.button--instagram:hover),:global(.footer-secondary.button--whatsapp:hover){color:#fff;box-shadow:none;}
 
   :global(.footer-primary:hover),
   :global(.footer-primary:focus-visible) {

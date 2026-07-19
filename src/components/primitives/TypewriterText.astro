@@ -1,0 +1,89 @@
+---
+interface Props {
+  text: string;
+  class?: string;
+}
+const { text, class: className = "" } = Astro.props;
+---
+
+<span
+  class:list={["typewriter-text", className]}
+  data-typewriter
+  aria-label={text}
+>
+  <span class="typewriter-text__reserve" aria-hidden="true">{text}</span><span
+    class="typewriter-text__output"
+    data-typewriter-output
+    aria-hidden="true">{text}</span
+  >
+</span>
+<script>
+  const initTypewriters = () =>
+    document
+      .querySelectorAll<HTMLElement>("[data-typewriter]")
+      .forEach((root) => {
+        if (root.dataset.ready) return;
+        root.dataset.ready = "true";
+        const output = root.querySelector<HTMLElement>(
+          "[data-typewriter-output]",
+        );
+        if (!output || matchMedia("(prefers-reduced-motion: reduce)").matches)
+          return;
+        const text = root.getAttribute("aria-label") ?? "";
+        new IntersectionObserver(
+          ([entry], observer) => {
+            if (!entry.isIntersecting || entry.intersectionRatio < 0.45) return;
+            observer.disconnect();
+            output.textContent = "";
+            root.classList.add("is-typing");
+            let index = 0;
+            const write = () => {
+              output.textContent = text.slice(0, ++index);
+              if (index < text.length) window.setTimeout(write, 28);
+              else root.classList.remove("is-typing");
+            };
+            write();
+          },
+          { threshold: [0.45] },
+        ).observe(root);
+      });
+  initTypewriters();
+  document.addEventListener("astro:page-load", initTypewriters);
+</script>
+<style>
+  .typewriter-text {
+    display: inline-grid;
+    position: relative;
+  }
+  .typewriter-text__reserve,
+  .typewriter-text__output {
+    grid-area: 1/1;
+  }
+  .typewriter-text__reserve {
+    visibility: hidden;
+  }
+  .typewriter-text__output::after {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    margin-left: 0.14em;
+    background: rgb(var(--cocoa-rgb));
+    opacity: 0;
+    vertical-align: -0.12em;
+  }
+  .is-typing .typewriter-text__output::after {
+    opacity: 0.72;
+    animation: typewriter-cursor 0.9s steps(1, end) infinite;
+  }
+  @keyframes typewriter-cursor {
+    50% {
+      opacity: 0.16;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .typewriter-text__output::after {
+      display: none;
+    }
+  }
+</style>

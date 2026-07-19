@@ -1,5 +1,4 @@
 ---
-
 import Logo from "./Logo.astro";
 import DesktopNav from "./DesktopNav.astro";
 import MobileNav from "./MobileNav.astro";
@@ -8,53 +7,34 @@ import MobileMenuButton from "./MobileMenuButton.astro";
 import UtilityNav from "./UtilityNav.astro";
 
 import { navigation as navigationItems } from "../../data/navigation";
-
 ---
 
-<header
-  class="navbar"
-  data-navbar
-  data-menu-open="false"
->
-  <nav
-    class="navbar__inner"
-    aria-label="Primary Navigation"
-  >
+<header class="navbar" data-navbar data-menu-open="false">
+  <nav class="navbar__inner" aria-label="Primary Navigation">
     <div class="navbar__header">
-
-      <a
-        href="/"
-        class="navbar__brand"
-        aria-label="Rangbastra Home"
-      >
+      <a href="/" class="navbar__brand" aria-label="Rangbastra Home">
         <Logo />
       </a>
 
-      <DesktopNav
-        items={navigationItems}
-      />
+      <DesktopNav items={navigationItems} />
 
       <div class="navbar__actions">
-
         <UtilityNav />
 
         <CTAButton />
 
         <MobileMenuButton />
-
       </div>
-
     </div>
 
-    <MobileNav
-      items={navigationItems}
-    />
-
+    <MobileNav items={navigationItems} />
   </nav>
 </header>
 
 <script>
   import { initializeNavbar } from "../../lib/navigation/navbar";
+  import { initAccountNavigation } from "../../lib/auth/accountNavigation";
 
   initializeNavbar();
+  initAccountNavigation();
 </script>

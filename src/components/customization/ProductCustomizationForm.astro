@@ -1,0 +1,565 @@
+---
+import type { CouturePiece } from "../../data/couture";
+import ProductPalette from "./ProductPalette.astro";
+import CoutureSelect from "../forms/CoutureSelect.astro";
+import Button from "../primitives/Button.astro";
+import Label from "../primitives/Label.astro";
+interface Props {
+  product: CouturePiece;
+  endpoint?: string;
+}
+const { product, endpoint = "" } = Astro.props;
+const contactOptions = ["WhatsApp", "Phone Call", "Video Call", "Email"].map(
+  (value) => ({
+    value: value.toLowerCase().replaceAll(" ", "-"),
+    label: value,
+  }),
+);
+const appointmentOptions = [
+  "Video consultation",
+  "Phone consultation",
+  "Studio visit",
+  "WhatsApp conversation",
+].map((value) => ({
+  value: value.toLowerCase().replaceAll(" ", "-"),
+  label: value,
+}));
+const occasions = [
+  "Wedding",
+  "Reception",
+  "Engagement",
+  "Festive celebration",
+  "Other",
+].map((value) => ({
+  value: value.toLowerCase().replaceAll(" ", "-"),
+  label: value,
+}));
+---
+
+<form
+  class="customization-form"
+  data-customization-form
+  data-endpoint={endpoint}
+  novalidate
+>
+  <input type="hidden" name="productId" value={product.id} /><input
+    type="hidden"
+    name="productSlug"
+    value={product.slug}
+  /><input type="hidden" name="productName" value={product.name} />
+  <section class="form-section" aria-labelledby="colour-heading">
+    <h2 id="colour-heading">Product direction</h2><ProductPalette
+      palette={product.palette}
+    /><label class="field"
+      ><span>Requested custom colour</span><input
+        name="requestedColour"
+        placeholder="Optional colour, tone or reference"
+      /></label
+    ><label class="field"
+      ><span>Fabric and detail preferences</span><textarea
+        name="detailPreferences"
+        rows="3"
+        placeholder="Tell the atelier what you would preserve or reinterpret."
+      ></textarea></label
+    >
+  </section>
+  <section class="form-section" aria-labelledby="customer-heading">
+    <h2 id="customer-heading">About you</h2><div class="field-grid">
+      <label class="field"
+        ><span>Full name</span><input
+          name="fullName"
+          autocomplete="name"
+          required
+        /></label
+      ><label class="field"
+        ><span>Email</span><input
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+        /></label
+      ><label class="field"
+        ><span>Phone / WhatsApp</span><input
+          name="phone"
+          type="tel"
+          autocomplete="tel"
+          required
+        /></label
+      ><label class="field"
+        ><span>City and country</span><input
+          name="location"
+          autocomplete="address-level2 country-name"
+          required
+        /></label
+      ><CoutureSelect
+        name="contactPreference"
+        label="Preferred contact method"
+        options={contactOptions}
+        required
+      />
+    </div>
+  </section>
+  <section class="form-section" aria-labelledby="event-heading">
+    <h2 id="event-heading">Your occasion</h2><div class="field-grid">
+      <CoutureSelect
+        name="occasion"
+        label="Occasion"
+        options={occasions}
+        required
+      /><label class="field"
+        ><span>Event date</span><input name="eventDate" type="date" /></label
+      ><label class="field"
+        ><span>Delivery needed by</span><input
+          name="deliveryDate"
+          type="date"
+          required
+        /></label
+      ><CoutureSelect
+        name="appointmentPreference"
+        label="Appointment preference"
+        options={appointmentOptions}
+      />
+    </div>
+  </section>
+  <section class="form-section" aria-labelledby="measurement-heading">
+    <h2 id="measurement-heading">Size and measurements</h2><div
+      class="method-grid"
+    >
+      {
+        [
+          { v: "standard", t: "Standard size" },
+          { v: "manual", t: "Enter measurements" },
+          { v: "upload", t: "Upload measurement sheet" },
+          { v: "assistance", t: "Request assistance" },
+        ].map((item, index) => (
+          <label data-selection-sound>
+            <>
+              <input
+                type="radio"
+                name="measurementMethod"
+                value={item.v}
+                checked={index === 0}
+              />
+              <span>{item.t}</span>
+            </>
+          </label>
+        ))
+      }
+    </div><div class="field-grid measurements" data-manual-measurements>
+      <CoutureSelect
+        name="measurementUnit"
+        label="Measurement unit"
+        options={[
+          { value: "cm", label: "Centimetres (cm)" },
+          { value: "in", label: "Inches (in)" },
+        ]}
+      />{
+        [
+          "Bust",
+          "Waist",
+          "Hip",
+          "Shoulder",
+          "Blouse length",
+          "Sleeve length",
+          "Lehenga / skirt length",
+          "Height",
+        ].map((label) => (
+          <label class="field">
+            <>
+              <span>{label}</span>
+              <input
+                name={`measurement_${label.toLowerCase().replaceAll(" ", "_").replaceAll("/", "")}`}
+                type="number"
+                min="1"
+                max="300"
+                step="0.1"
+                inputmode="decimal"
+              />
+            </>
+          </label>
+        ))
+      }
+    </div>
+  </section>
+  <section class="form-section" aria-labelledby="upload-heading">
+    <h2 id="upload-heading">Private references</h2><div class="field-grid">
+      <label class="field upload"
+        ><span>Measurement sheet</span><input
+          name="measurementSheet"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,application/pdf"
+        /><small>JPG, PNG, WebP or PDF. Maximum 8 MB.</small></label
+      ><label class="field upload"
+        ><span>Reference and inspiration images</span><input
+          name="references"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+        /><small>Up to 5 images, 8 MB each.</small></label
+      >
+    </div>
+  </section>
+  <section class="form-section" aria-labelledby="final-heading">
+    <h2 id="final-heading">Final details</h2><label class="field"
+      ><span>Personal notes</span><textarea name="notes" rows="5"
+      ></textarea></label
+    ><label class="consent"
+      ><input name="contactConsent" type="checkbox" required /><span
+        >I consent to Rangbastra contacting me about this customization request.</span
+      ></label
+    ><label class="consent"
+      ><input name="marketingConsent" type="checkbox" /><span
+        >I would also like occasional Rangbastra updates. Optional and unchecked
+        by default.</span
+      ></label
+    ><div class="review" aria-live="polite">
+      <strong>Request summary</strong><p>
+        <span class="signature-product-name">{product.name}</span> · <span
+          data-review-palette>{product.palette[0]?.name}</span
+        > · <span>{product.makingTime ?? "Timeline confirmed privately"}</span>
+      </p>
+    </div>
+  </section>
+  <div class="submit-row">
+    <Button type="submit"
+      ><Label icon="confidentialDiscussion">Send Private Request</Label></Button
+    ><p>
+      Uploads remain private. Your form stays intact if a recoverable submission
+      error occurs.
+    </p>
+  </div>
+  <div class="form-error-summary" role="alert" tabindex="-1" hidden></div>
+  <p class="form-status" role="status" aria-live="polite"></p>
+</form>
+<div
+  class="success-dialog"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="success-title"
+  hidden
+  data-success-dialog
+>
+  <div class="success-dialog__panel">
+    <span class="success-check" aria-hidden="true">✓</span><h2
+      id="success-title"
+    >
+      Your story has been received.
+    </h2><p>
+      Thank you for trusting Rangbastra. Your designer will respond privately
+      within 24 hours.
+    </p><p class="success-reference" data-success-reference></p><div>
+      <button type="button" data-success-close>Close</button><a href="/account"
+        >View Account</a>
+    </div>
+  </div>
+</div>
+<script>
+  document
+    .querySelectorAll<HTMLFormElement>("[data-customization-form]")
+    .forEach((form) => {
+      if (form.dataset.ready) return;
+      form.dataset.ready = "true";
+      const status = form.querySelector<HTMLElement>(".form-status"),
+        summary = form.querySelector<HTMLElement>("[data-review-palette]"),
+        errorSummary = form.querySelector<HTMLElement>(".form-error-summary"),
+        dialog = document.querySelector<HTMLElement>("[data-success-dialog]"),
+        closeButton = dialog?.querySelector<HTMLButtonElement>(
+          "[data-success-close]",
+        ),
+        reference = dialog?.querySelector<HTMLElement>(
+          "[data-success-reference]",
+        );
+      let submitting = false,
+        lastFocus: HTMLElement | null = null;
+      const closeDialog = () => {
+        if (!dialog) return;
+        dialog.hidden = true;
+        document.body.style.overflow = "";
+        lastFocus?.focus();
+      };
+      closeButton?.addEventListener("click", closeDialog);
+      dialog?.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeDialog();
+        if (event.key === "Tab") {
+          const controls = [
+            ...dialog.querySelectorAll<HTMLElement>("button,a[href]"),
+          ];
+          if (!controls.length) return;
+          const first = controls[0],
+            last = controls.at(-1)!;
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      });
+      form
+        .querySelectorAll<HTMLInputElement>("[name=paletteId]")
+        .forEach((input) =>
+          input.addEventListener("change", () => {
+            if (input.checked && summary)
+              summary.textContent = input.dataset.paletteName ?? input.value;
+          }),
+        );
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        status!.textContent = "";
+        if (submitting) return;
+        if (!form.checkValidity()) {
+          const invalid = form.querySelector<HTMLElement>(":invalid");
+          errorSummary!.hidden = false;
+          errorSummary!.textContent =
+            "Please complete the highlighted required details before sending your story.";
+          invalid?.focus();
+          window.RangbastraAudio?.error();
+          return;
+        }
+        errorSummary!.hidden = true;
+        const endpoint = form.dataset.endpoint;
+        if (!endpoint) {
+          status!.textContent =
+            "Your request is ready. Connect Supabase credentials to activate secure submission.";
+          return;
+        }
+        const data = new FormData(form);
+        const files = [
+          ...form.querySelectorAll<HTMLInputElement>("input[type=file]"),
+        ].flatMap((input) => [...(input.files ?? [])]);
+        if (files.some((file) => file.size > 8 * 1024 * 1024)) {
+          status!.textContent = "Each upload must be 8 MB or smaller.";
+          window.RangbastraAudio?.error();
+          return;
+        }
+        submitting = true;
+        const submit = form.querySelector<HTMLButtonElement>(
+          "button[type=submit]",
+        );
+        if (submit) submit.disabled = true;
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            body: data,
+          });
+          const result = await response.json();
+          if (!response.ok)
+            throw new Error(result.error ?? "Submission failed");
+          form.dataset.submitted = "true";
+          status!.textContent = `Your private request has been received. Reference ${result.reference}.`;
+          if (reference)
+            reference.textContent = `Reference ${result.reference}`;
+          if (dialog) {
+            lastFocus = document.activeElement as HTMLElement;
+            dialog.hidden = false;
+            document.body.style.overflow = "hidden";
+            closeButton?.focus();
+          }
+          window.RangbastraAudio?.success();
+        } catch (error) {
+          status!.textContent =
+            error instanceof Error
+              ? error.message
+              : "Please try again. Your details remain in the form.";
+          errorSummary!.hidden = false;
+          errorSummary!.textContent =
+            "We could not send your request. Your details are preserved below.";
+          errorSummary!.focus();
+          window.RangbastraAudio?.error();
+          submitting = false;
+          if (submit) submit.disabled = false;
+        }
+      });
+    });
+</script>
+<style>
+  .customization-form {
+    display: grid;
+    gap: 1rem;
+  }
+  .form-section {
+    display: grid;
+    gap: 1.2rem;
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-lg);
+    background: rgba(5, 5, 5, 0.98);
+  }
+  .form-section h2 {
+    color: var(--ivory-100);
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+  }
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.45rem;
+  }
+  .field > span,
+  .consent {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+  }
+  .field input,
+  .field textarea {
+    width: 100%;
+    min-height: 3.2rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-md);
+    background: #080808;
+    color: var(--ivory-100);
+  }
+  .field textarea {
+    resize: vertical;
+  }
+  .field input:focus,
+  .field textarea:focus {
+    outline: 1px solid var(--cocoa-300);
+    outline-offset: 2px;
+  }
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.7rem;
+  }
+  .method-grid input {
+    position: absolute;
+    opacity: 0;
+  }
+  .method-grid span {
+    display: grid;
+    min-height: 4rem;
+    place-items: center;
+    padding: 0.7rem;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-md);
+    background: #080808;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+  .method-grid input:checked + span {
+    border-color: var(--cocoa-border-strong);
+    color: var(--ivory-100);
+    box-shadow: inset 0 0 0 1px rgba(var(--cocoa-rgb), 0.25);
+  }
+  .consent {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+  }
+  .consent input {
+    margin-top: 0.15rem;
+    accent-color: rgb(var(--cocoa-rgb));
+  }
+  .review {
+    padding: 1rem;
+    border-left: 2px solid rgb(var(--cocoa-rgb));
+    background: #090909;
+  }
+  .signature-product-name {
+    font-family: var(--font-signature);
+    font-weight: 400;
+    font-synthesis: none;
+    line-height: 1.3;
+  }
+  .submit-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+    padding: 1rem;
+  }
+  .submit-row p {
+    font-size: 0.76rem;
+  }
+  .form-status {
+    min-height: 1.5rem;
+    color: var(--cocoa-300);
+  }
+  .form-error-summary {
+    padding: 1rem;
+    border: 1px solid rgba(177, 55, 68, 0.6);
+    border-radius: var(--radius-md);
+    background: rgba(78, 12, 22, 0.35);
+    color: #f1c4c9;
+  }
+  .success-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(12px);
+  }
+  .success-dialog[hidden] {
+    display: none;
+  }
+  .success-dialog__panel {
+    width: min(34rem, 100%);
+    padding: clamp(1.5rem, 5vw, 3rem);
+    border: 1px solid var(--cocoa-border);
+    border-radius: var(--radius-lg);
+    background: #070707;
+    text-align: center;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.65);
+  }
+  .success-check {
+    display: grid;
+    width: 4rem;
+    aspect-ratio: 1;
+    place-items: center;
+    margin: 0 auto 1rem;
+    border: 1px solid var(--cocoa-border-strong);
+    border-radius: 50%;
+    color: var(--cocoa-300);
+    font-size: 2rem;
+    animation: success-check-in 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .success-dialog h2 {
+    color: var(--ivory-100);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.4rem);
+  }
+  .success-reference {
+    margin: 1rem auto;
+    color: var(--cocoa-300);
+  }
+  .success-dialog__panel > div {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .success-dialog button,
+  .success-dialog a {
+    min-height: 44px;
+    padding: 0.8rem 1.2rem;
+    border: 1px solid var(--cocoa-border);
+    border-radius: var(--radius-md);
+    background: #0b0909;
+    color: var(--ivory-100);
+  }
+  @keyframes success-check-in {
+    from {
+      opacity: 0;
+      transform: scale(0.55) rotate(-18deg);
+    }
+  }
+  @media (max-width: 760px) {
+    .field-grid,
+    .method-grid {
+      grid-template-columns: 1fr;
+    }
+    .submit-row {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

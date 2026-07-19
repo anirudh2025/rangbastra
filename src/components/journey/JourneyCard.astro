@@ -33,7 +33,7 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
 ---
 
 <article class:list={["journey-card", `journey-card--reveal-${revealSide}`]}>
-  <span class="milestone" aria-hidden="true"></span>
+  <span class="milestone" data-timeline-milestone aria-hidden="true"></span>
 
   <div class="image-panel" aria-hidden="true">
     <img
@@ -52,12 +52,7 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     <span class="step">{String(step).padStart(2, "0")}</span>
 
     <div class="icon-wrapper" aria-hidden="true">
-      <Icon
-        name={icon}
-        size={34}
-        color="currentColor"
-        class="journey-icon"
-      />
+      <Icon name={icon} size={34} color="currentColor" class="journey-icon" />
     </div>
 
     <div class="content">
@@ -76,7 +71,7 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     --journey-card-min-height: clamp(22rem, 33vw, 29rem);
     --journey-step-size: clamp(4rem, 7vw, 7rem);
 
-    --journey-line-gap: var(--space-7);
+    --journey-line-gap: var(--timeline-gutter, var(--space-7));
     --journey-image-width: min(38rem, 42vw);
     --journey-dot-size: var(--space-3);
 
@@ -90,13 +85,21 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     z-index: 5;
     width: var(--journey-dot-size);
     height: var(--journey-dot-size);
-    border: 1px solid var(--border-accent);
+    border: 1px solid var(--cocoa-border-soft);
     border-radius: var(--radius-circle);
     background: var(--obsidian-1000);
-    box-shadow:
-      0 0 0 var(--space-2) rgba(181, 147, 130, .10),
-      0 0 22px rgba(181, 147, 130, .22);
-    opacity: .9;
+    box-shadow: none;
+    opacity: 0.9;
+  }
+  .milestone.is-complete {
+    border-color: var(--cocoa-border);
+    background: rgb(var(--cocoa-rgb));
+    box-shadow: 0 0 4px var(--cocoa-glow-soft);
+  }
+  .milestone.is-current {
+    border-color: var(--cocoa-border-strong);
+    background: rgb(var(--cocoa-rgb));
+    box-shadow: 0 0 5px var(--cocoa-glow-soft);
   }
 
   :global(.timeline-item--left) .milestone {
@@ -120,11 +123,9 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     gap: var(--space-6);
     padding: var(--journey-card-padding);
     padding-bottom: clamp(var(--space-5), 2.4vw, var(--space-7));
-    border: 1px solid var(--border-default);
+    border: 1px solid var(--cocoa-border-soft);
     border-radius: var(--radius-2xl);
-    background:
-      var(--gradient-obsidian),
-      var(--gradient-obsidian);
+    background: var(--obsidian-1000);
     box-shadow: var(--shadow-none);
     transition:
       transform var(--motion-medium) var(--ease-luxury),
@@ -137,26 +138,58 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     position: absolute;
     inset: 0;
     z-index: -1;
-    background:
-      radial-gradient(circle at 18% 12%, rgba(181, 147, 130, .13), transparent 38%),
-      radial-gradient(circle at 88% 86%, rgba(106, 78, 66, .18), transparent 46%);
-    opacity: .5;
+    background-image: radial-gradient(
+      circle at 25% 30%,
+      rgba(255, 255, 255, 0.08) 0 0.5px,
+      transparent 0.8px
+    );
+    background-size: 9px 9px;
+    opacity: 0.24;
+    transition: opacity var(--motion-medium) var(--ease-luxury);
+  }
+  .card-surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    border: 1px solid transparent;
+    border-radius: inherit;
+    background: linear-gradient(
+        135deg,
+        var(--cocoa-700),
+        var(--cocoa-400),
+        var(--cocoa-600)
+      )
+      border-box;
+    mask:
+      linear-gradient(#000 0 0) padding-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask:
+      linear-gradient(#000 0 0) padding-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    opacity: 0;
+    pointer-events: none;
     transition: opacity var(--motion-medium) var(--ease-luxury);
   }
 
   .journey-card:hover .card-surface,
   .journey-card:focus-within .card-surface {
     transform: translate3d(0, var(--motion-card-lift), 0);
-    border-color: var(--border-strong);
+    border-color: var(--cocoa-border-strong);
     box-shadow:
-      0 22px 54px rgba(0, 0, 0, .34),
-      0 0 28px rgba(181, 147, 130, .10),
-      inset 0 1px 0 rgba(255, 255, 255, .05);
+      inset 0 0 8px rgba(var(--cocoa-rgb), 0.06),
+      inset 0 1px rgba(255, 255, 255, 0.04);
   }
 
   .journey-card:hover .card-surface::before,
   .journey-card:focus-within .card-surface::before {
-    opacity: .58;
+    opacity: 0.58;
+  }
+  .journey-card:hover .card-surface::after,
+  .journey-card:focus-within .card-surface::after {
+    opacity: 1;
   }
 
   .image-panel {
@@ -169,7 +202,7 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-2xl);
     background: var(--surface-raised);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, .3);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
     opacity: 0;
     pointer-events: none;
     will-change: transform, opacity;
@@ -183,12 +216,12 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
 
   .journey-card--reveal-right .image-panel {
     left: calc(100% + (var(--journey-line-gap) * 2));
-    transform: translate3d(-14%, 0, 0) scale(.98);
+    transform: translate3d(-14%, 0, 0) scale(0.98);
   }
 
   .journey-card--reveal-left .image-panel {
     right: calc(100% + (var(--journey-line-gap) * 2));
-    transform: translate3d(14%, 0, 0) scale(.98);
+    transform: translate3d(14%, 0, 0) scale(0.98);
   }
 
   .journey-card:hover .image-panel,
@@ -201,7 +234,11 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.34));
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.08),
+      rgba(0, 0, 0, 0.34)
+    );
   }
 
   .image-panel img {
@@ -224,7 +261,8 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     color: var(--cocoa-400);
     font-family: var(--font-display);
     font-size: var(--journey-step-size);
-    font-weight: var(--weight-light);
+    font-weight: var(--weight-editorial);
+    font-synthesis: none;
     line-height: 1;
     transition:
       color var(--motion-medium) var(--ease-luxury),
@@ -233,11 +271,8 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
 
   .journey-card:hover .step,
   .journey-card:focus-within .step {
-    color: var(--sand-300);
-    text-shadow:
-      0 0 8px rgba(181, 147, 130, .42),
-      0 0 22px rgba(181, 147, 130, .22),
-      0 0 42px rgba(181, 147, 130, .12);
+    color: var(--ivory-100);
+    text-shadow: 0 0 7px var(--cocoa-glow);
   }
 
   .icon-wrapper {
@@ -245,11 +280,11 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     width: clamp(var(--space-8), 5vw, var(--space-10));
     height: clamp(var(--space-8), 5vw, var(--space-10));
     place-items: center;
-    border: 1px solid var(--border-default);
+    border: 1px solid var(--cocoa-border-soft);
     border-radius: var(--radius-circle);
     background: var(--surface-glass);
-    color: var(--sand-300);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+    color: rgb(var(--cocoa-rgb));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transition:
       transform var(--motion-medium) var(--ease-luxury),
       border-color var(--motion-medium) var(--ease-luxury),
@@ -260,11 +295,9 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
   .journey-card:hover .icon-wrapper,
   .journey-card:focus-within .icon-wrapper {
     transform: scale(var(--motion-icon-scale));
-    border-color: var(--border-strong);
+    border-color: var(--cocoa-border-strong);
     color: var(--ivory-100);
-    box-shadow:
-      0 0 16px rgba(181, 147, 130, .16),
-      inset 0 1px 0 rgba(255, 255, 255, .08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .content {
@@ -277,7 +310,8 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     color: var(--text-primary);
     font-family: var(--font-display);
     font-size: clamp(1.65rem, 2.4vw, 2.6rem);
-    font-weight: var(--weight-light);
+    font-weight: var(--weight-editorial);
+    font-synthesis: none;
     line-height: var(--leading-heading);
     letter-spacing: var(--tracking-title);
     text-wrap: balance;
@@ -340,7 +374,7 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
       width: auto;
       height: var(--journey-mobile-image-height);
       aspect-ratio: 16 / 10;
-      opacity: .82;
+      opacity: 0.82;
       transform: translate3d(0, 0, 0) scale(1);
     }
 

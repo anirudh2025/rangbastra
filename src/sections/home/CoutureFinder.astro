@@ -1,0 +1,572 @@
+---
+import Section from "../../components/primitives/Section.astro";
+import Container from "../../components/primitives/Container.astro";
+import Eyebrow from "../../components/primitives/Eyebrow.astro";
+import TypewriterText from "../../components/primitives/TypewriterText.astro";
+import {
+  getCloudinaryImageUrl,
+  getProductCoverImage,
+  getPublishedCouturePieces,
+} from "../../lib/couture";
+const products = getPublishedCouturePieces();
+const steps = [
+  {
+    key: "occasion",
+    question: "What are you dressing for?",
+    options: [
+      ["Bridal", "Wedding"],
+      ["Reception", "Reception"],
+      ["Engagement", "Engagement"],
+      ["Festive", "Festive"],
+      ["Intimate", "Intimate celebration"],
+      ["Custom Couture", "Something entirely your own"],
+    ],
+  },
+  {
+    key: "feeling",
+    question: "How do you want to feel?",
+    options: [
+      ["Regal", "Regal"],
+      ["Effortless", "Effortless"],
+      ["Unforgettable", "Unforgettable"],
+      ["Contemporary", "Contemporary"],
+      ["Romantic", "Softly romantic"],
+      ["Powerful", "Powerful"],
+    ],
+  },
+  {
+    key: "detail",
+    question: "What draws you first?",
+    options: [
+      ["Silhouette", "Silhouette"],
+      ["Embroidery", "Embroidery"],
+      ["Colour", "Colour"],
+      ["Movement", "Movement"],
+      ["Heritage", "Heritage"],
+      ["Restraint", "Modern restraint"],
+    ],
+  },
+];
+---
+
+<Section id="couture-finder" class="couture-finder-section">
+  <Container class="couture-finder-container">
+    <header class="finder-header">
+      <Eyebrow>A quiet place to begin</Eyebrow><h2>
+        Find Your <span class="heading-light-sweep">Couture Direction</span>
+      </h2><p>
+        <TypewriterText
+          text="Three thoughtful choices help us surface pieces worth exploring."
+        /> This is guidance, not a verdict—you remain in control.
+      </p>
+    </header>
+    <div class="finder" data-couture-finder>
+      <div class="finder-progress" aria-label="Couture finder progress">
+        <span data-progress-label>Question 1 of 3</span><span
+          class="progress-track"><i data-progress></i></span
+        >
+      </div>
+      {
+        steps.map((step, index) => (
+          <fieldset
+            data-finder-step={index}
+            data-selection-sound
+            hidden={index !== 0}
+          >
+            <>
+              <legend>{step.question}</legend>
+              <div class="choice-grid">
+                {step.options.map(([value, label]) => (
+                  <label>
+                    <input type="radio" name={step.key} value={value} />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
+            </>
+          </fieldset>
+        ))
+      }
+      <div class="finder-controls">
+        <button type="button" data-finder-back hidden>Back</button><button
+          type="button"
+          data-finder-next
+          disabled>Continue</button
+        >
+      </div>
+      <section
+        class="finder-results"
+        data-finder-results
+        hidden
+        aria-live="polite"
+      >
+        <div>
+          <Eyebrow>A direction shaped by your choices</Eyebrow><h3>
+            <TypewriterText text="Pieces to Begin With" />
+          </h3><p class="results-intro">
+            A considered edit shaped by the choices you just shared.
+          </p><p data-finder-reason></p>
+        </div><div class="result-grid">
+          {
+            products.map((product) => {
+              const cover = getProductCoverImage(product);
+              return (
+                <article
+                  data-finder-product
+                  data-slug={product.slug}
+                  data-category={product.category}
+                  data-style={product.style ?? ""}
+                  data-tags={product.craftTags.join(" ")}
+                  data-shade={product.shade ?? ""}
+                  hidden
+                >
+                  <>
+                    <img
+                      src={getCloudinaryImageUrl(cover.src, 520)}
+                      alt={cover.alt}
+                      width={cover.width ?? 432}
+                      height={cover.height ?? 540}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div>
+                      <>
+                        <span>
+                          {product.category} · {product.occasion}
+                        </span>
+                        <h4>{product.name}</h4>
+                        <p>{product.shortDescription}</p>
+                        <div>
+                          <>
+                            <a
+                              href={`/products/${product.slug}`}
+                              data-track="product_opened"
+                              data-product={product.slug}
+                            >
+                              Explore piece
+                            </a>
+                            <a
+                              href={product.customization.route}
+                              data-track="customization_started"
+                              data-product={product.slug}
+                            >
+                              Shape this around you
+                            </a>
+                          </>
+                        </div>
+                      </>
+                    </div>
+                  </>
+                </article>
+              );
+            })
+          }
+        </div><button type="button" data-finder-restart
+          ><svg aria-hidden="true" viewBox="0 0 24 24"
+            ><path d="M7 8H3V4M3.5 8A9 9 0 1 1 4 17"></path></svg
+          >BEGIN AGAIN</button
+        >
+      </section>
+    </div>
+  </Container>
+</Section>
+<script>
+  const initFinder = () =>
+    document
+      .querySelectorAll<HTMLElement>("[data-couture-finder]")
+      .forEach((root) => {
+        if (root.dataset.ready) return;
+        root.dataset.ready = "true";
+        const fieldsets = [
+            ...root.querySelectorAll<HTMLFieldSetElement>("[data-finder-step]"),
+          ],
+          next = root.querySelector<HTMLButtonElement>("[data-finder-next]")!,
+          back = root.querySelector<HTMLButtonElement>("[data-finder-back]")!,
+          results = root.querySelector<HTMLElement>("[data-finder-results]")!,
+          progress = root.querySelector<HTMLElement>("[data-progress]")!,
+          progressLabel = root.querySelector<HTMLElement>(
+            "[data-progress-label]",
+          )!,
+          reason = root.querySelector<HTMLElement>("[data-finder-reason]")!;
+        let step = 0;
+        const values: Record<string, string> = {};
+        const track = (name: string, detail: Record<string, string> = {}) =>
+          document.dispatchEvent(
+            new CustomEvent("rangbastra:analytics", {
+              detail: { name, ...detail },
+            }),
+          );
+        const sync = () => {
+          fieldsets.forEach((field, index) => (field.hidden = index !== step));
+          back.hidden = step === 0;
+          next.textContent =
+            step === fieldsets.length - 1 ? "See my direction" : "Continue";
+          next.disabled = !fieldsets[step]?.querySelector("input:checked");
+          progress.style.transform = `scaleX(${(step + 1) / fieldsets.length})`;
+          progressLabel.textContent = `Question ${step + 1} of ${fieldsets.length}`;
+        };
+        root.addEventListener("change", (event) => {
+          const input = event.target as HTMLInputElement;
+          if (!input.matches("input[type=radio]")) return;
+          values[input.name] = input.value;
+          next.disabled = false;
+        });
+        const score = (card: HTMLElement) => {
+          let total = 0;
+          const category = card.dataset.category ?? "",
+            style = (card.dataset.style ?? "").toLowerCase(),
+            tags = (card.dataset.tags ?? "").toLowerCase(),
+            shade = (card.dataset.shade ?? "").toLowerCase();
+          if (category === values.occasion) total += 7;
+          if (values.occasion === "Wedding" && category === "Bridal")
+            total += 7;
+          if (
+            values.occasion === "Intimate" &&
+            ["Festive", "Engagement"].includes(category)
+          )
+            total += 4;
+          if (
+            values.feeling === "Regal" &&
+            (/lehenga|anarkali|anaarkali/.test(style) || category === "Bridal")
+          )
+            total += 4;
+          if (
+            values.feeling === "Contemporary" &&
+            /gown|reception/.test(style + category.toLowerCase())
+          )
+            total += 4;
+          if (
+            values.feeling === "Romantic" &&
+            /rose|pink|blush|soft/.test(shade)
+          )
+            total += 3;
+          if (
+            values.feeling === "Powerful" &&
+            /gown|structured|plum|red/.test(style + shade)
+          )
+            total += 3;
+          if (
+            values.detail === "Embroidery" &&
+            /embroidery|handwork|bead|kasab/.test(tags)
+          )
+            total += 4;
+          if (values.detail === "Colour" && shade) total += 3;
+          if (
+            values.detail === "Heritage" &&
+            /heritage|banarasi|zardozi/.test(tags)
+          )
+            total += 4;
+          if (values.detail === "Silhouette" && style) total += 2;
+          return total;
+        };
+        const finish = () => {
+          fieldsets.forEach((field) => (field.hidden = true));
+          root.querySelector<HTMLElement>(".finder-controls")!.hidden = true;
+          results.hidden = false;
+          const cards = [
+            ...root.querySelectorAll<HTMLElement>("[data-finder-product]"),
+          ].sort((a, b) => score(b) - score(a));
+          cards.forEach((card, index) => (card.hidden = index >= 3));
+          reason.textContent = `For a ${values.feeling.toLowerCase()} ${values.occasion.toLowerCase()} direction led by ${values.detail.toLowerCase()}, these pieces offer a considered place to begin.`;
+          const url = new URL(location.href);
+          Object.entries(values).forEach(([key, value]) =>
+            url.searchParams.set(key, value),
+          );
+          history.replaceState({}, "", url);
+          try {
+            sessionStorage.setItem(
+              "rangbastraCoutureDirection",
+              JSON.stringify(values),
+            );
+          } catch {}
+          track("couture_finder_completed", values);
+        };
+        next.addEventListener("click", () => {
+          if (step < fieldsets.length - 1) {
+            window.RangbastraAudio?.progress();
+            step++;
+            sync();
+          } else finish();
+        });
+        back.addEventListener("click", () => {
+          step = Math.max(0, step - 1);
+          sync();
+        });
+        root
+          .querySelector("[data-finder-restart]")
+          ?.addEventListener("click", () => {
+            window.RangbastraAudio?.reset();
+            step = 0;
+            Object.keys(values).forEach((key) => delete values[key]);
+            root
+              .querySelectorAll<HTMLInputElement>("input")
+              .forEach((input) => (input.checked = false));
+            results.hidden = true;
+            root
+              .querySelectorAll<HTMLElement>("[data-finder-product]")
+              .forEach((card) => (card.hidden = true));
+            root.querySelector<HTMLElement>(".finder-controls")!.hidden = false;
+            const cleanUrl = new URL(location.href);
+            ["occasion", "feeling", "detail"].forEach((key) =>
+              cleanUrl.searchParams.delete(key),
+            );
+            history.replaceState({}, "", cleanUrl);
+            try {
+              sessionStorage.removeItem("rangbastraCoutureDirection");
+            } catch {}
+            sync();
+          });
+        const params = new URLSearchParams(location.search);
+        fieldsets.forEach((field) => {
+          const input = field.querySelector<HTMLInputElement>(
+            `input[value="${CSS.escape(params.get(field.querySelector("input")?.name ?? "") ?? "")}"]`,
+          );
+          if (input) {
+            input.checked = true;
+            values[input.name] = input.value;
+          }
+        });
+        sync();
+      });
+  initFinder();
+  document.addEventListener("astro:page-load", initFinder);
+</script>
+<style>
+  :global(.couture-finder-section) {
+    overflow: hidden;
+  }
+  .finder-header {
+    display: grid;
+    max-width: 56rem;
+    gap: var(--space-4);
+  }
+  .finder-header h2 {
+    font-family: var(--font-display);
+    font-size: var(--section-heading-statement);
+    font-weight: var(--weight-light);
+    line-height: 0.96;
+  }
+  .finder-header > p:last-child {
+    max-width: 48rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  :global(.couture-finder-container) {
+    display: grid;
+    gap: clamp(var(--space-7), 6vw, var(--space-10));
+  }
+  .finder {
+    padding: clamp(var(--space-5), 5vw, var(--space-9));
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-2xl);
+    background: rgba(5, 5, 5, 0.94);
+  }
+  .finder-progress {
+    display: grid;
+    gap: 0.65rem;
+    margin-bottom: var(--space-7);
+    color: var(--text-muted);
+    font-size: var(--caption);
+    text-transform: uppercase;
+  }
+  .progress-track {
+    height: 1px;
+    background: rgba(var(--cocoa-rgb), 0.2);
+  }
+  .progress-track i {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: rgb(var(--cocoa-rgb));
+    transform: scaleX(0.333);
+    transform-origin: left;
+    transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  fieldset {
+    border: 0;
+  }
+  legend {
+    margin-bottom: var(--space-6);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.8rem);
+  }
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+  }
+  label {
+    min-height: 54px;
+  }
+  label input {
+    position: absolute;
+    opacity: 0;
+  }
+  label span {
+    display: grid;
+    height: 100%;
+    place-items: center;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    text-align: center;
+    cursor: pointer;
+  }
+  label input:checked + span,
+  label input:focus-visible + span {
+    border-color: var(--cocoa-border-strong);
+    background: rgba(var(--cocoa-rgb), 0.16);
+    color: var(--ivory-100);
+  }
+  .finder-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-6);
+  }
+  button,
+  .result-grid a {
+    min-height: 44px;
+    padding: 0.75rem 1.1rem;
+    border: 1px solid var(--cocoa-border);
+    border-radius: var(--radius-md);
+    background: #090706;
+    color: var(--ivory-100);
+    cursor: pointer;
+  }
+  .finder-controls button:last-child,
+  .result-grid a:last-child {
+    background: var(--cta-mesh);
+  }
+  button:disabled {
+    opacity: 0.4;
+  }
+  .finder-results {
+    display: grid;
+    gap: var(--space-7);
+  }
+  .finder-results > div:first-child {
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+  }
+  .finder-results h3 {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 5rem);
+    font-weight: 300;
+  }
+  .finder-results > div > p:last-child {
+    color: var(--text-secondary);
+  }
+  .results-intro {
+    max-width: 44rem;
+    color: var(--cocoa-300);
+    font-size: var(--body-md);
+  }
+  [data-finder-restart] {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.55rem;
+    background: #080504;
+    color: var(--cocoa-200);
+    font-size: var(--caption);
+    font-weight: 700;
+    letter-spacing: var(--tracking-label);
+    transition:
+      border-color 360ms var(--ease-luxury),
+      box-shadow 360ms var(--ease-luxury),
+      color 360ms var(--ease-luxury);
+  }
+  [data-finder-restart] svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  [data-finder-restart]:hover,
+  [data-finder-restart]:focus-visible {
+    border-color: var(--cocoa-border-strong);
+    color: var(--ivory-100);
+    box-shadow: inset 0 -2px rgb(var(--cocoa-rgb));
+  }
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+  .result-grid article {
+    overflow: hidden;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-xl);
+    background: #050505;
+  }
+  .result-grid img {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+  }
+  .result-grid article > div {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+  .result-grid span {
+    color: var(--cocoa-300);
+    font-size: var(--caption);
+    text-transform: uppercase;
+  }
+  .result-grid h4 {
+    font-family: var(--font-signature);
+    font-size: 2rem;
+    font-weight: 400;
+    font-synthesis: none;
+    line-height: 1.3;
+  }
+  .result-grid p {
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+  .result-grid article > div > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .result-grid a {
+    text-decoration: none;
+    font-size: 0.78rem;
+  }
+  @media (max-width: 767px) {
+    .choice-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .finder {
+      padding: var(--space-5);
+    }
+    .result-grid {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+    }
+    .result-grid article {
+      min-width: 82vw;
+      scroll-snap-align: center;
+    }
+  }
+  @media (max-width: 390px) {
+    .choice-grid {
+      grid-template-columns: 1fr;
+    }
+    .result-grid article {
+      min-width: 88vw;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .progress-track i {
+      transition: none;
+    }
+  }
+</style>

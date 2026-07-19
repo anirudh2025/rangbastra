@@ -16,24 +16,28 @@ const { slug, name, variant = "floating" } = Astro.props;
   data-wishlist-toggle
   data-slug={slug}
   aria-label={`Save ${name} to wishlist`}
+  title="Save inspiration"
   aria-pressed="false"
 >
   <Icon name="heart" size={variant === "floating" ? 18 : 16} />
-  <span>{variant === "floating" ? "Save" : "Save Inspiration"}</span>
+  <span data-wishlist-label>Save inspiration</span>
+  <span class="heart-burst" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
 </button>
+<span class="wishlist-announcement" data-wishlist-announcement aria-live="polite"></span>
 
 <script>
   const wishlistKey = "rangbastraWishlist";
 
-  const readWishlist = () => {
+  const readWishlist = (): string[] => {
     try {
-      return JSON.parse(window.localStorage.getItem(wishlistKey) || "[]");
+      const value = JSON.parse(window.localStorage.getItem(wishlistKey) || "[]");
+      return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
     } catch {
       return [];
     }
   };
 
-  const writeWishlist = (items) => {
+  const writeWishlist = (items: string[]) => {
     window.localStorage.setItem(wishlistKey, JSON.stringify(items));
     window.dispatchEvent(new CustomEvent("rangbastra:wishlist-updated"));
   };
@@ -54,6 +58,7 @@ const { slug, name, variant = "floating" } = Astro.props;
   };
 
   document.querySelectorAll("[data-wishlist-toggle]").forEach((button) => {
+    let celebrationTimer = 0;
     button.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -64,11 +69,23 @@ const { slug, name, variant = "floating" } = Astro.props;
       const saved = new Set(readWishlist());
       if (saved.has(slug)) {
         saved.delete(slug);
+        window.RangbastraAudio?.inspiration(false);
+        const announcement = button.nextElementSibling as HTMLElement | null;
+        if (announcement) announcement.textContent = "Removed from inspirations";
       } else {
         saved.add(slug);
+        window.clearTimeout(celebrationTimer);
+        button.classList.remove("is-celebrating");
+        void (button as HTMLElement).offsetWidth;
+        button.classList.add("is-celebrating");
+        celebrationTimer=window.setTimeout(()=>button.classList.remove("is-celebrating"),620);
+        window.RangbastraAudio?.inspiration(true);
+        const announcement = button.nextElementSibling as HTMLElement | null;
+        if (announcement) announcement.textContent = "Saved to inspirations. Sign in to preserve it across devices.";
       }
 
       writeWishlist([...saved]);
+      document.dispatchEvent(new CustomEvent("rangbastra:product-saved",{detail:{product:slug,saved:saved.has(slug)}}));
       syncButtons();
     });
   });
@@ -84,9 +101,11 @@ const { slug, name, variant = "floating" } = Astro.props;
     justify-content: center;
     gap: var(--space-2);
     min-height: 2.75rem;
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-pill);
-    background: rgba(0, 0, 0, .5);
+    width:2.75rem;
+    padding:0;
+    border:1px solid var(--cocoa-border-soft);
+    border-radius:var(--radius-md);
+    background:rgba(3,3,3,.92);
     color: var(--text-secondary);
     font: inherit;
     font-size: var(--caption);
@@ -122,22 +141,37 @@ const { slug, name, variant = "floating" } = Astro.props;
     white-space: nowrap;
   }
 
+  .wishlist-toggle--inline span[data-wishlist-label]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+
   .wishlist-toggle--inline {
-    padding-inline: var(--space-4);
+    border-color:var(--cocoa-border-soft);
+    background:rgba(3,3,3,.92);
+    color:var(--text-secondary);
   }
 
   .wishlist-toggle:hover,
   .wishlist-toggle:focus-visible,
   .wishlist-toggle.is-saved {
-    border-color: rgba(198, 169, 114, .46);
-    background: rgba(106, 78, 66, .55);
+    border-color:rgba(161,38,69,.56);
+    background:rgba(3,3,3,.96);
     color: var(--ivory-50);
     transform: translate3d(0, var(--motion-button-lift), 0);
   }
 
   .wishlist-toggle.is-saved {
-    color: var(--sand-200);
+    color: var(--ivory-50);
+    background:#68172d;
+    box-shadow: none;
   }
+
+  .wishlist-toggle.is-celebrating :global(svg) { animation: heart-bloom 520ms var(--ease-premium); }
+  .heart-burst { position:absolute; inset:50% auto auto 50%; z-index:4; overflow:visible; pointer-events:none; }
+  .heart-burst i { position:absolute; width:4px; height:4px; border-radius:50%; background:#a12645; opacity:0; }
+  .is-celebrating .heart-burst i { animation: heart-particle 520ms var(--ease-premium); }
+  .heart-burst i:nth-child(1){--x:18px;--y:-14px}.heart-burst i:nth-child(2){--x:-17px;--y:-12px;background:var(--sand-100)}.heart-burst i:nth-child(3){--x:15px;--y:16px;background:var(--cocoa-400)}.heart-burst i:nth-child(4){--x:-14px;--y:15px}
+  .wishlist-announcement { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+  @keyframes heart-bloom { 35%{transform:scale(1.48)} 70%{transform:scale(.92)} 100%{transform:scale(1)} }
+  @keyframes heart-particle { 20%{opacity:.8} 100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.4)} }
 
   .wishlist-toggle:focus-visible {
     outline: 1px solid var(--focus-ring);
@@ -150,5 +184,6 @@ const { slug, name, variant = "floating" } = Astro.props;
     .wishlist-toggle:focus-visible {
       transform: none;
     }
+    .wishlist-toggle.is-celebrating :global(svg),.is-celebrating .heart-burst i{animation:none;}
   }
 </style>

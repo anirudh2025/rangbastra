@@ -1,31 +1,26 @@
 ---
-import NavLink from "./NavLink.astro";
-
 import type { NavigationItem } from "../../data/navigation";
-
-interface Props {
-  items: NavigationItem[];
-  currentPath?: string;
-}
-
-const {
-  items,
-  currentPath = Astro.url.pathname,
-} = Astro.props;
+import Icon from "../primitives/Icon.astro";
+interface Props { items: NavigationItem[]; currentPath?: string; }
+const { items, currentPath = Astro.url.pathname } = Astro.props;
 ---
 
-<ul
-  class="desktop-nav"
-  role="list"
->
-  {
-    items.map((item) => (
-      <li class="desktop-nav__item">
-        <NavLink
-          item={item}
-          isActive={currentPath === item.href}
-        />
+<ul class="desktop-nav" role="list">
+  {items.map((item, index) => {
+    const active = currentPath === item.href || item.children?.some((child) => currentPath === child.href.split("?")[0]);
+    return (
+      <li class="desktop-nav__item" data-nav-group>
+        {item.children ? (
+          <>
+            <button class:list={["nav-link","nav-parent-trigger",active&&"nav-link--active"]} type="button" aria-label={`Open ${item.label} menu`} aria-expanded="false" aria-controls={`desktop-menu-${index}`} data-dropdown-trigger><span>{item.label}</span>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+            </button>
+            <div class="nav-dropdown" id={`desktop-menu-${index}`} data-dropdown hidden>
+              {item.children.map((child) => <a href={child.href}><span class="nav-dropdown__icon" aria-hidden="true"><Icon name={child.icon} size={17}/></span><span>{child.label}</span></a>)}
+            </div>
+          </>
+        ) : <a class:list={["nav-link",active&&"nav-link--active"]} href={item.href} aria-current={currentPath===item.href?"page":undefined}>{item.label}</a>}
       </li>
-    ))
-  }
+    );
+  })}
 </ul>

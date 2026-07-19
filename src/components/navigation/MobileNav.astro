@@ -1,12 +1,11 @@
 ---
-import NavLink from "./NavLink.astro";
 import type { NavigationItem } from "../../data/navigation";
 import { contact, getWhatsAppHref } from "../../data/contact";
-
+import Icon from "../primitives/Icon.astro";
+import SoundControl from "./SoundControl.astro";
 interface Props {
   items: NavigationItem[];
 }
-
 const { items } = Astro.props;
 ---
 
@@ -17,72 +16,54 @@ const { items } = Astro.props;
   aria-hidden="true"
 >
   <div class="mobile-nav__content">
-
     <ul class="mobile-nav__list">
-
       {
         items.map((item) => (
-
           <li class="mobile-nav__item">
-
-            <NavLink
-              item={item}
-            />
-
+            <details class="mobile-nav__group">
+              <summary>
+                {item.label}
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="m4 6 4 4 4-4" />
+                </svg>
+              </summary>
+              <div>
+                {item.children?.map((child) => (
+                  <a href={child.href} class="nav-link">
+                    <span aria-hidden="true">
+                      <Icon name={child.icon} size={17} />
+                    </span>
+                    <span>{child.label}</span>
+                  </a>
+                ))}
+              </div>
+            </details>
           </li>
-
         ))
       }
-
-      <li class="mobile-nav__item">
-        <a href="/search" class="nav-link">Search</a>
+      <li class="mobile-nav__item mobile-nav__utilities">
+        <a href="/search" class="nav-link">Search</a><a
+          href="/wishlist"
+          class="nav-link">Inspirations</a
+        ><a href="/account/login" class="nav-link" data-account-nav
+          ><span data-account-nav-label>Sign In</span></a
+        ><a href="/account/signup" class="nav-link">Create Account</a
+        ><SoundControl id="mobile-sound-controls" compact />
       </li>
-
-      <li class="mobile-nav__item">
-        <a href="/wishlist" class="nav-link">Wishlist</a>
-      </li>
-
-      <li class="mobile-nav__item">
-        <a href="/account" class="nav-link">Account</a>
-      </li>
-
     </ul>
-
     <div class="mobile-nav__footer">
-
-      <div
-        class="mobile-nav__divider"
-        aria-hidden="true"
-      />
-
+      <div class="mobile-nav__divider" aria-hidden="true"></div>
       <p class="mobile-nav__statement">
         Every masterpiece begins with a conversation.
       </p>
-
-      <nav
-        class="mobile-nav__social"
-        aria-label="Social Links"
-      >
-
-        <a
-          href={contact.instagramUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Instagram
-        </a>
-
-        <a
+      <nav class="mobile-nav__social" aria-label="Social Links">
+        <a href={contact.instagramUrl} target="_blank" rel="noopener noreferrer"
+          >Instagram</a
+        ><a
           href={getWhatsAppHref("homepage")}
           target="_blank"
-          rel="noopener noreferrer"
-        >
-          WhatsApp
-        </a>
-
+          rel="noopener noreferrer">WhatsApp</a>
       </nav>
-
     </div>
-
   </div>
 </div>
