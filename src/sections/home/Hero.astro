@@ -54,9 +54,9 @@ import Label from "../../components/primitives/Label.astro";
       </h1>
       <div class="living-hero__support">
         <p class="living-hero__copy">
-          Rangbastra is an online luxury bridal and occasion-wear couture
-          platform where customers can explore collections, save favourite
-          pieces, and request a personalised design consultation.
+          Rangbastra is an online luxury couture platform for exploring bridal
+          and occasion wear, saving favourite pieces and beginning a
+          personalised design consultation.
         </p>
         <div class="living-hero__actions">
           <Button href="/design-your-outfit" class="living-hero__primary"
@@ -79,16 +79,9 @@ import Label from "../../components/primitives/Label.astro";
 
 <style>
   .living-hero {
-    --hero-progress: 0;
-    --image-scale: 1.035;
-    --image-y: 0px;
-    --content-y: 0px;
-    --support-y: 0px;
-    --support-opacity: 1;
-    --hero-image-opacity: 1;
-    --hero-darkness: 0;
     position: relative;
-    height: 320svh;
+    height: 100svh;
+    min-height: 38rem;
     background: var(--obsidian-1000);
     color: var(--text-primary);
   }
@@ -98,27 +91,22 @@ import Label from "../../components/primitives/Label.astro";
     position: absolute;
     left: 0;
     right: 0;
-    inset: 0;
+    bottom: 0;
+    height: 22%;
     z-index: 3;
     pointer-events: none;
     background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.98) 0%,
-      rgba(0, 0, 0, 0.88) 14%,
-      rgba(0, 0, 0, 0.58) 38%,
-      rgba(0, 0, 0, 0.18) 68%,
-      transparent 90%
+      to bottom,
+      transparent 0%,
+      rgba(5, 5, 5, 0.4) 45%,
+      var(--surface-canvas) 100%
     );
-    opacity: var(--hero-darkness);
-    will-change: opacity;
   }
 
   .living-hero__stage {
-    position: sticky;
-    top: 0;
-    height: 100svh;
-    min-height: 38rem;
-    overflow: visible;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
   }
 
   .living-hero__visual-mask {
@@ -126,8 +114,8 @@ import Label from "../../components/primitives/Label.astro";
     inset: 0;
     overflow: hidden;
     pointer-events: none;
-    opacity: var(--hero-image-opacity);
-    will-change: opacity;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0 78%, rgba(0, 0, 0, .9) 86%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0 78%, rgba(0, 0, 0, .9) 86%, transparent 100%);
   }
 
   .living-hero__media,
@@ -167,7 +155,7 @@ import Label from "../../components/primitives/Label.astro";
         rgba(0, 0, 0, 0.04),
         rgba(0, 0, 0, 0.46)
       );
-    opacity: calc(1 - var(--hero-progress) * 0.12);
+    opacity: 1;
   }
 
   .living-hero__grain {
@@ -200,9 +188,7 @@ import Label from "../../components/primitives/Label.astro";
     padding: clamp(7rem, 13vh, 10rem) 0 4rem;
     text-align: center;
     pointer-events: auto;
-    opacity: clamp(0, calc(1 - var(--hero-progress) * 1.42), 1);
     transform: none;
-    will-change: opacity;
   }
 
   .living-hero__eyebrow {
@@ -266,8 +252,8 @@ import Label from "../../components/primitives/Label.astro";
   }
 
   .living-hero__support {
-    transform: translate3d(0, var(--support-y), 0);
-    opacity: var(--support-opacity);
+    transform: none;
+    opacity: 1;
   }
 
   .living-hero__copy {
@@ -336,11 +322,8 @@ import Label from "../../components/primitives/Label.astro";
   }
 
   @media (max-width: 700px) {
-    .living-hero {
-      height: 300svh;
-    }
     .living-hero__stage {
-      min-height: 40rem;
+      min-height: 0;
     }
     .living-hero__media img {
       object-position: center top;
@@ -411,26 +394,8 @@ import Label from "../../components/primitives/Label.astro";
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .living-hero {
-      height: 100svh;
-    }
-    .living-hero__stage {
-      position: relative;
-    }
     .living-hero__visual-mask {
       opacity: 1;
-      -webkit-mask-image: linear-gradient(
-        to bottom,
-        #000 0 72%,
-        rgba(0, 0, 0, 0.82) 84%,
-        transparent 100%
-      );
-      mask-image: linear-gradient(
-        to bottom,
-        #000 0 72%,
-        rgba(0, 0, 0, 0.82) 84%,
-        transparent 100%
-      );
     }
     .living-hero__veil {
       display: none;
@@ -444,10 +409,6 @@ import Label from "../../components/primitives/Label.astro";
     .hero-heading__caret {
       display: none;
     }
-  }
-
-  .living-hero {
-    height: var(--hero-runway, 320svh);
   }
 
   .living-hero__eyebrow {
@@ -508,23 +469,17 @@ import Label from "../../components/primitives/Label.astro";
   }
 
   @media (max-width: 1024px) {
-    .living-hero {
-      height: var(--hero-runway, 300svh);
-    }
     h1 {
       font-size: clamp(2.9rem, 5.5vw, 3.625rem);
     }
   }
 
   @media (max-width: 700px) {
-    .living-hero {
-      height: var(--hero-runway, 280svh);
-      min-height: 0;
-    }
+    .living-hero { height: 100svh; min-height: 38rem; }
     .living-hero__stage {
-      position: sticky;
-      height: 100svh;
-      min-height: 38rem;
+      position: relative;
+      height: 100%;
+      min-height: 0;
     }
     .living-hero__content {
       transform: none !important;
@@ -563,12 +518,6 @@ import Label from "../../components/primitives/Label.astro";
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .living-hero {
-      height: 100svh;
-    }
-    .living-hero__stage {
-      position: relative;
-    }
     .living-hero__content,
     .living-hero__media img {
       transform: none !important;

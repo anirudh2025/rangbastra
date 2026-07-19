@@ -80,6 +80,18 @@
   flex-shrink: 0;
 
   text-decoration: none;
+
+  gap: var(--space-3);
+}
+
+.navbar__wordmark {
+  color: var(--ivory-100);
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 1.55vw, 1.5rem);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
 }
 
 .logo {

@@ -83,8 +83,7 @@ const {
 
 <style is:global>
   body {
-    opacity: 0;
-    animation: rangbastra-page-reveal 520ms var(--ease-luxury) forwards;
+    opacity: 1;
   }
 
   .page-transition {
@@ -100,7 +99,8 @@ const {
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     pointer-events: none;
-    opacity: 1;
+    opacity: 0;
+    visibility: hidden;
     transition:
       opacity 520ms var(--ease-luxury),
       visibility 520ms var(--ease-luxury);
@@ -109,12 +109,6 @@ const {
   .page-transition--ready {
     opacity: 0;
     visibility: hidden;
-  }
-
-  @keyframes rangbastra-page-reveal {
-    to {
-      opacity: 1;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
