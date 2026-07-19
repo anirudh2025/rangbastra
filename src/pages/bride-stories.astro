@@ -1,7 +1,75 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro"; import Button from "../components/primitives/Button.astro"; import Container from "../components/primitives/Container.astro"; import Eyebrow from "../components/primitives/Eyebrow.astro"; import Section from "../components/primitives/Section.astro"; import SignatureCTA from "../components/experience/SignatureCTA.astro"; import Footer from "../sections/home/Footer.astro"; import { brideStories } from "../data/brideStories";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/primitives/Button.astro";
+import Container from "../components/primitives/Container.astro";
+import Eyebrow from "../components/primitives/Eyebrow.astro";
+import Section from "../components/primitives/Section.astro";
+import SignatureCTA from "../components/experience/SignatureCTA.astro";
+import Footer from "../sections/home/Footer.astro";
+import { brideStories } from "../data/brideStories";
 ---
-<BaseLayout title="Bride Stories | Rangbastra" description="Explore consent-aware Rangbastra bride stories, wedding context, garment details and couture memories." canonical="/bride-stories" image={brideStories[0].image}>
-  <Section class="stories-section"><Container class="stories-container"><header><Eyebrow>Bride Stories</Eyebrow><h1>Real stories deserve care, context and consent</h1><p>Future bride experiences will be published here only with a recorded source and permission.</p></header><aside class="demo-notice"><strong>Preview data</strong><span>The card below demonstrates the editorial format. It is not a customer testimonial and is not verified.</span></aside><div class="story-grid">{brideStories.map(story=><article><figure><img src={story.image} alt={story.imageAlt} width="900" height="1125" loading="eager" decoding="async"/></figure><div><span>{story.occasion}</span><h2>{story.chapterTitle}</h2><p>{story.weddingContext}</p><dl><div><dt>Garment</dt><dd>{story.garment}</dd></div><div><dt>Consent</dt><dd>{story.consentConfirmed?"Confirmed":"Pending — preview only"}</dd></div></dl><Button href={`/bride-stories/${story.slug}`}>Read Story</Button></div></article>)}</div><SignatureCTA variant="consultation"/></Container></Section><Footer/>
+
+<BaseLayout
+  title="Bride Stories | Rangbastra"
+  description="Explore consent-aware Rangbastra bride stories, wedding context, garment details and couture memories."
+  canonical="/bride-stories"
+  image={brideStories[0]?.image}
+>
+  <Section class="stories-section">
+    <Container class="stories-container">
+      <header>
+        <Eyebrow>Bride Stories</Eyebrow>
+        <h1>Real stories deserve care, context and consent</h1>
+        <p>Bride experiences will be published here only with a recorded source and permission.</p>
+      </header>
+
+      {brideStories.length === 0 ? (
+        <aside class="archive-notice">
+          <strong>The archive is being prepared</strong>
+          <span>No customer testimonial is published until its source, consent and media permissions have been confirmed.</span>
+        </aside>
+      ) : (
+        <div class="story-grid">
+          {brideStories.map((story) => (
+            <article>
+              <figure><img src={story.image} alt={story.imageAlt} width="900" height="1125" loading="eager" decoding="async" /></figure>
+              <div>
+                <span>{story.occasion}</span>
+                <h2>{story.chapterTitle}</h2>
+                <p>{story.weddingContext}</p>
+                <dl>
+                  <div><dt>Garment</dt><dd>{story.garment}</dd></div>
+                  <div><dt>Consent</dt><dd>{story.consentConfirmed ? "Confirmed" : "Not published"}</dd></div>
+                </dl>
+                <Button href={`/bride-stories/${story.slug}`}>Read Story</Button>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      <SignatureCTA variant="consultation" />
+    </Container>
+  </Section>
+  <Footer />
 </BaseLayout>
-<style>:global(.stories-section){--section-padding-block:clamp(var(--space-12),14vw,var(--space-14)) clamp(var(--space-10),10vw,var(--space-13));background:radial-gradient(circle at 82% 12%,rgba(var(--cocoa-rgb),.13),transparent 34%),var(--surface-canvas)}:global(.stories-container){--container-default:var(--container-wide);display:grid;gap:clamp(var(--space-8),9vw,var(--space-12))}header{display:grid;max-width:62rem;gap:var(--space-5)}h1,h2{color:var(--text-primary);font-family:var(--font-display);font-weight:var(--weight-light);line-height:1}h1{font-size:clamp(3.2rem,7vw,7.8rem)}h2{font-size:clamp(2.5rem,5vw,5rem)}p,dd{color:var(--text-secondary);line-height:var(--leading-body)}.demo-notice{display:flex;gap:var(--space-3);padding:var(--space-4);border:1px solid var(--cocoa-border);background:rgba(var(--cocoa-rgb),.1);color:var(--text-secondary)}.demo-notice strong{color:var(--text-primary)}.story-grid article{display:grid;grid-template-columns:minmax(18rem,.45fr) minmax(0,.55fr);gap:clamp(var(--space-6),8vw,var(--space-11));align-items:center}.story-grid figure{min-height:34rem;overflow:hidden}.story-grid img{width:100%;height:100%;object-fit:cover}.story-grid article>div{display:grid;gap:var(--space-4);justify-items:start}.story-grid article>div>span,dt{color:var(--text-muted);font-size:var(--caption);letter-spacing:var(--tracking-label);text-transform:uppercase}dl{display:grid;gap:var(--space-2)}dl div{display:grid;grid-template-columns:7rem 1fr;gap:var(--space-3)}@media(max-width:760px){.story-grid article{grid-template-columns:1fr}.demo-notice{display:grid}.story-grid figure{min-height:28rem}}</style>
+
+<style>
+  :global(.stories-section){--section-padding-block:clamp(var(--space-12),14vw,var(--space-14)) clamp(var(--space-10),10vw,var(--space-13));background:radial-gradient(circle at 82% 12%,rgba(var(--cocoa-rgb),.13),transparent 34%),var(--surface-canvas)}
+  :global(.stories-container){--container-default:var(--container-wide);display:grid;gap:clamp(var(--space-8),9vw,var(--space-12))}
+  header{display:grid;max-width:62rem;gap:var(--space-5)}
+  h1,h2{color:var(--text-primary);font-family:var(--font-display);font-weight:var(--weight-light);line-height:1}
+  h1{font-size:clamp(3.2rem,7vw,7.8rem)}
+  h2{font-size:clamp(2.5rem,5vw,5rem)}
+  p,dd{color:var(--text-secondary);line-height:var(--leading-body)}
+  .archive-notice{display:flex;gap:var(--space-3);padding:var(--space-4);border:1px solid var(--cocoa-border);background:rgba(var(--cocoa-rgb),.1);color:var(--text-secondary)}
+  .archive-notice strong{color:var(--text-primary)}
+  .story-grid article{display:grid;grid-template-columns:minmax(18rem,.45fr) minmax(0,.55fr);gap:clamp(var(--space-6),8vw,var(--space-11));align-items:center}
+  .story-grid figure{min-height:34rem;overflow:hidden}
+  .story-grid img{width:100%;height:100%;object-fit:cover}
+  .story-grid article>div{display:grid;gap:var(--space-4);justify-items:start}
+  .story-grid article>div>span,dt{color:var(--text-muted);font-size:var(--caption);letter-spacing:var(--tracking-label);text-transform:uppercase}
+  dl{display:grid;gap:var(--space-2)}
+  dl div{display:grid;grid-template-columns:7rem 1fr;gap:var(--space-3)}
+  @media(max-width:760px){.story-grid article{grid-template-columns:1fr}.archive-notice{display:grid}.story-grid figure{min-height:28rem}}
+</style>

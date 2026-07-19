@@ -1,3 +1,11 @@
+export interface ConfirmedMilestone {
+  date: string;
+  title: string;
+  text: string;
+  media: string | null;
+  source: string;
+}
+
 export const consultationFormats = [
   { id: "whatsapp", title: "WhatsApp Consultation", detail: "A focused written conversation for initial questions, references and timing.", response: "Initial response within one business day", icon: "whatsapp" },
   { id: "video", title: "Private Video Consultation", detail: "A scheduled face-to-face discussion for silhouette, palette and celebration context.", response: "Available by confirmed appointment", icon: "videoCall" },
@@ -16,9 +24,8 @@ export const productionStages = [
   { title: "Delivery", text: "The completed piece is prepared for collection or coordinated delivery." },
 ] as const;
 
-export const confirmedMilestones = [
-  { date: "2026", title: "Rangbastra digital atelier", text: "Rangbastra introduced its online couture discovery and private enquiry experience.", media: null, source: "Owner-confirmed website launch context" },
-] as const;
+// Add milestones only after the founder records the date, event and media source.
+export const confirmedMilestones: ConfirmedMilestone[] = [];
 
 export const futureMissions = [
   "Document future milestones only after founder confirmation.",
