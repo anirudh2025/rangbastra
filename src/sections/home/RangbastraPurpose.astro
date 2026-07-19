@@ -7,21 +7,35 @@ import Section from "../../components/primitives/Section.astro";
 <Section class="purpose-section" aria-labelledby="rangbastra-purpose-heading">
   <Container class="purpose-container">
     <div class="purpose-introduction">
-      <Eyebrow>Rangbastra · Private Couture Platform</Eyebrow>
-      <h2 id="rangbastra-purpose-heading">Couture discovery, made personal.</h2>
+      <Eyebrow>About Rangbastra</Eyebrow>
+      <h2 id="rangbastra-purpose-heading">What Rangbastra does.</h2>
     </div>
+
     <div class="purpose-copy">
-      <p>
-        Rangbastra is a luxury custom couture platform based in Anand, Gujarat.
-        Customers can explore bridal and occasion-wear collections, create a
-        private account, save favourite pieces, and share their measurements,
-        preferences and design requirements for a personalised couture
-        consultation.
+      <p class="purpose-summary">
+        Rangbastra is an online luxury bridal and occasion-wear couture platform
+        based in Anand, Gujarat. This website lets customers explore couture
+        collections, create a private account, save favourite pieces, request a
+        personalised design consultation, and share measurements, preferences
+        and design requirements with the Rangbastra team.
       </p>
-      <p class="purpose-authentication">
-        Google sign-in is used to securely create and access your Rangbastra
-        account, saved inspiration and couture requests.
-      </p>
+
+      <div class="purpose-account" aria-labelledby="rangbastra-account-purpose">
+        <h3 id="rangbastra-account-purpose">Why customers can sign in</h3>
+        <p>
+          Google Sign-In is used only to authenticate customers and provide
+          secure access to their Rangbastra account, saved inspirations and
+          submitted couture enquiries. For account creation and access,
+          Rangbastra receives basic Google profile information such as the
+          customer&apos;s name, email address and profile image. Rangbastra does
+          not sell Google account information or use it for advertising.
+        </p>
+      </div>
+
+      <nav class="purpose-legal" aria-label="Rangbastra account and data policies">
+        <a href="/privacy-policy">Read our Privacy Policy</a>
+        <a href="/terms-and-conditions">Read our Terms &amp; Conditions</a>
+      </nav>
     </div>
   </Container>
 </Section>
@@ -31,15 +45,27 @@ import Section from "../../components/primitives/Section.astro";
     --section-padding-block: clamp(var(--space-8), 8vw, var(--space-11));
     position: relative;
     border-block: 1px solid var(--cocoa-border-soft);
-    background: radial-gradient(circle at 16% 28%, rgba(var(--cocoa-rgb), .12), transparent 34%), var(--surface-canvas);
+    background:
+      radial-gradient(
+        circle at 16% 28%,
+        rgba(var(--cocoa-rgb), 0.12),
+        transparent 34%
+      ),
+      var(--surface-canvas);
   }
+
   :global(.purpose-container) {
     display: grid;
-    grid-template-columns: minmax(16rem, .8fr) minmax(18rem, 1.2fr);
+    grid-template-columns: minmax(16rem, 0.8fr) minmax(18rem, 1.2fr);
     gap: clamp(var(--space-6), 8vw, var(--space-11));
     align-items: start;
   }
-  .purpose-introduction { display: grid; gap: var(--space-4); }
+
+  .purpose-introduction {
+    display: grid;
+    gap: var(--space-4);
+  }
+
   h2 {
     max-width: 11ch;
     color: var(--text-primary);
@@ -49,20 +75,81 @@ import Section from "../../components/primitives/Section.astro";
     letter-spacing: var(--tracking-heading);
     line-height: 1;
   }
-  .purpose-copy { display: grid; gap: var(--space-5); max-width: 52rem; }
+
+  .purpose-copy {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 52rem;
+  }
+
   .purpose-copy p {
     margin: 0;
     color: var(--text-secondary);
     font-size: var(--body-lg);
     line-height: var(--leading-body);
   }
-  .purpose-authentication {
+
+  .purpose-summary {
+    color: var(--text-primary) !important;
+  }
+
+  .purpose-account {
+    display: grid;
+    gap: var(--space-3);
     padding-top: var(--space-5);
     border-top: 1px solid var(--cocoa-border-soft);
-    color: var(--sand-200) !important;
-    font-size: var(--body-md) !important;
   }
+
+  .purpose-account h3 {
+    margin: 0;
+    color: rgb(var(--cocoa-rgb));
+    font-family: var(--font-sans);
+    font-size: var(--label-md);
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .purpose-account p {
+    font-size: var(--body-md);
+  }
+
+  .purpose-legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-6);
+  }
+
+  .purpose-legal a {
+    position: relative;
+    color: var(--text-primary);
+    font-size: var(--label-md);
+    text-decoration: none;
+  }
+
+  .purpose-legal a::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -0.35rem;
+    left: 0;
+    height: 1px;
+    background: rgb(var(--cocoa-rgb));
+    transform: scaleX(0.28);
+    transform-origin: left;
+    transition: transform var(--motion-medium) var(--ease-luxury);
+  }
+
+  .purpose-legal a:hover::after,
+  .purpose-legal a:focus-visible::after {
+    transform: scaleX(1);
+  }
+
   @media (max-width: 760px) {
-    :global(.purpose-container) { grid-template-columns: 1fr; gap: var(--space-7); }
+    :global(.purpose-container) {
+      grid-template-columns: 1fr;
+      gap: var(--space-7);
+    }
   }
 </style>
