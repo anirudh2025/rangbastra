@@ -23,21 +23,15 @@ const { mode } = Astro.props;
       mode === "dashboard" ? (
         <div class="dashboard-shell" data-account-dashboard>
           <nav class="dashboard-nav" aria-label="Client portal">
-            <>
-              <a class="is-active" href="#overview">
-                Overview
-              </a>
-              <a href="#profile">My Profile</a>
-              <a href="/wishlist">Saved Inspirations</a>
-              <a href="#requests">Couture Requests</a>
-              <a href="#appointments">Appointments</a>
-              <a href="#settings">Account Settings</a>
-              <button type="button" data-signout hidden>
-                Sign Out
-              </button>
-            </>
+            <a class="is-active" href="#overview" data-dashboard-tab="overview">Overview</a>
+            <a href="#profile" data-dashboard-tab="profile">My Profile</a>
+            <a href="#saved" data-dashboard-tab="saved">Saved Inspirations</a>
+            <a href="#requests" data-dashboard-tab="requests">Couture Requests</a>
+            <a href="#appointments" data-dashboard-tab="appointments">Appointments</a>
+            <a href="#settings" data-dashboard-tab="settings">Account Settings</a>
+            <button type="button" data-signout hidden>Log Out</button>
           </nav>
-          <div class="dashboard-panel" id="overview">
+          <div class="dashboard-panel" id="overview" data-dashboard-panel="overview">
             <div class="dashboard-heading">
               <>
                 <img data-account-avatar alt="" hidden />
@@ -55,15 +49,15 @@ const { mode } = Astro.props;
             </p>
             <div class="portal-metrics">
               <>
-                <a href="/wishlist">
+                <a href="#saved" data-dashboard-open="saved">
                   <>
-                    <strong>Saved</strong>
+                    <strong data-saved-count>—</strong>
                     <span>Inspirations</span>
                   </>
                 </a>
                 <span>
                   <>
-                    <strong>—</strong>
+                    <strong data-request-count>—</strong>
                     <span>Active requests</span>
                   </>
                 </span>
@@ -75,6 +69,25 @@ const { mode } = Astro.props;
                 </span>
               </>
             </div>
+            <div class="dashboard-actions">
+              <Button href="#saved" variant="cherry" sparkle={false} class="dashboard-open-saved">
+                <Label icon="heart">Saved Inspirations</Label>
+              </Button>
+              <Button href="/design-your-outfit">
+                <Label icon="sketch">Begin Couture Request</Label>
+              </Button>
+              <Button href="/account/login" class="account-login" variant="neutral" sparkle={false}>
+                <Label icon="account">Sign In</Label>
+              </Button>
+              <Button href="/account/signup" class="account-login" variant="neutral" sparkle={false}>
+                <Label icon="userPlus">Create Account</Label>
+              </Button>
+            </div>
+          </div>
+
+          <div class="dashboard-panel" id="profile" data-dashboard-panel="profile" hidden>
+            <div class="dashboard-heading"><Icon name="account" size={28} /><div><small>My Profile</small><h2>Your couture identity.</h2></div></div>
+            <p>Keep the details your designer needs for a more personal conversation.</p>
             <form class="profile-form" data-profile-form hidden>
               <label>
                 Full name
@@ -100,45 +113,39 @@ const { mode } = Astro.props;
                 <input name="marketing_consent" type="checkbox" /> Optional
                 marketing updates
               </label>
-              <label>
-                Sound volume
-                <input
-                  type="range"
-                  min="20"
-                  max="100"
-                  value="72"
-                  data-sound-volume
-                />
-              </label>
               <>
                 <Button type="submit">Save Profile</Button>
                 <p data-profile-note role="status" />
               </>
             </form>
-            <div class="dashboard-actions">
-              <Button href="/wishlist" variant="cherry" sparkle={false}>
-                <Label icon="heart">Open Wishlist</Label>
-              </Button>
-              <Button href="/design-your-outfit">
-                <Label icon="sketch">Design Your Outfit</Label>
-              </Button>
-              <Button
-                href="/account/login"
-                class="account-login"
-                variant="neutral"
-                sparkle={false}
-              >
-                <Label icon="account">Sign In</Label>
-              </Button>
-              <Button
-                href="/account/signup"
-                class="account-login"
-                variant="neutral"
-                sparkle={false}
-              >
-                <Label icon="userPlus">Create Account</Label>
-              </Button>
+          </div>
+
+          <div class="dashboard-panel" id="saved" data-dashboard-panel="saved" hidden>
+            <div class="dashboard-heading"><Icon name="heart" size={28} /><div><small>Saved Inspirations</small><h2>Your private edit.</h2></div></div>
+            <p>Return to every silhouette, craft detail and shade that caught your attention.</p>
+            <div class="private-feature-card"><span>Personal inspiration wardrobe</span><strong>Saved on this device</strong><p>Your existing saved pieces remain available while secure account syncing and private boards complete their production review.</p><Button href="/wishlist" variant="cherry" sparkle={false}>Open Saved Inspirations</Button></div>
+          </div>
+
+          <div class="dashboard-panel" id="requests" data-dashboard-panel="requests" hidden>
+            <div class="dashboard-heading"><Icon name="sketch" size={28} /><div><small>Couture Requests</small><h2>Your atelier conversations.</h2></div></div>
+            <p>Requests connected to this signed-in account appear here with their real status.</p>
+            <div class="request-list" data-request-list></div>
+            <div class="private-feature-card" data-request-empty><span>No active request</span><strong>Begin with the piece that feels like you.</strong><p>Share the occasion, preferred silhouette and timeline. Your product context will travel with the request.</p><Button href="/design-your-outfit">Begin a Couture Request</Button></div>
+          </div>
+
+          <div class="dashboard-panel" id="appointments" data-dashboard-panel="appointments" hidden>
+            <div class="dashboard-heading"><Icon name="calendar" size={28} /><div><small>Appointments</small><h2>Your private consultation.</h2></div></div>
+            <p>Choose how you would like to meet the Rangbastra team. We show only confirmed details—never invented availability.</p>
+            <div class="private-feature-card"><span>Consultation calendar</span><strong>Book with the atelier</strong><p>Explore studio, video and WhatsApp consultation formats and request a suitable time.</p><Button href="/designer-consultation">View Consultation Options</Button></div>
+          </div>
+
+          <div class="dashboard-panel" id="settings" data-dashboard-panel="settings" hidden>
+            <div class="dashboard-heading"><Icon name="settings" size={28} /><div><small>Account Settings</small><h2>Make the experience yours.</h2></div></div>
+            <div class="settings-list">
+              <label><span><strong>Sound volume</strong><small>Control Rangbastra interface sound.</small></span><input type="range" min="0" max="100" value="72" data-sound-volume /></label>
+              <label><span><strong>Reduced motion</strong><small>Use your device preference for gentler movement.</small></span><input type="checkbox" data-reduced-motion disabled /></label>
             </div>
+            <p class="settings-note">Email, password and security changes use Supabase’s protected account flows. More controls will appear only when their secure backend is production-ready.</p>
           </div>
         </div>
       ) : (
@@ -634,6 +641,54 @@ const { mode } = Astro.props;
     gap: var(--space-4);
     height: 100%;
   }
+
+  .dashboard-panel[hidden] { display: none; }
+
+  .private-feature-card,
+  .request-list article,
+  .settings-list {
+    display: grid;
+    gap: var(--space-3);
+    padding: clamp(var(--space-4), 4vw, var(--space-6));
+    border: 1px solid var(--cocoa-border-soft);
+    background: linear-gradient(135deg, rgba(var(--cocoa-rgb), .12), transparent 58%), #080706;
+  }
+
+  .private-feature-card > span,
+  .request-list article > span {
+    color: var(--cocoa-300);
+    font-size: var(--caption);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .private-feature-card > strong,
+  .request-list article > strong {
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: var(--weight-light);
+  }
+
+  .request-list { display: grid; gap: var(--space-3); }
+  .request-list article { grid-template-columns: 1fr auto; align-items: center; }
+  .request-list article p { grid-column: 1 / -1; }
+  .request-status { color: var(--cocoa-300); text-transform: capitalize; }
+
+  .settings-list label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--cocoa-border-soft);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .settings-list label:last-child { border-bottom: 0; padding-bottom: 0; }
+  .settings-list span { display: grid; gap: var(--space-1); }
+  .settings-list strong { color: var(--text-primary); }
+  .settings-list small, .settings-note { color: var(--text-muted); font-size: var(--body-sm); }
 
   h2 {
     color: var(--text-primary);

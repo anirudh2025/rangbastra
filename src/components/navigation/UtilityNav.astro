@@ -5,9 +5,14 @@ import SoundControl from "./SoundControl.astro";
 const utilityLinks = [
   { href: "/search", label: "Search", icon: "search" },
   { href: "/wishlist", label: "Wishlist", icon: "heart" },
-  { href: "/account/login", label: "Sign In", icon: "account", account: true },
-  { href: "/account/signup", label: "Create Account", icon: "userPlus" },
 ];
+const profileLinks = [
+  ["My Profile", "/account#profile"],
+  ["Saved Inspirations", "/account#saved"],
+  ["Couture Requests", "/account#requests"],
+  ["Appointments", "/account#appointments"],
+  ["Account Settings", "/account#settings"],
+] as const;
 ---
 
 <nav class="utility-nav" aria-label="Utility navigation">
@@ -17,14 +22,40 @@ const utilityLinks = [
         href={link.href}
         class="utility-nav__link"
         aria-label={link.label}
-        data-account-nav={link.account ? "" : undefined}
       >
         <Icon name={link.icon} size={18} />
-        <span data-account-nav-label={link.account ? "" : undefined}>
-          {link.label}
-        </span>
+        <span>{link.label}</span>
       </a>
     ))
   }
+  <span class="auth-skeleton" data-auth-pending aria-label="Restoring account session"></span>
+  <div class="auth-signed-out" data-auth-signed-out hidden>
+    <a href="/account/login" class="utility-nav__link" data-auth-login aria-label="Sign In"><Icon name="account" size={18}/><span>Sign In</span></a>
+    <a href="/account/signup" class="utility-nav__link" data-auth-signup aria-label="Create Account"><Icon name="userPlus" size={18}/><span>Create Account</span></a>
+  </div>
+  <details class="profile-control" data-auth-signed-in hidden>
+    <summary aria-label="Open customer account menu">
+      <span class="profile-avatar" data-auth-avatar aria-hidden="true"><Icon name="account" size={17}/></span>
+      <span data-auth-name>Account</span><span aria-hidden="true">⌄</span>
+    </summary>
+    <div class="profile-menu">
+      {profileLinks.map(([label, href]) => <a href={href}>{label}</a>)}
+      <button type="button" data-auth-logout>Log Out</button>
+    </div>
+  </details>
   <SoundControl id="desktop-sound-controls" />
 </nav>
+
+<style>
+  .auth-signed-out{display:flex;align-items:center;gap:var(--space-2)}
+  .auth-signed-out .utility-nav__link{width:auto;gap:.4rem;padding-inline:.45rem;font-size:.66rem;letter-spacing:.04em}
+  .auth-signed-out .utility-nav__link span{position:static!important;width:auto!important;height:auto!important;overflow:visible!important;clip:auto!important;clip-path:none!important;white-space:nowrap!important}
+  .auth-skeleton{width:6.5rem;height:2.5rem;border:1px solid var(--cocoa-border-soft);border-radius:var(--radius-md);background:linear-gradient(90deg,#090807,#15110f,#090807);background-size:200% 100%;animation:auth-shimmer 1.4s linear infinite}
+  .profile-control{position:relative;color:var(--text-secondary)}
+  .profile-control summary{display:flex;min-height:44px;align-items:center;gap:.5rem;padding:.35rem .6rem;border:1px solid var(--cocoa-border-soft);border-radius:var(--radius-md);cursor:pointer;list-style:none}
+  .profile-control summary::-webkit-details-marker{display:none}.profile-control summary:focus-visible{outline:2px solid var(--focus-ring);outline-offset:3px}
+  .profile-avatar{display:grid;width:1.9rem;height:1.9rem;overflow:hidden;place-items:center;border:1px solid var(--cocoa-border);border-radius:50%;background:#090807}.profile-avatar img{width:100%;height:100%;object-fit:cover}
+  .profile-menu{position:absolute;top:calc(100% + .65rem);right:0;z-index:var(--z-dropdown);display:grid;width:15rem;padding:.65rem;border:1px solid var(--cocoa-border);background:#050403;box-shadow:var(--shadow-lg)}
+  .profile-menu a,.profile-menu button{min-height:42px;padding:.7rem;border:0;border-bottom:1px solid var(--border-default);background:transparent;color:var(--text-secondary);font:inherit;text-align:left}.profile-menu a:hover,.profile-menu button:hover,.profile-menu a:focus-visible,.profile-menu button:focus-visible{color:var(--text-primary);outline:none;background:rgba(var(--cocoa-rgb),.12)}
+  [hidden]{display:none!important}@keyframes auth-shimmer{to{background-position:-200% 0}}@media(prefers-reduced-motion:reduce){.auth-skeleton{animation:none}}
+</style>

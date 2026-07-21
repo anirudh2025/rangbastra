@@ -1,29 +1,108 @@
+import type { User } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient } from "./supabaseBrowser";
 
+const privateCacheKeys = [
+  "rangbastra-account-cache",
+  "rangbastra-account-profile",
+  "rangbastra-account-notifications",
+];
+
+const safeReturnPath = () => {
+  const current = `${location.pathname}${location.search}${location.hash}`;
+  return current.startsWith("/account/") ? "/account" : current;
+};
+
+const displayName = (user: User) => {
+  const raw = String(
+    user.user_metadata?.display_name ??
+      user.user_metadata?.full_name ??
+      user.user_metadata?.name ??
+      user.email?.split("@")[0] ??
+      "Account",
+  ).trim();
+  return raw.split(/\s+/)[0] || "Account";
+};
+
+const setAvatar = (host: HTMLElement, user: User) => {
+  const source = user.user_metadata?.avatar_url ?? user.user_metadata?.picture;
+  host.replaceChildren();
+  if (typeof source === "string" && /^https:\/\//.test(source)) {
+    const image = document.createElement("img");
+    image.src = source;
+    image.alt = "";
+    image.referrerPolicy = "no-referrer";
+    host.append(image);
+  } else {
+    host.textContent = displayName(user).slice(0, 1).toUpperCase();
+  }
+};
+
 export const initAccountNavigation = async () => {
-  const links =
-    document.querySelectorAll<HTMLAnchorElement>("[data-account-nav]");
-  if (!links.length) return;
+  const navbar = document.querySelector<HTMLElement>("[data-navbar]");
+  if (!navbar || navbar.dataset.accountNavigationReady === "true") return;
+  navbar.dataset.accountNavigationReady = "true";
+
+  const pending = [...navbar.querySelectorAll<HTMLElement>("[data-auth-pending]")];
+  const signedOut = [...navbar.querySelectorAll<HTMLElement>("[data-auth-signed-out]")];
+  const signedIn = [...navbar.querySelectorAll<HTMLElement>("[data-auth-signed-in]")];
+
+  const reveal = (user: User | null) => {
+    pending.forEach((item) => (item.hidden = true));
+    signedOut.forEach((item) => (item.hidden = Boolean(user)));
+    signedIn.forEach((item) => (item.hidden = !user));
+    document.documentElement.dataset.authState = user ? "signed-in" : "signed-out";
+    navbar.querySelectorAll<HTMLElement>("[data-auth-name]").forEach((item) => {
+      item.textContent = user ? displayName(user) : "Account";
+    });
+    if (user) {
+      navbar.querySelectorAll<HTMLElement>("[data-auth-avatar]").forEach((item) =>
+        setAvatar(item, user),
+      );
+    }
+  };
+
+  const next = encodeURIComponent(safeReturnPath());
+  navbar.querySelectorAll<HTMLAnchorElement>("[data-auth-login]").forEach(
+    (link) => (link.href = `/account/login?next=${next}`),
+  );
+  navbar.querySelectorAll<HTMLAnchorElement>("[data-auth-signup]").forEach(
+    (link) => (link.href = `/account/signup?next=${next}`),
+  );
+
+  const dialog = navbar.querySelector<HTMLDialogElement>("[data-logout-dialog]");
+  let logoutTrigger: HTMLElement | null = null;
+  navbar.querySelectorAll<HTMLButtonElement>("[data-auth-logout]").forEach((button) =>
+    button.addEventListener("click", () => {
+      logoutTrigger = button;
+      dialog?.showModal();
+    }),
+  );
+  dialog?.querySelector<HTMLButtonElement>("[data-logout-cancel]")?.addEventListener(
+    "click",
+    () => dialog.close(),
+  );
+  dialog?.addEventListener("close", () => logoutTrigger?.focus());
+
   try {
     const supabase = getSupabaseBrowserClient();
-    const sync = (
-      user: { email?: string; user_metadata?: Record<string, unknown> } | null,
-    ) => {
-      links.forEach((link) => {
-        const label = link.querySelector<HTMLElement>(
-          "[data-account-nav-label]",
-        );
-        if (label)
-          label.textContent = user
-            ? String(user.user_metadata?.full_name ?? user.email ?? "Account")
-            : "Sign In";
-        link.href = user ? "/account" : "/account/login";
-      });
-    };
-    const { data } = await supabase.auth.getSession();
-    sync(data.session?.user ?? null);
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => sync(session?.user ?? null),
+    dialog?.querySelector<HTMLButtonElement>("[data-logout-confirm]")?.addEventListener(
+      "click",
+      async () => {
+        const confirm = dialog.querySelector<HTMLButtonElement>("[data-logout-confirm]")!;
+        confirm.disabled = true;
+        const { error } = await supabase.auth.signOut({ scope: "local" });
+        confirm.disabled = false;
+        if (error) return;
+        privateCacheKeys.forEach((key) => sessionStorage.removeItem(key));
+        dialog.close();
+        reveal(null);
+        location.assign("/");
+      },
+    );
+    const { data, error } = await supabase.auth.getSession();
+    reveal(error ? null : (data.session?.user ?? null));
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) =>
+      reveal(session?.user ?? null),
     );
     document.addEventListener(
       "astro:before-swap",
@@ -31,6 +110,6 @@ export const initAccountNavigation = async () => {
       { once: true },
     );
   } catch {
-    // Signed-out navigation is the safe fallback when public configuration is absent.
+    reveal(null);
   }
 };

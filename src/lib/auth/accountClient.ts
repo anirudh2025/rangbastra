@@ -190,12 +190,15 @@ export const initAccountExperience = async () => {
       ?.addEventListener("click", async (event) => {
         if (googleBusy) return;
         googleBusy = true;
-        const button = event.currentTarget;
+        const button = event.currentTarget as HTMLButtonElement;
         button.disabled = true;
         note.textContent = "Opening Google’s secure sign-in…";
+        const next = getSafeNext();
         const { error } = await supabase.auth.signInWithOAuth({
           provider: "google",
-          options: { redirectTo: `${window.location.origin}/auth/callback` },
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+          },
         });
         if (error) {
           googleBusy = false;
@@ -209,6 +212,121 @@ export const initAccountExperience = async () => {
   }
 
   const dashboard = root.querySelector<HTMLElement>("[data-account-dashboard]");
+  const allowedPanels = new Set([
+    "overview",
+    "profile",
+    "saved",
+    "requests",
+    "appointments",
+    "settings",
+  ]);
+  const openPanel = (requested?: string | null) => {
+    if (!dashboard) return;
+    const panel = requested && allowedPanels.has(requested) ? requested : "overview";
+    dashboard.querySelectorAll<HTMLElement>("[data-dashboard-panel]").forEach(
+      (item) => (item.hidden = item.dataset.dashboardPanel !== panel),
+    );
+    dashboard.querySelectorAll<HTMLElement>("[data-dashboard-tab]").forEach((item) =>
+      item.classList.toggle("is-active", item.dataset.dashboardTab === panel),
+    );
+    dashboard.querySelector<HTMLElement>(`[data-dashboard-panel="${panel}"]`)?.focus({
+      preventScroll: true,
+    });
+  };
+  dashboard?.querySelectorAll<HTMLAnchorElement>("[data-dashboard-tab]").forEach((link) =>
+    link.addEventListener("click", () => openPanel(link.dataset.dashboardTab)),
+  );
+  dashboard?.querySelectorAll<HTMLAnchorElement>("[data-dashboard-open]").forEach((link) =>
+    link.addEventListener("click", () => openPanel(link.dataset.dashboardOpen)),
+  );
+  dashboard?.querySelector<HTMLAnchorElement>(".dashboard-open-saved")?.addEventListener(
+    "click",
+    () => openPanel("saved"),
+  );
+  openPanel(location.hash.slice(1));
+  window.addEventListener("hashchange", () => openPanel(location.hash.slice(1)));
+
+  const escapeHtml = (value: unknown) =>
+    String(value ?? "").replace(
+      /[&<>'"]/g,
+      (character) =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[
+          character
+        ] ?? character,
+    );
+
+  const loadPrivateDashboard = async (user: User) => {
+    if (!dashboard) return;
+    const profileForm = dashboard.querySelector<HTMLFormElement>("[data-profile-form]");
+    const [profileResult, savedResult, requestResult] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("full_name,phone,city,country,preferred_contact_method,marketing_consent")
+        .eq("id", user.id)
+        .maybeSingle(),
+      supabase.from("saved_inspirations").select("id", { count: "exact", head: true }),
+      supabase
+        .from("customization_requests")
+        .select("id,reference_number,product_name_snapshot,status,created_at")
+        .order("created_at", { ascending: false }),
+    ]);
+
+    const savedCount = dashboard.querySelector<HTMLElement>("[data-saved-count]");
+    if (savedCount) savedCount.textContent = String(savedResult.count ?? 0);
+
+    const requests = requestResult.data ?? [];
+    const requestCount = dashboard.querySelector<HTMLElement>("[data-request-count]");
+    if (requestCount) requestCount.textContent = String(requests.length);
+    const requestList = dashboard.querySelector<HTMLElement>("[data-request-list]");
+    if (requestList) {
+      requestList.innerHTML = requests
+        .map(
+          (request) =>
+            `<article><div><span>${escapeHtml(request.reference_number)}</span><strong>${escapeHtml(request.product_name_snapshot)}</strong></div><span class="request-status">${escapeHtml(String(request.status).replaceAll("_", " "))}</span><p>${new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(request.created_at))}</p></article>`,
+        )
+        .join("");
+    }
+    const requestEmpty = dashboard.querySelector<HTMLElement>("[data-request-empty]");
+    if (requestEmpty) requestEmpty.hidden = requests.length > 0;
+
+    if (profileForm) {
+      profileForm.hidden = false;
+      const profile = profileResult.data ?? {};
+      Object.entries(profile).forEach(([name, value]) => {
+        const field = profileForm.elements.namedItem(name);
+        if (field instanceof HTMLInputElement) {
+          if (field.type === "checkbox") field.checked = Boolean(value);
+          else field.value = String(value ?? "");
+        }
+      });
+      if (!profileForm.dataset.ready) {
+        profileForm.dataset.ready = "true";
+        profileForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const values = new FormData(profileForm);
+          const payload = {
+            full_name: String(values.get("full_name") ?? "").trim() || null,
+            phone: String(values.get("phone") ?? "").trim() || null,
+            city: String(values.get("city") ?? "").trim() || null,
+            country: String(values.get("country") ?? "").trim() || null,
+            preferred_contact_method:
+              String(values.get("preferred_contact_method") ?? "").trim() || null,
+            marketing_consent: values.get("marketing_consent") === "on",
+            marketing_consent_at:
+              values.get("marketing_consent") === "on" ? new Date().toISOString() : null,
+            updated_at: new Date().toISOString(),
+          };
+          const profileNote = profileForm.querySelector<HTMLElement>("[data-profile-note]");
+          const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
+          if (profileNote)
+            profileNote.textContent = error
+              ? "We could not save your profile. Please try again."
+              : "Your profile has been updated securely.";
+        });
+      }
+    }
+  };
+
   const renderUser = (user: User | null) => {
     if (!dashboard) return;
     const identity = dashboard.querySelector<HTMLElement>(
@@ -232,6 +350,7 @@ export const initAccountExperience = async () => {
       avatar.hidden = !picture;
       if (picture) avatar.src = String(picture);
     }
+    if (user) void loadPrivateDashboard(user);
   };
   const { data, error } = await supabase.auth.getSession();
   if (error && dashboard)
@@ -241,12 +360,8 @@ export const initAccountExperience = async () => {
   renderUser(data.session?.user ?? null);
   dashboard
     ?.querySelector<HTMLButtonElement>("[data-signout]")
-    ?.addEventListener("click", async () => {
-      const { error } = await supabase.auth.signOut();
-      if (error) return;
-      window.RangbastraAudio?.signout();
-      renderUser(null);
-      location.assign("/account/login");
+    ?.addEventListener("click", () => {
+      document.querySelector<HTMLDialogElement>("[data-logout-dialog]")?.showModal();
     });
   const { data: authListener } = supabase.auth.onAuthStateChange(
     (_event, session) => renderUser(session?.user ?? null),

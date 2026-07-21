@@ -30,6 +30,9 @@ import { navigation as navigationItems } from "../../data/navigation";
 
     <MobileNav items={navigationItems} />
   </nav>
+  <dialog class="logout-dialog" data-logout-dialog aria-labelledby="logout-title" aria-describedby="logout-copy">
+    <div><h2 id="logout-title">Leaving your private couture space?</h2><p id="logout-copy">Your inspirations and requests will remain safely saved for your return.</p><div><button type="button" data-logout-cancel>Stay Here</button><button type="button" data-logout-confirm>Log Out</button></div></div>
+  </dialog>
 </header>
 
 <script>
@@ -38,4 +41,9 @@ import { navigation as navigationItems } from "../../data/navigation";
 
   initializeNavbar();
   initAccountNavigation();
+  document.addEventListener("astro:page-load", initAccountNavigation);
 </script>
+
+<style>
+  .logout-dialog{max-width:min(32rem,calc(100% - 2rem));padding:0;border:1px solid var(--cocoa-border);border-radius:var(--radius-lg);background:#050403;color:var(--text-secondary)}.logout-dialog::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(7px)}.logout-dialog>div{display:grid;gap:var(--space-4);padding:clamp(var(--space-5),5vw,var(--space-8))}.logout-dialog h2{color:var(--text-primary);font-family:var(--font-display);font-size:clamp(2rem,5vw,3.2rem);font-weight:var(--weight-light);line-height:1}.logout-dialog p{line-height:var(--leading-body)}.logout-dialog div div{display:flex;justify-content:flex-end;gap:var(--space-3)}.logout-dialog button{min-height:44px;padding-inline:var(--space-4);border:1px solid var(--cocoa-border);border-radius:var(--radius-md);background:transparent;color:var(--text-primary)}.logout-dialog button[data-logout-confirm]{background:rgba(var(--cocoa-rgb),.2)}.logout-dialog button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:3px}
+</style>

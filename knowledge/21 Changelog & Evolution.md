@@ -114,6 +114,60 @@ No
 
 ------------------------------------------------------------
 
+Version
+
+v1.0.1
+
+Date
+
+22 July 2026
+
+Category
+
+Authenticated Customer Experience
+
+Summary
+
+Repaired authenticated navigation and the customer account shell. Signed-in customers now receive a name/avatar profile control instead of Sign In and Create Account actions, every account destination opens a real panel, and logout uses a confirmation dialog. Updated Astro to the patched 7.1 release line and resolved the vulnerable transitive YAML parser selected by the previous lockfile.
+
+Reason
+
+The production navigation exposed guest authentication actions after session restoration, while several account links targeted sections that did not exist. The repair makes authenticated state coherent without changing the public homepage, OAuth configuration, or legal content.
+
+Files Affected
+
+AccountShell.astro
+
+MobileNav.astro
+
+Navbar.astro
+
+UtilityNav.astro
+
+accountClient.ts
+
+accountNavigation.ts
+
+auth/callback.astro
+
+package.json
+
+package-lock.json
+
+Impact
+
+Signed-in customers receive functional account navigation on desktop and mobile. Existing Supabase profile and couture-request data is presented through the repaired account panels. Public verification-sensitive content remains unchanged.
+
+Approved By
+
+Founder
+
+Future Review Required
+
+Yes — migrate account authorization to server-validated sessions before exposing higher-value customer or administrative operations.
+
+------------------------------------------------------------
+
 # WHAT MUST BE RECORDED
 
 Document changes involving:
