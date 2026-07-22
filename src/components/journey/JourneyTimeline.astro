@@ -27,13 +27,66 @@ import JourneyCard from "./JourneyCard.astro";
 
 <script>
   import { initTimelineProgress } from "../../lib/animations/timelineProgress";
-  initTimelineProgress();
-  document.addEventListener("astro:page-load", initTimelineProgress);
+  const initJourneyTimeline = () => {
+    initTimelineProgress();
+    document
+      .querySelectorAll<HTMLElement>("[data-scroll-timeline]")
+      .forEach((timeline) => {
+        if (timeline.dataset.accordionReady) return;
+        timeline.dataset.accordionReady = "true";
+        timeline
+          .querySelectorAll<HTMLButtonElement>(".card-surface")
+          .forEach((trigger) => {
+            trigger.addEventListener("click", () => {
+              if (!matchMedia("(max-width: 1023px)").matches) return;
+              const card = trigger.closest<HTMLElement>(".journey-card");
+              if (!card) return;
+              const willOpen = trigger.getAttribute("aria-expanded") !== "true";
+              timeline
+                .querySelectorAll<HTMLElement>(".journey-card.is-expanded")
+                .forEach((openCard) => {
+                  if (openCard === card) return;
+                  openCard.classList.remove("is-expanded");
+                  const openTrigger = openCard.querySelector<HTMLButtonElement>(
+                    ".card-surface",
+                  );
+                  openTrigger?.setAttribute("aria-expanded", "false");
+                  openCard
+                    .querySelector<HTMLElement>(".image-panel")
+                    ?.setAttribute("aria-hidden", "true");
+                  if (openTrigger)
+                    openTrigger.setAttribute(
+                      "aria-label",
+                      openTrigger.getAttribute("aria-label")?.replace("Hide", "Show") ?? "Show image",
+                    );
+                });
+              card.classList.toggle("is-expanded", willOpen);
+              trigger.setAttribute("aria-expanded", String(willOpen));
+              card
+                .querySelector<HTMLElement>(".image-panel")
+                ?.setAttribute("aria-hidden", String(!willOpen));
+              trigger.setAttribute(
+                "aria-label",
+                trigger.getAttribute("aria-label")?.replace(
+                  willOpen ? "Show" : "Hide",
+                  willOpen ? "Hide" : "Show",
+                ) ?? `${willOpen ? "Hide" : "Show"} image`,
+              );
+            });
+          });
+      });
+  };
+  initJourneyTimeline();
+  document.addEventListener("astro:page-load", initJourneyTimeline);
 </script>
 
 <style>
   .timeline {
     --timeline-gutter: clamp(var(--space-7), 6vw, var(--space-12));
+    --timeline-mobile-axis: var(--space-2);
+    --timeline-mobile-content-offset: var(--space-6);
+    --timeline-line-start: var(--space-6);
+    --timeline-line-length: calc(100% - (var(--space-6) * 2));
     position: relative;
     display: grid;
     gap: clamp(var(--space-8), 7vw, var(--space-12));
@@ -42,7 +95,9 @@ import JourneyCard from "./JourneyCard.astro";
   .timeline::before {
     content: "";
     position: absolute;
-    inset-block: var(--space-6);
+    top: var(--timeline-line-start);
+    bottom: auto;
+    height: var(--timeline-line-length);
     left: 50%;
     width: 1px;
     background: rgba(var(--cocoa-rgb), 0.26);
@@ -53,11 +108,13 @@ import JourneyCard from "./JourneyCard.astro";
   .timeline::after {
     content: "";
     position: absolute;
-    inset-block: var(--space-6);
+    top: var(--timeline-line-start);
+    bottom: auto;
+    height: var(--timeline-line-length);
     left: 50%;
     width: 1.5px;
     background: rgb(var(--cocoa-rgb));
-    box-shadow: 0 0 4px var(--cocoa-glow-soft);
+    box-shadow: none;
     transform: translate3d(-50%, 0, 0) scaleY(var(--timeline-progress, 0));
     transform-origin: top;
     pointer-events: none;
@@ -85,11 +142,11 @@ import JourneyCard from "./JourneyCard.astro";
     }
 
     .timeline::before {
-      left: var(--space-2);
+      left: var(--timeline-mobile-axis);
       transform: none;
     }
     .timeline::after {
-      left: var(--space-2);
+      left: var(--timeline-mobile-axis);
       transform: scaleY(var(--timeline-progress, 0));
     }
 
@@ -99,7 +156,7 @@ import JourneyCard from "./JourneyCard.astro";
       width: 100%;
       justify-self: stretch;
       padding-inline: 0 0;
-      padding-left: var(--space-6);
+      padding-left: var(--timeline-mobile-content-offset);
     }
   }
 

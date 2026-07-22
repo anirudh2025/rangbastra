@@ -1,205 +1,85 @@
 ---
-import Button from "../primitives/Button.astro";
 import type { CouturePiece } from "../../data/couture";
 
-interface Props {
-  product: CouturePiece;
-}
-
+interface Props { product: CouturePiece; }
 const { product } = Astro.props;
 ---
 
-<section class="impression-form-section" aria-labelledby="impression-form-heading">
-  <div class="form-intro">
-    <span>Share Your Impression</span>
-    <h2 id="impression-form-heading">Share What This Piece Made You <span>Feel</span>.</h2>
-    <p id="impression-form-note">
-      These are private visitor impressions, not verified buyer reviews. They are not published automatically.
-    </p>
+<section class="product-interactions" aria-labelledby={`interaction-${product.id}`} data-product-interactions data-product-id={product.id} data-product-slug={product.slug}>
+  <header>
+    <span>Community &amp; private notes</span>
+    <h2 id={`interaction-${product.id}`}>What This Piece <em>Inspires</em></h2>
+    <p>Public contributions are reviewed before publication. Private notes remain visible only to you and authorized Rangbastra staff.</p>
+  </header>
+
+  <div class="interaction-summary" aria-live="polite">
+    <div><strong data-rating-average>Not yet rated</strong><span data-rating-count>No customer ratings</span></div>
+    <button type="button" data-like aria-pressed="false">Like this piece</button>
   </div>
 
-  <!-- TODO: Wire to a Resend/API route with moderation and secure storage before public display. -->
-  <form class="impression-form" method="post" aria-describedby="impression-form-note" data-impression-form data-product-slug={product.slug}>
-    <input type="hidden" name="productSlug" value={product.slug} />
-
-    <label>
-      <span>Name</span>
-      <input name="name" type="text" autocomplete="name" required />
-    </label>
-
-    <label>
-      <span>Email</span>
-      <input name="email" type="email" autocomplete="email" required />
-    </label>
-
-    <label class="form-field-wide">
-      <span>Impression / Thought</span>
-      <textarea name="impression" rows="5" required></textarea>
-    </label>
-
-    <label>
-      <span>Optional rating</span>
-      <select name="rating">
-        <option value="">No rating</option>
-        <option value="5">5 - Loved the feeling</option>
-        <option value="4">4 - Beautifully admired</option>
-        <option value="3">3 - Softly considered</option>
-      </select>
-    </label>
-
-    <div class="form-action">
-      <Button type="submit">Share Impression</Button>
-      <small>Private impressions are reviewed before any future public display.</small>
-      <p class="form-status" aria-live="polite" data-impression-status></p>
+  <section class="composer" data-composer aria-labelledby={`composer-${product.id}`}>
+    <h3 id={`composer-${product.id}`}>Share your perspective</h3>
+    <div class="composer-lock" data-composer-lock>
+      <p>Sign in to leave a moderated public contribution or a private note for the atelier.</p>
+      <div><a href={`/account/login?next=${encodeURIComponent(`/products/${product.slug}#interaction-${product.id}`)}`}>Sign In</a><a href={`/account/signup?next=${encodeURIComponent(`/products/${product.slug}#interaction-${product.id}`)}`}>Create Account</a></div>
     </div>
-  </form>
+    <form data-comment-form hidden>
+      <fieldset><legend>Who should see this?</legend><label><input type="radio" name="contributionType" value="public" checked /> Public contribution</label><label><input type="radio" name="contributionType" value="private" /> Private note to Rangbastra</label></fieldset>
+      <label>Public display name<input name="displayName" maxlength="60" minlength="2" autocomplete="nickname" required /></label>
+      <label class="avatar-choice"><input type="checkbox" name="showAvatar" /> Show my avatar if this public contribution is approved</label>
+      <label>Your comment or note<textarea name="body" minlength="10" maxlength="1000" rows="5" required></textarea></label>
+      <div class="composer-actions"><button type="submit">Submit for review</button><button type="button" data-comment-cancel hidden>Cancel edit</button></div>
+      <p role="status" data-comment-status></p>
+    </form>
+  </section>
+
+  <section class="rating-composer" data-rating-composer hidden aria-label="Your rating">
+    <label>Your rating<select data-rating><option value="">Not rated</option><option value="5">5 — Exceptional</option><option value="4">4 — Beautiful</option><option value="3">3 — Considered</option><option value="2">2 — Not for me</option><option value="1">1 — Disappointed</option></select></label>
+  </section>
+  <p data-rating-lock><a href={`/account/login?next=${encodeURIComponent(`/products/${product.slug}#interaction-${product.id}`)}`}>Sign in to rate this piece</a>. Ratings are limited to one per customer.</p>
+
+  <section class="my-contributions" data-my-contributions hidden><h3>Your contributions</h3><div data-my-comment-list></div></section>
+  <section class="public-comments"><h3>Approved public comments</h3><div data-public-comment-list></div><p data-comment-empty>No approved comments yet.</p></section>
 </section>
 
 <script>
-  const impressionForms = document.querySelectorAll<HTMLFormElement>("[data-impression-form]");
-
-  impressionForms.forEach((form) => {
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-
-      const status = form.querySelector<HTMLElement>("[data-impression-status]");
-
-      if (status) {
-        status.textContent =
-          "Thank you. Your impression is ready for private atelier review.";
-      }
-
-      form.reset();
-    });
+  import { getSupabaseBrowserClient } from "../../lib/auth/supabaseBrowser";
+  const escapeText = (value: unknown) => String(value ?? "");
+  const init = () => document.querySelectorAll<HTMLElement>("[data-product-interactions]").forEach(async (root) => {
+    if (root.dataset.ready) return; root.dataset.ready = "true";
+    const productId = Number(root.dataset.productId), supabase = getSupabaseBrowserClient();
+    const lock = root.querySelector<HTMLElement>("[data-composer-lock]")!, form = root.querySelector<HTMLFormElement>("[data-comment-form]")!, status = root.querySelector<HTMLElement>("[data-comment-status]")!;
+    const publicList = root.querySelector<HTMLElement>("[data-public-comment-list]")!, mineList = root.querySelector<HTMLElement>("[data-my-comment-list]")!, mineSection = root.querySelector<HTMLElement>("[data-my-contributions]")!;
+    const ratingSelect = root.querySelector<HTMLSelectElement>("[data-rating]")!, ratingComposer = root.querySelector<HTMLElement>("[data-rating-composer]")!, like = root.querySelector<HTMLButtonElement>("[data-like]")!;
+    let user: any = null, editing = "";
+    const element = (tag: string, className?: string, text?: string) => { const node=document.createElement(tag); if(className) node.className=className; if(text) node.textContent=text; return node; };
+    const load = async () => {
+      const auth = await supabase.auth.getUser(); user = auth.data.user;
+      lock.hidden=Boolean(user); form.hidden=!user; ratingComposer.hidden=!user; root.querySelector<HTMLElement>("[data-rating-lock]")!.hidden=Boolean(user);
+      like.textContent=user ? "Like this piece" : "Sign in to like";
+      if(user){ const name=form.elements.namedItem("displayName") as HTMLInputElement; name.value=String(user.user_metadata?.full_name ?? "").slice(0,60); }
+      const { data, error } = await supabase.rpc("get_product_interactions", { requested_product_id: productId });
+      if(error){ status.textContent=error.message; return; } render(data ?? {});
+    };
+    const render = (data: any) => {
+      const aggregate=data.rating ?? {}, average=root.querySelector<HTMLElement>("[data-rating-average]")!, count=root.querySelector<HTMLElement>("[data-rating-count]")!;
+      average.textContent=aggregate.count ? `${aggregate.average} / 5` : "Not yet rated"; count.textContent=aggregate.count ? `${aggregate.count} customer ${aggregate.count===1?"rating":"ratings"}` : "No customer ratings";
+      publicList.replaceChildren(); (data.comments ?? []).forEach((comment:any)=>{ const article=element("article","comment"); const head=element("div","comment-head"); head.append(element("strong","",escapeText(comment.displayName)),element("time","",new Date(comment.createdAt).toLocaleDateString("en-IN"))); article.append(head,element("p","",escapeText(comment.body))); (comment.replies??[]).forEach((reply:any)=>{const r=element("aside","owner-reply");r.append(element("strong","","Rangbastra — Official reply"),element("p","",escapeText(reply.body)));article.append(r)}); if(user){const report=element("button","report-comment","Report") as HTMLButtonElement;report.type="button";report.dataset.report=comment.id;article.append(report)} publicList.append(article)});
+      root.querySelector<HTMLElement>("[data-comment-empty]")!.hidden=(data.comments??[]).length>0;
+      const mine=data.mine; mineSection.hidden=!mine; mineList.replaceChildren(); (mine?.comments??[]).forEach((comment:any)=>{const article=element("article","comment mine");article.dataset.mineId=comment.id;article.append(element("span","moderation-state",comment.type==="private"?"Private note":`Public · ${comment.status.replaceAll("_"," ")}`),element("p","",escapeText(comment.body)));if(comment.reason)article.append(element("small","",escapeText(comment.reason)));if(!comment.locked){const edit=element("button","","Edit") as HTMLButtonElement;edit.type="button";edit.dataset.edit=comment.id;const remove=element("button","","Delete") as HTMLButtonElement;remove.type="button";remove.dataset.delete=comment.id;article.append(edit,remove)}mineList.append(article)});
+      ratingSelect.value=mine?.rating ? String(mine.rating) : ""; like.setAttribute("aria-pressed",String(Boolean(mine?.liked)));like.textContent=mine?.liked?"Liked":"Like this piece";
+    };
+    form.addEventListener("submit",async(event)=>{event.preventDefault();const values=new FormData(form),body=String(values.get("body")||""),display=String(values.get("displayName")||""),show=values.get("showAvatar")==="on";status.textContent="Submitting securely…";const result=editing?await supabase.rpc("update_own_product_comment",{requested_comment_id:editing,requested_body:body,requested_display_name:display,requested_show_avatar:show}):await supabase.rpc("submit_product_comment",{requested_product_id:productId,requested_body:body,requested_type:String(values.get("contributionType")),requested_display_name:display,requested_show_avatar:show});if(result.error){status.textContent=result.error.message;return}editing="";form.reset();status.textContent="Received. Your contribution is awaiting review.";await load()});
+    mineList.addEventListener("click",async(event)=>{const target=event.target as HTMLElement,article=target.closest<HTMLElement>("[data-mine-id]");if(!article)return;const id=article.dataset.mineId!;if(target.matches("[data-delete]")){if(!confirm("Delete this contribution?"))return;await supabase.rpc("delete_own_product_comment",{requested_comment_id:id});await load()}if(target.matches("[data-edit]")){editing=id;const body=article.querySelector("p")?.textContent??"";(form.elements.namedItem("body") as HTMLTextAreaElement).value=body;form.querySelector<HTMLElement>("[data-comment-cancel]")!.hidden=false;form.scrollIntoView({behavior:"smooth",block:"center"})}});
+    form.querySelector<HTMLElement>("[data-comment-cancel]")?.addEventListener("click",()=>{editing="";form.reset();form.querySelector<HTMLElement>("[data-comment-cancel]")!.hidden=true});
+    ratingSelect.addEventListener("change",async()=>{const value=Number(ratingSelect.value);const result=value?await supabase.rpc("set_product_rating",{requested_product_id:productId,requested_rating:value}):await supabase.rpc("remove_own_product_rating",{requested_product_id:productId});if(result.error)status.textContent=result.error.message;await load()});
+    like.addEventListener("click",async()=>{if(!user){location.assign(`/account/login?next=${encodeURIComponent(location.pathname+location.hash)}`);return}const result=await supabase.rpc("toggle_product_like",{requested_product_id:productId});if(result.error)status.textContent=result.error.message;await load()});
+    publicList.addEventListener("click",async(event)=>{const button=(event.target as HTMLElement).closest<HTMLButtonElement>("[data-report]");if(!button)return;const reason=prompt("Report reason: spam, abuse, privacy, misleading or other","spam");if(!reason)return;const result=await supabase.rpc("report_product_comment",{requested_comment_id:button.dataset.report,requested_reason:reason,requested_detail:null});status.textContent=result.error?result.error.message:"Report received for private moderation."});
+    await load();
   });
+  init(); document.addEventListener("astro:page-load",init);
 </script>
 
 <style>
-  .impression-form-section {
-    display: grid;
-    grid-template-columns: minmax(0, .58fr) minmax(22rem, .82fr);
-    gap: clamp(var(--space-6), 7vw, var(--space-10));
-    align-items: start;
-  }
-
-  .form-intro {
-    display: grid;
-    gap: var(--space-4);
-  }
-
-  .form-intro span,
-  label span {
-    color: var(--text-muted);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    text-transform: uppercase;
-  }
-
-  h2 {
-    max-width: 15ch;
-    color: var(--text-primary);
-    font-family: var(--font-display);
-    font-size: clamp(2.4rem, 5vw, 5rem);
-    font-weight: var(--weight-light);
-    letter-spacing: var(--tracking-heading);
-    line-height: var(--leading-heading);
-    text-wrap: balance;
-  }
-
-  .form-intro h2 span {
-    background: var(--gradient-brand-text);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    font: inherit;
-    letter-spacing: inherit;
-    line-height: inherit;
-    text-transform: none;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .form-intro p,
-  .form-status,
-  small {
-    max-width: var(--measure-xs);
-    color: var(--text-secondary);
-    font-size: var(--body-sm);
-    line-height: var(--leading-body);
-  }
-
-  .impression-form {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-4);
-    padding: clamp(var(--space-5), 4vw, var(--space-7));
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-xl);
-    background: rgba(255, 255, 255, .025);
-    box-shadow: var(--shadow-inset);
-  }
-
-  label,
-  .form-action {
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  .form-field-wide,
-  .form-action {
-    grid-column: 1 / -1;
-  }
-
-  input,
-  textarea,
-  select {
-    width: 100%;
-    min-height: 3.5rem;
-    padding: 0 var(--space-4);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-lg);
-    background: rgba(0, 0, 0, .3);
-    color: var(--text-primary);
-    font: inherit;
-    line-height: var(--leading-body);
-    transition:
-      border-color var(--motion-button) var(--ease-luxury),
-      box-shadow var(--motion-button) var(--ease-luxury);
-  }
-
-  textarea {
-    min-height: 9rem;
-    padding-block: var(--space-4);
-    resize: vertical;
-  }
-
-  input:focus,
-  textarea:focus,
-  select:focus {
-    outline: none;
-    border-color: var(--border-accent);
-    box-shadow: var(--glow-soft);
-  }
-
-  .form-action {
-    align-items: start;
-    margin-top: var(--space-2);
-  }
-
-  .form-status {
-    min-height: 1.5rem;
-    color: var(--sand-200);
-  }
-
-  @media (max-width: 860px) {
-    .impression-form-section,
-    .impression-form {
-      grid-template-columns: 1fr;
-    }
-
-    h2 {
-      max-width: 13ch;
-    }
-  }
+  .product-interactions{display:grid;gap:var(--space-7);padding:clamp(var(--space-5),5vw,var(--space-9));border:1px solid var(--border-default);border-radius:var(--radius-2xl);background:rgba(5,5,5,.94)}header{display:grid;gap:var(--space-3);max-width:60rem}header>span,.moderation-state{color:var(--cocoa-300);font-size:var(--caption);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-label);text-transform:uppercase}h2{font-family:var(--font-display);font-size:clamp(2.5rem,5vw,5rem);font-weight:var(--weight-light);line-height:1}h2 em{color:var(--cocoa-300);font-style:normal}.interaction-summary{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--space-4);padding-block:var(--space-4);border-block:1px solid var(--border-default)}.interaction-summary div{display:grid}.interaction-summary button,.composer a,.composer button,.my-contributions button,.report-comment{min-height:44px;padding:.7rem 1rem;border:1px solid var(--cocoa-border);border-radius:var(--radius-md);color:var(--text-primary)}.composer,.rating-composer,.my-contributions,.public-comments{display:grid;gap:var(--space-4)}.composer-lock{display:grid;gap:var(--space-4);padding:var(--space-5);border:1px solid var(--border-default);background:rgba(var(--cocoa-rgb),.08)}.composer-lock div,.composer-actions{display:flex;flex-wrap:wrap;gap:var(--space-3)}form{display:grid;gap:var(--space-4)}form>label,fieldset{display:grid;gap:var(--space-2)}fieldset{padding:var(--space-4);border:1px solid var(--border-default)}fieldset label,.avatar-choice{display:flex;align-items:center;gap:var(--space-2)}input:not([type=radio]):not([type=checkbox]),textarea,select{width:100%;min-height:48px;padding:.75rem 1rem;border:1px solid var(--border-default);border-radius:var(--radius-md);background:#090807;color:var(--text-primary)}textarea{min-height:9rem;resize:vertical}.comment{display:grid;gap:var(--space-3);padding:var(--space-5);border:1px solid var(--border-default)}.comment-head{display:flex;justify-content:space-between;gap:var(--space-3)}.comment-head time,.comment small{color:var(--text-muted);font-size:var(--caption)}.owner-reply{display:grid;gap:var(--space-2);margin-top:var(--space-2);padding:var(--space-4);border-left:2px solid var(--cocoa-300);background:rgba(var(--cocoa-rgb),.08)}.owner-reply strong{color:var(--cocoa-300)}[hidden]{display:none!important}@media(max-width:600px){.product-interactions{padding:var(--space-5)}.interaction-summary,.comment-head{align-items:flex-start;flex-direction:column}}
 </style>

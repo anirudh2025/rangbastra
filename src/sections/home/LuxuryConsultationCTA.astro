@@ -110,7 +110,7 @@ import { contact, getWhatsAppHref } from "../../data/contact";
 
 <style>
   :global(.luxury-consultation-section) {
-    --section-padding-block: clamp(var(--space-10), 12vw, var(--space-13));
+    --section-padding-block: var(--homepage-section-spacing);
     --consultation-background: #000000;
     --consultation-glow-opacity: 0.18;
     --consultation-satin-opacity: 0.34;
@@ -172,8 +172,8 @@ import { contact, getWhatsAppHref } from "../../data/contact";
   }
 
   :global(.luxury-consultation-container) {
-    --container-default: var(--container-wide);
-    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+    --container-default: var(--container-2xl);
+    --container-padding-inline: var(--section-padding-inline);
 
     position: relative;
     z-index: var(--z-content);
@@ -291,7 +291,7 @@ import { contact, getWhatsAppHref } from "../../data/contact";
 
   @media (max-width: 767px) {
     :global(.luxury-consultation-section) {
-      --section-padding-block: clamp(var(--space-9), 16vw, var(--space-11));
+      --section-padding-block: var(--homepage-section-spacing);
       --consultation-glow-opacity: 0.14;
       --consultation-satin-opacity: 0.24;
       --consultation-button-min-width: min(100%, 18rem);
@@ -312,7 +312,7 @@ import { contact, getWhatsAppHref } from "../../data/contact";
     }
 
     :global(.luxury-consultation-container) {
-      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      --container-padding-inline: var(--section-padding-inline);
     }
 
     .invitation {

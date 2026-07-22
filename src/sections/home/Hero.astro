@@ -28,36 +28,11 @@ import Label from "../../components/primitives/Label.astro";
     </div>
 
     <div class="living-hero__content">
-      <p class="living-hero__eyebrow living-hero__eyebrow-legacy" aria-hidden="true">
-        Rangbastra <span aria-hidden="true">·</span> Private Couture
-      </p>
-      <p class="living-hero__eyebrow living-hero__eyebrow-location">
-        Rangbastra <span aria-hidden="true">&middot;</span> Luxury Custom Couture
-        <span aria-hidden="true">&middot;</span> Anand, Gujarat
-      </p>
+      <p class="living-hero__eyebrow">Bespoke Indian Couture</p>
       <h1 id="hero-heading">
-        <span class="visually-hidden"
-          >Not Designed for Everyone. Crafted Around You.</span
-        >
-        <span class="hero-heading__visual" aria-hidden="true">
-          <span class="hero-heading__line"
-            ><span>Not Designed for Everyone.</span></span
-          >
-          <span class="hero-heading__line hero-heading__second"
-            ><span class="animated-phrase"
-              ><span class="hero-heading__word" data-changing-word
-                >Crafted<span class="hero-heading__caret"></span></span
-              ><span>Around You.</span></span
-            ></span
-          >
-        </span>
+        Not Designed for Everyone
       </h1>
       <div class="living-hero__support">
-        <p class="living-hero__copy">
-          Rangbastra is an online luxury couture platform for exploring bridal
-          and occasion wear, saving favourite pieces and beginning a
-          personalised design consultation.
-        </p>
         <div class="living-hero__actions">
           <Button href="/design-your-outfit" class="living-hero__primary"
             ><Label icon="sketch">Begin Yours</Label></Button
@@ -70,12 +45,6 @@ import Label from "../../components/primitives/Label.astro";
     </div>
   </div>
 </header>
-
-<script>
-  import { initLivingHero } from "../../lib/animations/livingHero";
-  document.addEventListener("astro:page-load", initLivingHero);
-  initLivingHero();
-</script>
 
 <style>
   .living-hero {
@@ -269,7 +238,7 @@ import Label from "../../components/primitives/Label.astro";
     justify-content: center;
     align-items: center;
     gap: var(--space-6);
-    margin-top: var(--space-8);
+    margin-top: clamp(var(--space-7), 5vh, var(--space-9));
     pointer-events: auto;
   }
 
@@ -366,7 +335,7 @@ import Label from "../../components/primitives/Label.astro";
     .living-hero__actions {
       flex-direction: column;
       gap: 0.35rem;
-      margin-top: 1rem;
+      margin-top: var(--space-6);
     }
     :global(.living-hero__primary) {
       min-height: 48px;

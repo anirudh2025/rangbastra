@@ -30,12 +30,13 @@ const makeSrcset = (url?: string): string | null => {
 
 const srcset = makeSrcset(image);
 const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
+const panelId = `journey-image-${step}`;
 ---
 
 <article class:list={["journey-card", `journey-card--reveal-${revealSide}`]}>
   <span class="milestone" data-timeline-milestone aria-hidden="true"></span>
 
-  <div class="image-panel" aria-hidden="true">
+  <div class="image-panel" id={panelId} aria-hidden="true">
     <img
       src={image}
       alt=""
@@ -48,7 +49,13 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     />
   </div>
 
-  <div class="card-surface">
+  <button
+    class="card-surface"
+    type="button"
+    aria-expanded="false"
+    aria-controls={panelId}
+    aria-label={`Show the ${title} image`}
+  >
     <span class="step">{String(step).padStart(2, "0")}</span>
 
     <div class="icon-wrapper" aria-hidden="true">
@@ -62,7 +69,8 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
 
       <p>{description}</p>
     </div>
-  </div>
+    <span class="card-state" aria-hidden="true"></span>
+  </button>
 </article>
 
 <style>
@@ -131,6 +139,9 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
       transform var(--motion-medium) var(--ease-luxury),
       border-color var(--motion-medium) var(--ease-luxury),
       box-shadow var(--motion-medium) var(--ease-luxury);
+    color: inherit;
+    text-align: left;
+    cursor: default;
   }
 
   .card-surface::before {
@@ -181,6 +192,10 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     box-shadow:
       inset 0 0 8px rgba(var(--cocoa-rgb), 0.06),
       inset 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .card-state {
+    display: none;
   }
 
   .journey-card:hover .card-surface::before,
@@ -352,30 +367,40 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
 
   @media (max-width: 1023px) {
     .journey-card {
-      --journey-card-min-height: clamp(20rem, 56vw, 27rem);
+      --journey-card-min-height: clamp(18rem, 48vw, 24rem);
       --journey-mobile-image-height: min(16rem, 56vw);
-
-      padding-bottom: calc(var(--journey-mobile-image-height) + var(--space-3));
     }
 
     .milestone,
     :global(.timeline-item--left) .milestone,
     :global(.timeline-item--right) .milestone {
-      left: calc((var(--space-6) + var(--space-2)) * -1);
+      left: calc(
+        var(--timeline-mobile-axis) - var(--timeline-mobile-content-offset) -
+          (var(--journey-dot-size) / 2)
+      );
       right: auto;
       transform: none;
     }
 
     .image-panel {
+      position: relative;
       top: auto;
-      right: var(--space-5);
-      bottom: 0;
-      left: var(--space-5);
-      width: auto;
-      height: var(--journey-mobile-image-height);
+      right: auto;
+      bottom: auto;
+      left: auto;
+      width: 100%;
+      height: 0;
+      max-height: 0;
+      margin-top: 0;
       aspect-ratio: 16 / 10;
-      opacity: 0.82;
+      opacity: 0;
+      overflow: hidden;
       transform: translate3d(0, 0, 0) scale(1);
+      transition:
+        height 300ms var(--ease-luxury),
+        max-height 300ms var(--ease-luxury),
+        margin-top 300ms var(--ease-luxury),
+        opacity 180ms var(--ease-luxury);
     }
 
     .journey-card--reveal-left .image-panel,
@@ -383,6 +408,48 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     .journey-card:hover .image-panel,
     .journey-card:focus-within .image-panel {
       transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    .journey-card.is-expanded .image-panel {
+      height: var(--journey-mobile-image-height);
+      max-height: var(--journey-mobile-image-height);
+      margin-top: var(--space-3);
+      opacity: 1;
+    }
+
+    .card-surface {
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .card-state {
+      position: absolute;
+      right: var(--space-5);
+      bottom: var(--space-5);
+      display: grid;
+      width: 2rem;
+      height: 2rem;
+      place-items: center;
+      border: 1px solid var(--cocoa-border-soft);
+      border-radius: var(--radius-circle);
+    }
+
+    .card-state::before,
+    .card-state::after {
+      content: "";
+      position: absolute;
+      width: .75rem;
+      height: 1px;
+      background: currentColor;
+      transition: transform 240ms var(--ease-luxury);
+    }
+
+    .card-state::after {
+      transform: rotate(90deg);
+    }
+
+    .card-surface[aria-expanded="true"] .card-state::after {
+      transform: rotate(0deg);
     }
   }
 
@@ -405,8 +472,6 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     }
 
     .image-panel {
-      right: var(--space-4);
-      left: var(--space-4);
       border-radius: var(--radius-xl);
     }
   }
@@ -423,6 +488,12 @@ const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
     .journey-card:hover .divider,
     .journey-card:focus-within .divider {
       transform: none;
+    }
+
+    @media (max-width: 1023px) {
+      .image-panel {
+        transition: none;
+      }
     }
   }
 </style>

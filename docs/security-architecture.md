@@ -24,6 +24,10 @@ Google OAuth uses PKCE. Allowed origins and redirect URLs must be exact producti
 - notifications and raw product-interest events: no public table access.
 - public product-interest RPC returns only a recent aggregate. It is not a trustworthy business metric without gateway abuse controls.
 - Owner/admin access is through the authenticated Supabase dashboard. There is no website admin role or admin route.
+- Product interactions use narrowly granted `security definer` RPCs for validation, ownership enforcement, rate limiting and moderation transitions. Direct browser mutations on interaction tables are revoked; RLS remains an independent read boundary.
+- Staff interaction authority comes only from the signed Auth JWT `app_metadata.role` allowlist (`owner`, `staff`, `moderator`). User-editable metadata and browser-side email comparisons are never authorization inputs.
+- Public interaction responses are privacy-shaped JSON: approved public content and aggregates only. Private notes, pending/rejected/hidden comments and identity UUIDs are excluded; owners receive their own state and authorized staff use the moderation queue RPC.
+- Customer text is length-limited, control-character cleaned, URL/active-markup rejected, and rendered with DOM `textContent`. New public comments default to `pending`; publication always requires an audited staff action.
 
 ## Browser defenses
 

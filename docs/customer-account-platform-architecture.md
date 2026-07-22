@@ -48,7 +48,7 @@ auth.users
 1. Existing `001`–`005`: profiles, saved inspirations, requests, private files, notification delivery and hardening.
 2. `006_customer_account_platform.sql`: profile preference fields, boards, slug-based inspirations with notes/restore state, customer preferences, hidden products, configured availability slots, appointments, in-app notifications and customer-safe request history.
 3. A later storage migration only after malware/quarantine architecture is selected: private avatar and customer-reference policies with randomized server-generated paths.
-4. Social/review tables are deferred until moderation, reporting, rate limiting, audit retention and community rules are approved.
+4. `007_product_interactions.sql`: moderated public/private product comments, official replies, ratings, likes, reporting, notifications and audit records. It remains deployment-gated until Preview migration/RLS/staff testing and retention/community-policy approval.
 
 ## Authorization and RLS summary
 
@@ -85,12 +85,12 @@ Use the Supabase dashboard for the current MVP. A website owner console requires
 
 ## Explicitly deferred
 
-- Public likes/counts, comments, stories, reviews and moderation queue.
+- Stories and any customer-to-customer messaging.
 - Web push/VAPID and service worker.
 - Customer/staff secure messaging.
 - Live scheduling and customer reschedule/cancel mutations.
 - Profile-image and new private-reference uploads.
-- Website admin/owner console.
+- Website admin/owner console UI. Staff moderation is available through secured RPCs and the Supabase operational surface only.
 - Any global product editing by customers.
 
 ## Deployment gate
@@ -108,6 +108,8 @@ Use the Supabase dashboard for the current MVP. A website owner console requires
 - `CustomerAccountPlatform.astro`: overview, profile, inspirations, request history, configured appointments, notifications, preferences and privacy controls.
 - `/wishlist`: remains the guest, device-local shortlist. On authenticated account load, canonical catalogue matches are merged into `saved_inspirations` and the local list is cleared only after a successful database write.
 - `/design-your-outfit`: remains the canonical detailed couture-request route.
+- `/account/activity`: authenticated RPC-backed comments, privacy/moderation state, official replies, ratings and liked products.
+- `/products/[slug]`: approved public comments and honest rating aggregates for everyone; authenticated pending/private contributions, rating and appreciation controls for the owner.
 
 ### Developer control guide
 

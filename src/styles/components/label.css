@@ -63,11 +63,11 @@
   transform: translateX(-3px);
 
   transition:
-    opacity var(--label-duration) var(--label-easing),
-    transform var(--label-duration) var(--label-easing),
-    max-width var(--label-duration) var(--label-easing),
-    margin var(--label-duration) var(--label-easing),
-    visibility 0s linear var(--label-duration);
+    opacity 240ms var(--label-easing),
+    transform 280ms var(--label-easing),
+    max-width 280ms var(--label-easing),
+    margin 280ms var(--label-easing),
+    visibility 0s linear 280ms;
 }
 
 .label--left .label__icon {
