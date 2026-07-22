@@ -343,11 +343,6 @@
         height:30px;
     }
 
-    .navbar__wordmark{
-        font-size:1.08rem;
-        letter-spacing:.06em;
-    }
-
     .mobile-nav__statement{
         font-size:.68rem;
     }
@@ -375,13 +370,13 @@
     }
 
     .navbar__cta.button{
-        display:none !important;
+        display:inline-flex !important;
         --button-padding-x:.55rem !important;
 
         min-height:44px !important;
         height:44px !important;
         font-size:.68rem !important;
-        padding:0 .9rem !important;
+        padding:0 .55rem !important;
         padding-block:0 !important;
         line-height:1 !important;
     }

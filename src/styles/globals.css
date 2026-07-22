@@ -462,7 +462,7 @@ main > :where(.section, .homepage-journey),
   --section-rhythm-heading: var(--space-3);
   --section-rhythm-content: clamp(var(--space-7), 6vw, var(--space-10));
   --section-rhythm-padding: clamp(var(--space-10), 9vw, var(--space-13));
-  --homepage-section-spacing: clamp(6rem, 8vw, 9rem);
+  --homepage-section-spacing: clamp(6rem, 7vw, 8rem);
   --editorial-header-gap: var(--space-4);
   --editorial-title-gap: var(--space-2);
   --title-tracking-premium: clamp(-0.045em, -0.25vw, -0.018em);
@@ -562,11 +562,11 @@ main > :where(.section, .homepage-journey),
 
 @media (max-width: 1024px) {
   :root {
-    --homepage-section-spacing: clamp(5rem, 9vw, 7rem);
+    --homepage-section-spacing: clamp(4.5rem, 8vw, 6rem);
   }
 }
 @media (max-width: 767px) {
   :root {
-    --homepage-section-spacing: clamp(4rem, 18vw, 5.5rem);
+    --homepage-section-spacing: clamp(3.5rem, 15vw, 4.5rem);
   }
 }

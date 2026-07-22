@@ -16,15 +16,15 @@ import JourneyTimeline from "./JourneyTimeline.astro";
 
 <style>
   :global(.journey-section) {
-    --section-padding-block: clamp(var(--space-10), 10vw, var(--space-14));
+    --section-padding-block: var(--homepage-section-spacing);
 
     overflow: hidden;
     background:transparent;
   }
 
   :global(.journey-container) {
-    --container-default: var(--container-wide);
-    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
+    --container-default: var(--container-2xl);
+    --container-padding-inline: var(--section-padding-inline);
 
     position: relative;
     z-index: var(--z-content);
@@ -35,11 +35,11 @@ import JourneyTimeline from "./JourneyTimeline.astro";
 
   @media (max-width: 767px) {
     :global(.journey-section) {
-      --section-padding-block: clamp(var(--space-9), 18vw, var(--space-12));
+      --section-padding-block: var(--homepage-section-spacing);
     }
 
     :global(.journey-container) {
-      --container-padding-inline: clamp(var(--space-4), 6vw, var(--space-6));
+      --container-padding-inline: var(--section-padding-inline);
       gap: var(--space-8);
     }
   }

@@ -37,12 +37,19 @@ const measure = () => {
   measureFrame = 0;
   states.forEach((state) => {
     const rect = state.element.getBoundingClientRect();
-    state.top = rect.top + scrollY;
-    state.height = Math.max(1, rect.height);
-    state.milestoneProgress = state.milestones.map((milestone) => {
+    const milestoneCenters = state.milestones.map((milestone) => {
       const dot = milestone.getBoundingClientRect();
-      return clamp((dot.top + dot.height / 2 - rect.top) / state.height);
+      return dot.top + dot.height / 2 - rect.top;
     });
+    const lineStart = milestoneCenters[0] ?? 0;
+    const lineEnd = milestoneCenters.at(-1) ?? rect.height;
+    state.top = rect.top + scrollY + lineStart;
+    state.height = Math.max(1, lineEnd - lineStart);
+    state.element.style.setProperty("--timeline-line-start", `${lineStart}px`);
+    state.element.style.setProperty("--timeline-line-length", `${state.height}px`);
+    state.milestoneProgress = milestoneCenters.map((center) =>
+      clamp((center - lineStart) / state.height),
+    );
   });
   scheduleRender();
 };
@@ -59,6 +66,20 @@ export function initTimelineProgress() {
       element.style.setProperty("--timeline-progress", "1");
       milestones.forEach((milestone) => milestone.classList.add("is-complete"));
       milestones.at(-1)?.classList.add("is-current");
+      requestAnimationFrame(() => {
+        const rect = element.getBoundingClientRect();
+        const centers = milestones.map((milestone) => {
+          const dot = milestone.getBoundingClientRect();
+          return dot.top + dot.height / 2 - rect.top;
+        });
+        const start = centers[0] ?? 0;
+        const end = centers.at(-1) ?? rect.height;
+        element.style.setProperty("--timeline-line-start", `${start}px`);
+        element.style.setProperty(
+          "--timeline-line-length",
+          `${Math.max(1, end - start)}px`,
+        );
+      });
       return;
     }
     const observer = new ResizeObserver(scheduleMeasure);

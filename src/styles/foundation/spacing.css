@@ -76,7 +76,7 @@ SECTION SPACING
 clamp(1.25rem,3vw,4rem);
 
 --section-padding-block:
-clamp(6rem,9vw,10rem);
+clamp(6rem,7vw,8rem);
 
 --section-gap:
 var(--fluid-space-xl);
