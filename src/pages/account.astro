@@ -2,13 +2,17 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Container from "../components/primitives/Container.astro";
 import Section from "../components/primitives/Section.astro";
-import AccountShell from "../components/account/AccountShell.astro";
+import CustomerAccountPlatform from "../components/account/CustomerAccountPlatform.astro";
 ---
 
-<BaseLayout title="Private Client Room | Rangbastra" description="Enter a private Rangbastra client room for saved couture inspirations, design notes and future atelier responses." canonical="/account">
+<BaseLayout
+  title="Private Client Room | Rangbastra"
+  description="Enter a private Rangbastra client room for saved couture inspirations, design notes and future atelier responses."
+  canonical="/account"
+>
   <Section class="account-section">
     <Container class="account-container">
-      <AccountShell mode="dashboard" />
+      <CustomerAccountPlatform />
     </Container>
   </Section>
 </BaseLayout>
@@ -18,8 +22,17 @@ import AccountShell from "../components/account/AccountShell.astro";
     --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
     overflow: hidden;
     background:
-      radial-gradient(circle at 82% 16%, rgba(106, 78, 66, .2), transparent 34%),
-      linear-gradient(90deg, transparent 0 72%, rgba(198, 169, 114, .07) 72.08% 72.16%, transparent 72.24%),
+      radial-gradient(
+        circle at 82% 16%,
+        rgba(106, 78, 66, 0.2),
+        transparent 34%
+      ),
+      linear-gradient(
+        90deg,
+        transparent 0 72%,
+        rgba(198, 169, 114, 0.07) 72.08% 72.16%,
+        transparent 72.24%
+      ),
       var(--surface-canvas);
   }
 

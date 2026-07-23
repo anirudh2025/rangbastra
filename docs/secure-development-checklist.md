@@ -16,6 +16,8 @@
 - [ ] Revoke default `PUBLIC` function execution; pin `search_path` on security-definer functions.
 - [ ] Confirm mass-assignment cannot change identity, role, status, ownership, or consent timestamps.
 - [ ] Add rate limits and idempotency for costly or externally visible operations.
+- [ ] For product interactions, run `supabase/tests/007_product_interactions_rls.sql` in a disposable Preview database and verify anonymous, cross-user, staff, private-note, moderation, XSS, rate-limit, rating and like assertions.
+- [ ] Provision staff only through Supabase Auth `app_metadata.role`; require operator MFA and verify a refreshed token before moderation access.
 
 ## Authentication
 

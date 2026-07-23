@@ -1,0 +1,14 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Container from "../../components/primitives/Container.astro";
+import ProductActivity from "../../components/account/ProductActivity.astro";
+---
+
+<BaseLayout
+  title="Product Activity | Rangbastra"
+  description="Your private Rangbastra product comments, ratings and likes."
+  canonical="/account/activity"
+  robots="noindex,nofollow"
+>
+  <Container><ProductActivity /></Container>
+</BaseLayout>
