@@ -1,0 +1,67 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Container from "../../components/primitives/Container.astro";
+import Section from "../../components/primitives/Section.astro";
+import CustomerAccountPlatform from "../../components/account/CustomerAccountPlatform.astro";
+
+export const getStaticPaths = () => {
+  const accountSections = {
+    profile: { panel: "profile", title: "My Profile" },
+    inspirations: { panel: "saved", title: "Saved Inspirations" },
+    requests: { panel: "requests", title: "Couture Requests" },
+    appointments: { panel: "appointments", title: "Appointments" },
+    preferences: { panel: "preferences", title: "Preferences" },
+    privacy: { panel: "privacy", title: "Privacy & Security" },
+  } as const;
+
+  return Object.entries(accountSections).map(([section, details]) => ({
+    params: { section },
+    props: details,
+  }));
+};
+
+interface Props {
+  panel: string;
+  title: string;
+}
+
+const { panel, title } = Astro.props;
+---
+
+<BaseLayout
+  title={`${title} | Rangbastra`}
+  description={`${title} in your private Rangbastra client room.`}
+  canonical={`/account/${Astro.params.section}`}
+  robots="noindex,nofollow"
+>
+  <Section class="account-section">
+    <Container class="account-container">
+      <CustomerAccountPlatform initialPanel={panel} />
+    </Container>
+  </Section>
+</BaseLayout>
+
+<style>
+  :global(.account-section) {
+    --section-padding-block: 0 clamp(var(--space-10), 10vw, var(--space-13));
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 82% 16%,
+        rgba(106, 78, 66, 0.2),
+        transparent 34%
+      ),
+      linear-gradient(
+        90deg,
+        transparent 0 72%,
+        rgba(198, 169, 114, 0.07) 72.08% 72.16%,
+        transparent 72.24%
+      ),
+      var(--surface-canvas);
+  }
+
+  :global(.account-container) {
+    --container-default: min(94rem, 100%);
+    --container-padding-inline: clamp(var(--space-3), 3vw, var(--space-7));
+  }
+</style>

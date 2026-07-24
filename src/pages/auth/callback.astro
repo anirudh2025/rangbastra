@@ -14,21 +14,42 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 </BaseLayout>
 
 <script>
-  import { getSupabaseBrowserClient } from "../../lib/auth/supabaseBrowser";
+  import { createClient } from "@supabase/supabase-js";
 
   const completeAuth = async () => {
     const status = document.querySelector<HTMLElement>(
       "[data-auth-callback-status]",
     );
     try {
-      const supabase = getSupabaseBrowserClient();
-      const { data, error } = await supabase.auth.getSession();
+      const url = import.meta.env.PUBLIC_SUPABASE_URL;
+      const key =
+        import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+        import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+      if (!url || !key) throw new Error("Authentication is not configured");
+
+      const parameters = new URLSearchParams(location.search);
+      if (parameters.has("error") || parameters.has("error_code"))
+        throw new Error("OAuth provider returned an error");
+
+      const supabase = createClient(url, key, {
+        auth: {
+          flowType: "pkce",
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: false,
+        },
+      });
+      const code = parameters.get("code");
+      const result = code
+        ? await supabase.auth.exchangeCodeForSession(code)
+        : await supabase.auth.getSession();
+      const { data, error } = result;
       if (error || !data.session)
         throw error ?? new Error("No session returned");
       if (status)
         status.textContent = "Welcome. Opening your private client room…";
       window.RangbastraAudio?.success();
-      const requested = new URLSearchParams(location.search).get("next");
+      const requested = parameters.get("next");
       const next =
         requested?.startsWith("/") && !requested.startsWith("//")
           ? requested

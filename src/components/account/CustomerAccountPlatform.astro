@@ -2,6 +2,12 @@
 import Button from "../primitives/Button.astro";
 import { getPublishedCouturePieces } from "../../lib/couture";
 
+interface Props {
+  initialPanel?: string;
+}
+
+const { initialPanel = "overview" } = Astro.props;
+
 const catalogue = getPublishedCouturePieces().map(
   ({ id, slug, name, category, featuredImage }) => ({
     id,
@@ -28,6 +34,7 @@ const sections = [
 <section
   class="client-room"
   data-account-platform
+  data-initial-panel={initialPanel}
   aria-labelledby="client-room-title"
 >
   <header class="client-room__header">
@@ -871,7 +878,8 @@ const sections = [
           );
         say(error ? error.message : "Preferences saved.", Boolean(error));
       });
-    const initial = location.hash.slice(1);
+    const initial =
+      location.hash.slice(1) || root.dataset.initialPanel || "overview";
     if (
       [
         "overview",
