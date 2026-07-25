@@ -107,3 +107,29 @@ export const serializeCanvaOAuthCookie = (sealedTransaction) =>
     "Secure",
     "SameSite=Lax",
   ].join("; ");
+
+export const readCanvaOAuthCookie = (cookieHeader) => {
+  const cookies = String(cookieHeader ?? "").split(";");
+
+  for (const cookie of cookies) {
+    const separatorIndex = cookie.indexOf("=");
+    if (separatorIndex < 0) continue;
+
+    const name = cookie.slice(0, separatorIndex).trim();
+    if (name !== CANVA_OAUTH_COOKIE_NAME) continue;
+
+    return cookie.slice(separatorIndex + 1).trim() || null;
+  }
+
+  return null;
+};
+
+export const serializeClearedCanvaOAuthCookie = () =>
+  [
+    `${CANVA_OAUTH_COOKIE_NAME}=`,
+    "Path=/",
+    "Max-Age=0",
+    "HttpOnly",
+    "Secure",
+    "SameSite=Lax",
+  ].join("; ");
