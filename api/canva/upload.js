@@ -2,7 +2,10 @@ import {
   CanvaCredentialError,
   loadCanvaAccessToken,
 } from "./_credentials.js";
-import { uploadCanvaPngOriginal } from "./_cloudinary.js";
+import {
+  CloudinaryUploadError,
+  uploadCanvaPngOriginal,
+} from "./_cloudinary.js";
 import { createCanvaPngExport } from "./_export.js";
 
 const DESIGN_ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
@@ -78,6 +81,19 @@ export default async function handler(request, response) {
 
     return response.status(200).json(uploaded);
   } catch (error) {
+    if (error instanceof CloudinaryUploadError) {
+      return response.status(502).json({
+        error: "Cloudinary upload failed",
+        status: error.status,
+        ...(error.providerMessage
+          ? { provider_message: error.providerMessage }
+          : {}),
+        ...(error.providerCode
+          ? { provider_code: error.providerCode }
+          : {}),
+      });
+    }
+
     if (
       error instanceof CanvaCredentialError &&
       error.code === "refresh_required"

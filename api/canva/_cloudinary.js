@@ -3,6 +3,33 @@ const PNG_SIGNATURE = Buffer.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
 ]);
 
+export class CloudinaryUploadError extends Error {
+  constructor({ status, providerMessage, providerCode }) {
+    super("Cloudinary upload failed.");
+    this.status = status;
+    this.providerMessage = providerMessage;
+    this.providerCode = providerCode;
+  }
+}
+
+const safeProviderText = (value, secrets) => {
+  if (typeof value !== "string" && typeof value !== "number") {
+    return undefined;
+  }
+
+  const text = String(value).replace(/[\r\n\t]/g, " ").trim();
+  if (
+    !text ||
+    text.length > 300 ||
+    secrets.some((secret) => secret && text.includes(secret)) ||
+    /\b(?:authorization|bearer|basic)\b/i.test(text)
+  ) {
+    return undefined;
+  }
+
+  return text;
+};
+
 export const uploadCanvaPngOriginal = async ({
   downloadUrl,
   publicId,
@@ -60,7 +87,37 @@ export const uploadCanvaPngOriginal = async ({
   );
 
   if (!uploadResponse.ok) {
-    throw new Error("Cloudinary upload failed.");
+    let providerError;
+    try {
+      providerError = (await uploadResponse.json())?.error;
+    } catch {
+      providerError = null;
+    }
+
+    const secrets = [apiKey, apiSecret];
+    const providerMessage = safeProviderText(
+      providerError?.message ??
+        uploadResponse.headers.get("x-cld-error"),
+      secrets,
+    );
+    const providerCode = safeProviderText(
+      providerError?.code ?? providerError?.type,
+      secrets,
+    );
+    const diagnostic = {
+      status: uploadResponse.status,
+      ...(providerMessage
+        ? { provider_message: providerMessage }
+        : {}),
+      ...(providerCode ? { provider_code: providerCode } : {}),
+    };
+
+    console.error("Cloudinary upload failed", diagnostic);
+    throw new CloudinaryUploadError({
+      status: uploadResponse.status,
+      providerMessage,
+      providerCode,
+    });
   }
 
   const uploaded = await uploadResponse.json();
