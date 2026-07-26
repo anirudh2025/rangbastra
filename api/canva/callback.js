@@ -4,6 +4,8 @@ import {
   readCanvaOAuthCookie,
   serializeClearedCanvaOAuthCookie,
 } from "./_oauth.js";
+import { getSupabaseAdminClient } from "./_supabase.js";
+import { encryptCanvaToken } from "./_tokens.js";
 
 const CANVA_TOKEN_URL = "https://api.canva.com/rest/v1/oauth/token";
 const CANVA_REDIRECT_URI =
@@ -103,17 +105,47 @@ export default async function handler(request, response) {
       typeof tokenPayload.access_token !== "string" ||
       !tokenPayload.access_token ||
       typeof tokenPayload.refresh_token !== "string" ||
-      !tokenPayload.refresh_token
+      !tokenPayload.refresh_token ||
+      !Number.isFinite(Number(tokenPayload.expires_in)) ||
+      Number(tokenPayload.expires_in) <= 0
     ) {
       return response
         .status(502)
         .send("Canva returned an incomplete authorization response.");
     }
 
+    const grantedScopes =
+      typeof tokenPayload.scope === "string"
+        ? [...new Set(tokenPayload.scope.split(/\s+/).filter(Boolean))]
+        : null;
+    const accessTokenExpiresAt = new Date(
+      Date.now() + Number(tokenPayload.expires_in) * 1000,
+    ).toISOString();
+    const supabase = getSupabaseAdminClient();
+    const { error: storageError } = await supabase.rpc(
+      "store_canva_oauth_credentials",
+      {
+        requested_access_token_encrypted: encryptCanvaToken(
+          tokenPayload.access_token,
+        ),
+        requested_refresh_token_encrypted: encryptCanvaToken(
+          tokenPayload.refresh_token,
+        ),
+        requested_access_token_expires_at: accessTokenExpiresAt,
+        requested_granted_scopes: grantedScopes,
+      },
+    );
+
+    if (storageError) {
+      return response
+        .status(502)
+        .send("Canva credentials could not be stored securely.");
+    }
+
     return response
       .status(200)
       .send(
-        "Canva connected successfully. Access and refresh tokens received securely.",
+        "Canva connected successfully and credentials stored securely.",
       );
   } catch {
     return response
