@@ -5,9 +5,9 @@ import {
 } from "../data/couture";
 import {
   cloudinaryImageUrl,
-  GULNAAR_ASSETS,
+  COUTURE_ASSETS,
   isCloudinaryResponsiveWidth,
-  type GulnaarAssetKey,
+  type CoutureAssetKey,
 } from "./cloudinary";
 
 const productViewLabels = [
@@ -67,15 +67,15 @@ export const getCloudinaryImageUrl = (src: string, width: number) => {
     return src;
   }
 
-  const gulnaarAsset = Object.entries(GULNAAR_ASSETS).find(
+  const registeredAsset = Object.entries(COUTURE_ASSETS).find(
     ([, publicId]) => src.endsWith(`/${publicId}.webp`),
   );
-  if (gulnaarAsset) {
+  if (registeredAsset) {
     if (!isCloudinaryResponsiveWidth(width)) {
-      throw new Error("Unsupported Gulnaar responsive image width.");
+      throw new Error("Unsupported couture responsive image width.");
     }
     return cloudinaryImageUrl(
-      gulnaarAsset[0] as GulnaarAssetKey,
+      registeredAsset[0] as CoutureAssetKey,
       width,
     );
   }

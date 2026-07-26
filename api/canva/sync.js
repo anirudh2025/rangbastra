@@ -14,7 +14,25 @@ import { createCanvaPngExport } from "./_export.js";
 import { CANVA_SYNC_MANIFEST } from "./_sync-manifest.js";
 import { loadAllCanvaPages } from "./bindings.js";
 
-const ALLOWED_PRODUCT = "gulnaar";
+export const SYNC_PRODUCTS = Object.freeze({
+  gulnaar: 6,
+  elara: 6,
+  noor: 7,
+  inaayat: 7,
+  amaira: 6,
+  naeyra: 6,
+  mahira: 7,
+  ayana: 7,
+});
+const PRODUCT_ROLES = Object.freeze([
+  "hero",
+  "front",
+  "side",
+  "back",
+  "detail",
+  "drape",
+  "editorial",
+]);
 const EXPECTED_DIMENSIONS = Object.freeze({
   width: 2160,
   height: 2700,
@@ -24,15 +42,6 @@ const PRODUCTION_DIMENSIONS = Object.freeze({
   height: 2375,
 });
 const MAX_CLOUDINARY_IMAGE_BYTES = 10 * 1024 * 1024;
-const EXPECTED_GULNAAR_ASSETS = Object.freeze({
-  "gulnaar-web-01": "hero",
-  "gulnaar-web-02": "front",
-  "gulnaar-web-03": "side",
-  "gulnaar-web-04": "back",
-  "gulnaar-web-05": "detail",
-  "gulnaar-web-06": "drape",
-});
-
 const firstQueryValue = (value) =>
   Array.isArray(value) ? value[0] : value;
 
@@ -62,38 +71,47 @@ const assertUnique = (values, label) => {
   }
 };
 
-export const resolveGulnaarBindings = ({ manifest, pages }) => {
+export const resolveProductBindings = ({ manifest, pages, product }) => {
+  const expectedCount = SYNC_PRODUCTS[product];
+  if (!expectedCount) {
+    throw new Error("Product is not approved for synchronization.");
+  }
+
   const entries = manifest.filter(
-    (entry) => entry.productSlug === ALLOWED_PRODUCT,
+    (entry) => entry.productSlug === product,
   );
-  const expectedAssetKeys = Object.keys(EXPECTED_GULNAAR_ASSETS);
+  const expectedAssetKeys = Array.from(
+    { length: expectedCount },
+    (_, index) =>
+      `${product}-web-${String(index + 1).padStart(2, "0")}`,
+  );
 
   if (
-    entries.length !== expectedAssetKeys.length ||
+    entries.length !== expectedCount ||
     entries.some(
-      (entry) =>
-        !Object.hasOwn(EXPECTED_GULNAAR_ASSETS, entry.assetKey) ||
-        EXPECTED_GULNAAR_ASSETS[entry.assetKey] !== entry.websiteRole,
+      (entry, index) =>
+        entry.assetKey !== expectedAssetKeys[index] ||
+        entry.websiteRole !== PRODUCT_ROLES[index],
     ) ||
     expectedAssetKeys.some(
       (assetKey) =>
         !entries.some((entry) => entry.assetKey === assetKey),
     )
   ) {
-    throw new Error("Unexpected Gulnaar sync manifest.");
+    throw new Error("Unexpected product sync manifest.");
   }
 
   assertUnique(
     entries.map((entry) => entry.assetKey),
-    "Gulnaar asset key",
+    "product asset key",
   );
   assertUnique(
     entries.map((entry) => entry.canvaPageId),
-    "Gulnaar Canva page ID",
+    "product Canva page ID",
   );
   assertUnique(
     entries.map((entry) => entry.publicId),
-    "Gulnaar Cloudinary public ID",
+    "product Cloudinary public ID",
   );
 
   const pagesById = new Map();
@@ -108,19 +126,19 @@ export const resolveGulnaarBindings = ({ manifest, pages }) => {
   const resolved = entries.map((entry) => {
     const page = pagesById.get(entry.canvaPageId);
     if (!page) {
-      throw new Error("A Gulnaar Canva page binding could not be resolved.");
+      throw new Error("A Canva page binding could not be resolved.");
     }
     if (
       !Number.isSafeInteger(page.page_number) ||
       page.page_number < 1
     ) {
-      throw new Error("A Gulnaar Canva page number is invalid.");
+      throw new Error("A Canva page number is invalid.");
     }
     if (
       page.dimensions?.width !== EXPECTED_DIMENSIONS.width ||
       page.dimensions?.height !== EXPECTED_DIMENSIONS.height
     ) {
-      throw new Error("A Gulnaar Canva page has unexpected dimensions.");
+      throw new Error("A Canva page has unexpected dimensions.");
     }
 
     return Object.freeze({
@@ -131,7 +149,7 @@ export const resolveGulnaarBindings = ({ manifest, pages }) => {
 
   assertUnique(
     resolved.map(({ currentPageNumber }) => currentPageNumber),
-    "resolved Gulnaar Canva page",
+    "resolved Canva page",
   );
 
   return Object.freeze(resolved);
@@ -175,7 +193,7 @@ const safeExportError = (status, response) => {
     });
   }
   return response.status(502).json({
-    error: "Canva could not export every Gulnaar asset.",
+    error: "Canva could not export every product asset.",
   });
 };
 
@@ -260,9 +278,12 @@ export default async function handler(request, response) {
   }
 
   const product = firstQueryValue(request.query?.product);
-  if (product !== ALLOWED_PRODUCT) {
+  if (
+    typeof product !== "string" ||
+    !Object.hasOwn(SYNC_PRODUCTS, product)
+  ) {
     return response.status(400).json({
-      error: "Only the Gulnaar product can be synchronized.",
+      error: "The requested product is not approved for synchronization.",
     });
   }
 
@@ -298,13 +319,14 @@ export default async function handler(request, response) {
 
     let resolved;
     try {
-      resolved = resolveGulnaarBindings({
+      resolved = resolveProductBindings({
         manifest: CANVA_SYNC_MANIFEST,
         pages: pageResult.pages,
+        product,
       });
     } catch {
       return response.status(409).json({
-        error: "The Gulnaar asset bindings failed preflight validation.",
+        error: "The product asset bindings failed preflight validation.",
       });
     }
 
@@ -326,8 +348,8 @@ export default async function handler(request, response) {
         ).json({
           error:
             exported.status === "timeout"
-              ? "A Gulnaar Canva export timed out."
-              : "Canva could not export every Gulnaar asset.",
+              ? "A Canva export timed out."
+              : "Canva could not export every product asset.",
         });
       }
 
@@ -382,13 +404,13 @@ export default async function handler(request, response) {
     }
 
     return response.status(200).json({
-      product: ALLOWED_PRODUCT,
+      product,
       assets,
     });
   } catch (error) {
     if (error instanceof CloudinaryUploadError) {
       return response.status(502).json({
-        error: "A Gulnaar Cloudinary upload failed.",
+        error: "A product Cloudinary upload failed.",
         status: error.status,
         ...(error.providerMessage
           ? { provider_message: error.providerMessage }
@@ -415,7 +437,7 @@ export default async function handler(request, response) {
     }
 
     return response.status(502).json({
-      error: "The Gulnaar synchronization is temporarily unavailable.",
+      error: "The product synchronization is temporarily unavailable.",
     });
   }
 }

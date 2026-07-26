@@ -1,191 +1,210 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import Container from "../../components/primitives/Container.astro";
-import Section from "../../components/primitives/Section.astro";
+const syncProducts = Object.freeze([
+  Object.freeze({ slug: "gulnaar", label: "Gulnaar" }),
+  Object.freeze({ slug: "elara", label: "Elara" }),
+  Object.freeze({ slug: "noor", label: "Noor" }),
+  Object.freeze({ slug: "inaayat", label: "Inaayat" }),
+  Object.freeze({ slug: "amaira", label: "Amaira" }),
+  Object.freeze({ slug: "naeyra", label: "Naeyra" }),
+  Object.freeze({ slug: "mahira", label: "Mahira" }),
+  Object.freeze({ slug: "ayana", label: "Ayana" }),
+]);
 ---
 
-<BaseLayout
-  title="Canva Sync | Rangbastra Internal"
-  description="Internal Rangbastra Canva synchronization control."
-  canonical="/internal/canva-sync"
-  robots="noindex,nofollow"
->
-  <Section class="sync-section">
-    <Container class="sync-container">
-      <article class="sync-panel">
-        <header>
-          <p>Internal operator tool</p>
-          <h1>Canva Sync</h1>
-        </header>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Canva Sync | Rangbastra</title>
+  </head>
+  <body>
+    <main>
+      <h1>Canva Product Sync</h1>
+      <p>Choose one approved product to sync from Canva to Cloudinary.</p>
 
-        <form data-sync-form autocomplete="off">
-          <label for="sync-secret">Sync Secret</label>
-          <input
-            id="sync-secret"
-            name="sync-secret"
-            type="password"
-            autocomplete="off"
-            required
-          />
-          <button type="submit" data-sync-button>Sync Gulnaar</button>
-        </form>
+      <form data-sync-form>
+        <label for="sync-secret">Sync Secret</label>
+        <input
+          id="sync-secret"
+          name="sync-secret"
+          type="password"
+          autocomplete="off"
+          required
+        />
 
-        <section class="sync-result" aria-live="polite" aria-atomic="true">
-          <h2>Status</h2>
-          <pre data-sync-result>Ready.</pre>
-        </section>
-      </article>
-    </Container>
-  </Section>
-</BaseLayout>
+        <div class="sync-actions">
+          {
+            syncProducts.map(({ slug, label }) => (
+              <button
+                type="submit"
+                name="product"
+                value={slug}
+                data-sync-button
+              >
+                Sync {label}
+              </button>
+            ))
+          }
+        </div>
+      </form>
 
-<script>
-  const form = document.querySelector<HTMLFormElement>("[data-sync-form]");
-  const secretInput =
-    document.querySelector<HTMLInputElement>("#sync-secret");
-  const button =
-    document.querySelector<HTMLButtonElement>("[data-sync-button]");
-  const result = document.querySelector<HTMLElement>("[data-sync-result]");
+      <section aria-live="polite" aria-atomic="true">
+        <h2>Status</h2>
+        <pre data-sync-result>Ready.</pre>
+      </section>
+    </main>
 
-  const clearSecret = () => {
-    if (secretInput) secretInput.value = "";
-  };
+    <script>
+      const form = document.querySelector("[data-sync-form]");
+      const secretInput = document.querySelector("#sync-secret");
+      const buttons = [
+        ...document.querySelectorAll("[data-sync-button]"),
+      ];
+      const result = document.querySelector("[data-sync-result]");
 
-  clearSecret();
-  window.addEventListener("pageshow", clearSecret);
-
-  form?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!secretInput || !button || !result || !secretInput.value) return;
-
-    button.disabled = true;
-    result.dataset.state = "pending";
-    result.textContent = "Synchronizing Gulnaar…";
-
-    try {
-      const response = await fetch("/api/canva/sync?product=gulnaar", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${secretInput.value}`,
-        },
-        cache: "no-store",
-        credentials: "same-origin",
-      });
-
-      let payload;
-      try {
-        payload = await response.json();
-      } catch {
-        payload = { error: "The sync endpoint returned an invalid response." };
+      if (
+        !(form instanceof HTMLFormElement) ||
+        !(secretInput instanceof HTMLInputElement) ||
+        !(result instanceof HTMLElement)
+      ) {
+        throw new Error("Canva sync controls are unavailable.");
       }
 
-      result.dataset.state = response.ok ? "success" : "error";
-      result.textContent = JSON.stringify(payload, null, 2);
-    } catch {
-      result.dataset.state = "error";
-      result.textContent = JSON.stringify({
-        error: "The sync request could not be completed.",
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const submitter =
+          event instanceof SubmitEvent &&
+          event.submitter instanceof HTMLButtonElement
+            ? event.submitter
+            : null;
+        const product = submitter?.value ?? "";
+        const productLabel = submitter?.textContent?.replace(/^Sync\s+/, "") ?? product;
+        const secret = secretInput.value;
+
+        if (!product || !secret) {
+          result.textContent = "Choose a product and enter the sync secret.";
+          return;
+        }
+
+        buttons.forEach((button) => {
+          if (button instanceof HTMLButtonElement) button.disabled = true;
+        });
+        result.textContent = `Synchronizing ${productLabel}...`;
+
+        try {
+          const response = await fetch(
+            `/api/canva/sync?product=${encodeURIComponent(product)}`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${secret}`,
+              },
+            },
+          );
+          const payload = await response.json().catch(() => ({
+            error: "The sync endpoint returned an unreadable response.",
+          }));
+
+          result.textContent = JSON.stringify(payload, null, 2);
+          result.dataset.status = response.ok ? "success" : "error";
+        } catch {
+          result.textContent = JSON.stringify(
+            { error: "The sync request could not be completed." },
+            null,
+            2,
+          );
+          result.dataset.status = "error";
+        } finally {
+          secretInput.value = "";
+          buttons.forEach((button) => {
+            if (button instanceof HTMLButtonElement) button.disabled = false;
+          });
+        }
       });
-    } finally {
-      clearSecret();
-      button.disabled = false;
-    }
-  });
-</script>
+    </script>
 
-<style>
-  :global(.sync-section) {
-    min-height: 100vh;
-    padding-block: clamp(var(--space-11), 14vw, var(--space-14));
-  }
+    <style>
+      :global(*) {
+        box-sizing: border-box;
+      }
 
-  :global(.sync-container) {
-    --container-default: 44rem;
-  }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #111;
+        color: #f5f0e8;
+        font-family: system-ui, sans-serif;
+      }
 
-  .sync-panel,
-  form,
-  .sync-result {
-    display: grid;
-    gap: var(--space-4);
-  }
+      main {
+        width: min(42rem, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 3rem 0;
+      }
 
-  .sync-panel {
-    gap: var(--space-7);
-    padding: clamp(var(--space-5), 5vw, var(--space-8));
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-xl);
-    background: var(--surface-raised);
-  }
+      form {
+        display: grid;
+        gap: 0.75rem;
+        margin: 2rem 0;
+      }
 
-  header {
-    display: grid;
-    gap: var(--space-2);
-  }
+      input,
+      button {
+        min-height: 2.75rem;
+        border: 1px solid #8f7652;
+        border-radius: 0.25rem;
+        font: inherit;
+      }
 
-  header p,
-  label,
-  h2 {
-    color: var(--text-muted);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-  }
+      input {
+        padding: 0.65rem 0.75rem;
+        background: #191919;
+        color: inherit;
+      }
 
-  h1 {
-    color: var(--text-primary);
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 7vw, 4.5rem);
-    font-weight: var(--weight-light);
-  }
+      .sync-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+      }
 
-  input,
-  button {
-    min-height: 3rem;
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-md);
-    padding-inline: var(--space-4);
-    font: inherit;
-  }
+      button {
+        padding: 0.65rem 1rem;
+        background: #8f7652;
+        color: #fff;
+        cursor: pointer;
+      }
 
-  input {
-    background: var(--surface-canvas);
-    color: var(--text-primary);
-  }
+      button:disabled {
+        cursor: wait;
+        opacity: 0.65;
+      }
 
-  button {
-    background: rgb(var(--cocoa-rgb));
-    color: var(--ivory-50);
-    cursor: pointer;
-  }
+      pre {
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+        padding: 1rem;
+        border: 1px solid #40382d;
+        background: #181818;
+      }
 
-  button:disabled {
-    cursor: wait;
-    opacity: 0.6;
-  }
+      pre[data-status="success"] {
+        border-color: #507453;
+      }
 
-  pre {
-    min-height: 8rem;
-    overflow: auto;
-    margin: 0;
-    padding: var(--space-4);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    background: var(--surface-canvas);
-    color: var(--text-secondary);
-    font-size: var(--body-sm);
-    line-height: var(--leading-body);
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
+      pre[data-status="error"] {
+        border-color: #9b4f4f;
+      }
 
-  pre[data-state="success"] {
-    border-color: var(--cocoa-border-strong);
-    color: var(--text-primary);
-  }
-
-  pre[data-state="error"] {
-    border-color: var(--error);
-  }
-</style>
+      @media (max-width: 36rem) {
+        .sync-actions {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </body>
+</html>

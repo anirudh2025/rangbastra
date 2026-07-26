@@ -315,7 +315,7 @@ const coutureSourceRecords: CoutureSourceRecord[] = [
   },
   {
     id: 8,
-    name: "Aayana",
+    name: "Ayana",
     category: "Festive",
     occasion: "Corset with Skirt",
     price: "18500",
@@ -910,67 +910,67 @@ const productImageUrls: Record<
     cloudinaryImageUrl("gulnaar-web-01"), // 07 editorial
   ],
   elara: [
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784188775/Elara_Web_01_wyoibr.webp", // 01 hero
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784188776/Elara_Web_02_mcllu1.webp", // 02 front
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784188778/Elara_Web_03_wf5v8x.webp", // 03 side
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784188777/Elara_Web_04_cekq8k.webp", // 04 back
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784188778/Elara_Web_05_tuxyyq.webp", // 05 detail
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784188778/Elara_Web_06_vbg9in.webp", // 06 drape
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784188775/Elara_Web_01_wyoibr.webp", // 07 editorial - temporary hero fallback
+    cloudinaryImageUrl("elara-web-01"), // 01 hero
+    cloudinaryImageUrl("elara-web-02"), // 02 front
+    cloudinaryImageUrl("elara-web-03"), // 03 side
+    cloudinaryImageUrl("elara-web-04"), // 04 back
+    cloudinaryImageUrl("elara-web-05"), // 05 detail
+    cloudinaryImageUrl("elara-web-06"), // 06 drape
+    cloudinaryImageUrl("elara-web-01"), // 07 editorial
   ],
   noor: [
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457855/Noor_Web_01_lzgejf.webp", // 01 hero
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457856/Noor_Web_02_a4b0d6.webp", // 02 front
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457857/Noor_Web_03_odw8vy.webp", // 03 side
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457857/Noor_Web_04_hgfm1n.webp", // 04 back
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457856/Noor_Web_05_iknicz.webp", // 05 detail
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457857/Noor_Web_06_dwqhey.webp", // 06 drape
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784457856/Noor_Web_07_yfdeai.webp", // 07 editorial
+    cloudinaryImageUrl("noor-web-01"), // 01 hero
+    cloudinaryImageUrl("noor-web-02"), // 02 front
+    cloudinaryImageUrl("noor-web-03"), // 03 side
+    cloudinaryImageUrl("noor-web-04"), // 04 back
+    cloudinaryImageUrl("noor-web-05"), // 05 detail
+    cloudinaryImageUrl("noor-web-06"), // 06 drape
+    cloudinaryImageUrl("noor-web-07"), // 07 editorial
   ],
   inaayat: [
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461296/Inaayat_Web_01_bnyonn.webp", // 01 hero
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461297/Inaayat_Web_02_ewc039.webp", // 02 front
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461298/Inaayat_Web_03_jsepzz.webp", // 03 side
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461297/Inaayat_Web_04_nwlmuc.webp", // 04 back
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461298/Inaayat_Web_05_jckrsr.webp", // 05 detail
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461298/Inaayat_Web_06_tl1gir.webp", // 06 drape
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784461299/Inaayat_Web_07_foksqp.webp", // 07 editorial
+    cloudinaryImageUrl("inaayat-web-01"), // 01 hero
+    cloudinaryImageUrl("inaayat-web-02"), // 02 front
+    cloudinaryImageUrl("inaayat-web-03"), // 03 side
+    cloudinaryImageUrl("inaayat-web-04"), // 04 back
+    cloudinaryImageUrl("inaayat-web-05"), // 05 detail
+    cloudinaryImageUrl("inaayat-web-06"), // 06 drape
+    cloudinaryImageUrl("inaayat-web-07"), // 07 editorial
   ],
   amaira: [
-    coutureImages.bridal, // 01 hero
-    coutureImages.bridal, // 02 front
-    coutureImages.bridal, // 03 side
-    coutureImages.bridal, // 04 back
-    coutureImages.bridal, // 05 detail
-    coutureImages.bridal, // 06 drape
-    coutureImages.bridal, // 07 editorial
+    cloudinaryImageUrl("amaira-web-01"), // 01 hero
+    cloudinaryImageUrl("amaira-web-02"), // 02 front
+    cloudinaryImageUrl("amaira-web-03"), // 03 side
+    cloudinaryImageUrl("amaira-web-04"), // 04 back
+    cloudinaryImageUrl("amaira-web-05"), // 05 detail
+    cloudinaryImageUrl("amaira-web-06"), // 06 drape
+    cloudinaryImageUrl("amaira-web-01"), // 07 editorial
   ],
   naeyra: [
-    coutureImages.celebration, // 01 hero
-    coutureImages.celebration, // 02 front
-    coutureImages.celebration, // 03 side
-    coutureImages.celebration, // 04 back
-    coutureImages.celebration, // 05 detail
-    coutureImages.celebration, // 06 drape
-    coutureImages.celebration, // 07 editorial
+    cloudinaryImageUrl("naeyra-web-01"), // 01 hero
+    cloudinaryImageUrl("naeyra-web-02"), // 02 front
+    cloudinaryImageUrl("naeyra-web-03"), // 03 side
+    cloudinaryImageUrl("naeyra-web-04"), // 04 back
+    cloudinaryImageUrl("naeyra-web-05"), // 05 detail
+    cloudinaryImageUrl("naeyra-web-06"), // 06 drape
+    cloudinaryImageUrl("naeyra-web-01"), // 07 editorial
   ],
   mahira: [
-    coutureImages.swatches, // 01 hero
-    coutureImages.swatches, // 02 front
-    coutureImages.swatches, // 03 side
-    coutureImages.swatches, // 04 back
-    coutureImages.swatches, // 05 detail
-    coutureImages.swatches, // 06 drape
-    coutureImages.swatches, // 07 editorial
+    cloudinaryImageUrl("mahira-web-01"), // 01 hero
+    cloudinaryImageUrl("mahira-web-02"), // 02 front
+    cloudinaryImageUrl("mahira-web-03"), // 03 side
+    cloudinaryImageUrl("mahira-web-04"), // 04 back
+    cloudinaryImageUrl("mahira-web-05"), // 05 detail
+    cloudinaryImageUrl("mahira-web-06"), // 06 drape
+    cloudinaryImageUrl("mahira-web-07"), // 07 editorial
   ],
-  aayana: [
-    coutureImages.atelier, // 01 hero
-    coutureImages.atelier, // 02 front
-    coutureImages.atelier, // 03 side
-    coutureImages.atelier, // 04 back
-    coutureImages.atelier, // 05 detail
-    coutureImages.atelier, // 06 drape
-    coutureImages.atelier, // 07 editorial
+  ayana: [
+    cloudinaryImageUrl("ayana-web-01"), // 01 hero
+    cloudinaryImageUrl("ayana-web-02"), // 02 front
+    cloudinaryImageUrl("ayana-web-03"), // 03 side
+    cloudinaryImageUrl("ayana-web-04"), // 04 back
+    cloudinaryImageUrl("ayana-web-05"), // 05 detail
+    cloudinaryImageUrl("ayana-web-06"), // 06 drape
+    cloudinaryImageUrl("ayana-web-07"), // 07 editorial
   ],
   iraaya: [
     coutureImages.hero, // 01 hero
@@ -1414,8 +1414,10 @@ for (const product of couturePieces) {
       throw new Error(`${product.slug}: ${id} must use an HTTPS image URL`);
     if (
       image.src.includes("res.cloudinary.com") &&
-      product.slug !== "gulnaar" &&
-      !/\/image\/upload\/v\d+\//.test(image.src)
+      !/\/image\/upload\/v\d+\//.test(image.src) &&
+      !/^https:\/\/res\.cloudinary\.com\/cloutoraworld\/image\/upload\/f_webp,q_95\/[A-Za-z0-9/_-]+\.webp$/.test(
+        image.src,
+      )
     )
       throw new Error(
         `${product.slug}: ${id} Cloudinary URL must be versioned`,

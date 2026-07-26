@@ -6,6 +6,16 @@
       "source": "/begin-a-consultation",
       "destination": "/designer-consultation",
       "permanent": true
+    },
+    {
+      "source": "/products/aayana",
+      "destination": "/products/ayana",
+      "permanent": true
+    },
+    {
+      "source": "/products/aayana/customize",
+      "destination": "/products/ayana/customize",
+      "permanent": true
     }
   ],
   "headers": [
