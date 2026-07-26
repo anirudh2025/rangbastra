@@ -1,5 +1,7 @@
-import { getSupabaseAdminClient } from "./_supabase.js";
-import { decryptCanvaToken } from "./_tokens.js";
+import {
+  CanvaCredentialError,
+  loadCanvaAccessToken,
+} from "./_credentials.js";
 
 const CANVA_API_URL = "https://api.canva.com/rest/v1";
 const DESIGN_ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
@@ -27,29 +29,7 @@ export default async function handler(request, response) {
   }
 
   try {
-    const supabase = getSupabaseAdminClient();
-    const { data, error } = await supabase.rpc(
-      "load_canva_oauth_credentials",
-    );
-    const credentials = Array.isArray(data) ? data[0] : null;
-
-    if (error || !credentials || credentials.status !== "active") {
-      return response.status(503).json({
-        error: "The Canva connection is unavailable.",
-      });
-    }
-
-    if (
-      Date.parse(credentials.access_token_expires_at) <= Date.now()
-    ) {
-      return response.status(401).json({
-        error: "The Canva access token has expired. Token refresh is required.",
-      });
-    }
-
-    const accessToken = decryptCanvaToken(
-      credentials.access_token_encrypted,
-    );
+    const accessToken = await loadCanvaAccessToken();
     const canvaResponse = await fetch(
       `${CANVA_API_URL}/designs/${encodeURIComponent(designId)}/pages?limit=200`,
       {
@@ -100,7 +80,22 @@ export default async function handler(request, response) {
           : null,
       })),
     });
-  } catch {
+  } catch (error) {
+    if (
+      error instanceof CanvaCredentialError &&
+      error.code === "refresh_required"
+    ) {
+      return response.status(401).json({
+        error: "The Canva access token has expired. Token refresh is required.",
+      });
+    }
+
+    if (error instanceof CanvaCredentialError) {
+      return response.status(503).json({
+        error: "The Canva connection is unavailable.",
+      });
+    }
+
     return response.status(502).json({
       error: "The Canva design lookup is temporarily unavailable.",
     });
