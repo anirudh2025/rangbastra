@@ -9,6 +9,18 @@ const DESIGN_ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
 const firstQueryValue = (value) =>
   Array.isArray(value) ? value[0] : value;
 
+export const toSafeCanvaPage = (page) => ({
+  page_id: typeof page.id === "string" ? page.id : null,
+  page_number: page.page_number,
+  design_type: page.design_type,
+  dimensions: page.dimensions
+    ? {
+        width: page.dimensions.width,
+        height: page.dimensions.height,
+      }
+    : null,
+});
+
 export default async function handler(request, response) {
   response.setHeader("Cache-Control", "no-store");
   response.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -69,16 +81,7 @@ export default async function handler(request, response) {
     return response.status(200).json({
       design_id: designId,
       pages_returned: pages.length,
-      pages: pages.map((page) => ({
-        page_number: page.page_number,
-        design_type: page.design_type,
-        dimensions: page.dimensions
-          ? {
-              width: page.dimensions.width,
-              height: page.dimensions.height,
-            }
-          : null,
-      })),
+      pages: pages.map(toSafeCanvaPage),
     });
   } catch (error) {
     if (
