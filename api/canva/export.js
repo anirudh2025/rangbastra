@@ -49,6 +49,7 @@ export default async function handler(request, response) {
   const designId = firstQueryValue(request.query?.design_id);
   const requestedPage = firstQueryValue(request.query?.page);
   const mode = firstQueryValue(request.query?.mode);
+  const quality = firstQueryValue(request.query?.quality) ?? "regular";
   const page = Number(requestedPage);
 
   if (
@@ -70,6 +71,12 @@ export default async function handler(request, response) {
     });
   }
 
+  if (quality !== "regular" && quality !== "pro") {
+    return response.status(400).json({
+      error: "Quality must be regular or pro.",
+    });
+  }
+
   try {
     const accessToken = await loadCanvaAccessToken();
     const headers = {
@@ -83,6 +90,7 @@ export default async function handler(request, response) {
         design_id: designId,
         format: {
           type: "png",
+          export_quality: quality,
           lossless: true,
           pages: [page],
         },
