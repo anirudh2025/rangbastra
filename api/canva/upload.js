@@ -10,6 +10,14 @@ import { createCanvaPngExport } from "./_export.js";
 
 const DESIGN_ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
 
+const REPLACEMENT_TARGETS = Object.freeze({
+  "gulnaar-web-01": Object.freeze({
+    designId: "DAHPSPnYCvY",
+    page: 67,
+    publicId: "Gulnaar_Web_01_gasunw",
+  }),
+});
+
 const firstQueryValue = (value) =>
   Array.isArray(value) ? value[0] : value;
 
@@ -22,27 +30,52 @@ export default async function handler(request, response) {
     return response.status(405).json({ error: "Method not allowed." });
   }
 
-  const designId = firstQueryValue(request.query?.design_id);
-  const requestedPage = firstQueryValue(request.query?.page);
-  const page = Number(requestedPage);
+  const requestedTarget = firstQueryValue(request.query?.target);
+  let designId;
+  let page;
+  let publicId;
 
-  if (
-    typeof designId !== "string" ||
-    !DESIGN_ID_PATTERN.test(designId)
-  ) {
-    return response.status(400).json({
-      error: "A valid design_id query parameter is required.",
-    });
-  }
+  if (requestedTarget !== undefined) {
+    if (
+      typeof requestedTarget !== "string" ||
+      !Object.hasOwn(REPLACEMENT_TARGETS, requestedTarget)
+    ) {
+      return response.status(400).json({
+        error: "Unknown Canva replacement target.",
+      });
+    }
 
-  if (
-    typeof requestedPage !== "string" ||
-    !/^[1-9]\d*$/.test(requestedPage) ||
-    !Number.isSafeInteger(page)
-  ) {
-    return response.status(400).json({
-      error: "Page must be a positive integer.",
-    });
+    const target = REPLACEMENT_TARGETS[requestedTarget];
+    designId = target.designId;
+    page = target.page;
+    publicId = target.publicId;
+  } else {
+    const requestedDesignId = firstQueryValue(request.query?.design_id);
+    const requestedPage = firstQueryValue(request.query?.page);
+    const parsedPage = Number(requestedPage);
+
+    if (
+      typeof requestedDesignId !== "string" ||
+      !DESIGN_ID_PATTERN.test(requestedDesignId)
+    ) {
+      return response.status(400).json({
+        error: "A valid design_id query parameter is required.",
+      });
+    }
+
+    if (
+      typeof requestedPage !== "string" ||
+      !/^[1-9]\d*$/.test(requestedPage) ||
+      !Number.isSafeInteger(parsedPage)
+    ) {
+      return response.status(400).json({
+        error: "Page must be a positive integer.",
+      });
+    }
+
+    designId = requestedDesignId;
+    page = parsedPage;
+    publicId = `rangbastra/canva-tests/${designId}-page-${page}`;
   }
 
   try {
@@ -76,7 +109,7 @@ export default async function handler(request, response) {
 
     const uploaded = await uploadCanvaPngOriginal({
       downloadUrl: exported.downloadUrl,
-      publicId: `rangbastra/canva-tests/${designId}-page-${page}`,
+      publicId,
     });
 
     return response.status(200).json(uploaded);

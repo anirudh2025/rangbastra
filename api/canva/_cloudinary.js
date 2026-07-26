@@ -125,6 +125,7 @@ export const uploadCanvaPngOriginal = async ({
     typeof uploaded.public_id !== "string" ||
     typeof uploaded.secure_url !== "string" ||
     uploaded.format !== "png" ||
+    !Number.isFinite(uploaded.version) ||
     !Number.isFinite(uploaded.width) ||
     !Number.isFinite(uploaded.height) ||
     !Number.isFinite(uploaded.bytes)
@@ -134,6 +135,7 @@ export const uploadCanvaPngOriginal = async ({
 
   return {
     public_id: uploaded.public_id,
+    version: uploaded.version,
     secure_url: uploaded.secure_url,
     format: uploaded.format,
     width: uploaded.width,
