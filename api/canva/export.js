@@ -49,7 +49,7 @@ export default async function handler(request, response) {
   const designId = firstQueryValue(request.query?.design_id);
   const requestedPage = firstQueryValue(request.query?.page);
   const mode = firstQueryValue(request.query?.mode);
-  const quality = firstQueryValue(request.query?.quality) ?? "regular";
+  const quality = firstQueryValue(request.query?.quality) ?? "pro";
   const page = Number(requestedPage);
 
   if (
