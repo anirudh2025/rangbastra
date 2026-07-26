@@ -3,6 +3,11 @@ const PNG_SIGNATURE = Buffer.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
 ]);
 
+export const isPngBuffer = (value) =>
+  Buffer.isBuffer(value) &&
+  value.length >= PNG_SIGNATURE.length &&
+  value.subarray(0, PNG_SIGNATURE.length).equals(PNG_SIGNATURE);
+
 export class CloudinaryUploadError extends Error {
   constructor({ status, providerMessage, providerCode }) {
     super("Cloudinary upload failed.");
@@ -30,22 +35,7 @@ const safeProviderText = (value, secrets) => {
   return text;
 };
 
-export const uploadCanvaPngOriginal = async ({
-  downloadUrl,
-  publicId,
-}) => {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
-  if (
-    !cloudName ||
-    !/^[A-Za-z0-9_-]+$/.test(cloudName) ||
-    !apiKey ||
-    !apiSecret
-  ) {
-    throw new Error("Cloudinary is not configured.");
-  }
-
+export const downloadCanvaPng = async (downloadUrl) => {
   const canvaResponse = await fetch(downloadUrl);
   const declaredBytes = Number(
     canvaResponse.headers.get("content-length"),
@@ -62,9 +52,33 @@ export const uploadCanvaPngOriginal = async ({
   if (
     png.length === 0 ||
     png.length > MAX_CANVA_PNG_BYTES ||
-    !png.subarray(0, PNG_SIGNATURE.length).equals(PNG_SIGNATURE)
+    !isPngBuffer(png)
   ) {
     throw new Error("Canva returned an invalid PNG.");
+  }
+
+  return png;
+};
+
+export const uploadPngOriginal = async ({ png, publicId }) => {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  if (
+    !cloudName ||
+    !/^[A-Za-z0-9_-]+$/.test(cloudName) ||
+    !apiKey ||
+    !apiSecret
+  ) {
+    throw new Error("Cloudinary is not configured.");
+  }
+  if (
+    !isPngBuffer(png) ||
+    png.length > MAX_CANVA_PNG_BYTES ||
+    typeof publicId !== "string" ||
+    !publicId
+  ) {
+    throw new Error("Invalid PNG upload.");
   }
 
   const form = new FormData();
@@ -142,4 +156,12 @@ export const uploadCanvaPngOriginal = async ({
     height: uploaded.height,
     bytes: uploaded.bytes,
   };
+};
+
+export const uploadCanvaPngOriginal = async ({
+  downloadUrl,
+  publicId,
+}) => {
+  const png = await downloadCanvaPng(downloadUrl);
+  return uploadPngOriginal({ png, publicId });
 };

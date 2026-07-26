@@ -1,11 +1,14 @@
 import { timingSafeEqual } from "node:crypto";
+import sharp from "sharp";
 import {
   CanvaCredentialError,
   loadCanvaAccessToken,
 } from "./_credentials.js";
 import {
   CloudinaryUploadError,
-  uploadCanvaPngOriginal,
+  downloadCanvaPng,
+  isPngBuffer,
+  uploadPngOriginal,
 } from "./_cloudinary.js";
 import { createCanvaPngExport } from "./_export.js";
 import { CANVA_SYNC_MANIFEST } from "./_sync-manifest.js";
@@ -16,6 +19,11 @@ const EXPECTED_DIMENSIONS = Object.freeze({
   width: 2160,
   height: 2700,
 });
+const PRODUCTION_DIMENSIONS = Object.freeze({
+  width: 1900,
+  height: 2375,
+});
+const MAX_CLOUDINARY_IMAGE_BYTES = 10 * 1024 * 1024;
 const EXPECTED_GULNAAR_ASSETS = Object.freeze({
   "gulnaar-web-01": "hero",
   "gulnaar-web-02": "front",
@@ -171,6 +179,77 @@ const safeExportError = (status, response) => {
   });
 };
 
+export const resizeCanvaPngForProduction = async (sourcePng) => {
+  if (!isPngBuffer(sourcePng)) {
+    throw new Error("The Canva source is not a valid PNG.");
+  }
+
+  const source = await sharp(sourcePng, {
+    failOn: "error",
+  }).metadata();
+  if (
+    source.format !== "png" ||
+    source.width !== EXPECTED_DIMENSIONS.width ||
+    source.height !== EXPECTED_DIMENSIONS.height ||
+    !Number.isSafeInteger(source.channels) ||
+    (source.depth !== "uchar" && source.depth !== "ushort")
+  ) {
+    throw new Error("The Canva source PNG is invalid.");
+  }
+
+  let pipeline = sharp(sourcePng, { failOn: "error" })
+    .resize({
+      width: PRODUCTION_DIMENSIONS.width,
+      height: PRODUCTION_DIMENSIONS.height,
+      fit: "inside",
+      kernel: sharp.kernel.lanczos3,
+      withoutEnlargement: true,
+    })
+    .keepMetadata();
+
+  if (source.depth === "ushort") {
+    pipeline = pipeline.toColourspace("rgb16");
+  }
+
+  const { data, info } = await pipeline
+    .png({
+      palette: false,
+      compressionLevel: 9,
+      adaptiveFiltering: true,
+    })
+    .toBuffer({ resolveWithObject: true });
+  const final = await sharp(data, { failOn: "error" }).metadata();
+
+  if (
+    !isPngBuffer(data) ||
+    info.format !== "png" ||
+    info.width !== PRODUCTION_DIMENSIONS.width ||
+    info.height !== PRODUCTION_DIMENSIONS.height ||
+    final.format !== "png" ||
+    final.width !== PRODUCTION_DIMENSIONS.width ||
+    final.height !== PRODUCTION_DIMENSIONS.height ||
+    final.channels !== source.channels ||
+    final.hasAlpha !== source.hasAlpha ||
+    final.depth !== source.depth
+  ) {
+    throw new Error("The production PNG failed validation.");
+  }
+
+  return Object.freeze({
+    png: data,
+    source: Object.freeze({
+      width: source.width,
+      height: source.height,
+      bytes: sourcePng.length,
+    }),
+    final: Object.freeze({
+      width: final.width,
+      height: final.height,
+      bytes: data.length,
+    }),
+  });
+};
+
 export default async function handler(request, response) {
   response.setHeader("Cache-Control", "no-store");
   response.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -255,17 +334,50 @@ export default async function handler(request, response) {
       exports.push({ binding, downloadUrl: exported.downloadUrl });
     }
 
-    const assets = [];
+    const prepared = [];
     for (const exported of exports) {
-      const uploaded = await uploadCanvaPngOriginal({
-        downloadUrl: exported.downloadUrl,
-        publicId: exported.binding.entry.publicId,
+      const sourcePng = await downloadCanvaPng(exported.downloadUrl);
+      const resized = await resizeCanvaPngForProduction(sourcePng);
+      prepared.push({ binding: exported.binding, ...resized });
+    }
+
+    const oversized = prepared
+      .filter(({ final }) => final.bytes > MAX_CLOUDINARY_IMAGE_BYTES)
+      .map(({ binding, final }) => ({
+        assetKey: binding.entry.assetKey,
+        publicId: binding.entry.publicId,
+        finalBytes: final.bytes,
+        maximumBytes: MAX_CLOUDINARY_IMAGE_BYTES,
+      }));
+    if (oversized.length > 0) {
+      return response.status(413).json({
+        error: "One or more production PNGs exceed the upload limit.",
+        assets: oversized,
+      });
+    }
+
+    const assets = [];
+    for (const asset of prepared) {
+      const uploaded = await uploadPngOriginal({
+        png: asset.png,
+        publicId: asset.binding.entry.publicId,
       });
       assets.push({
-        asset_key: exported.binding.entry.assetKey,
-        canva_page_id: exported.binding.entry.canvaPageId,
-        current_page_number: exported.binding.currentPageNumber,
-        ...uploaded,
+        asset_key: asset.binding.entry.assetKey,
+        source_dimensions: {
+          width: asset.source.width,
+          height: asset.source.height,
+        },
+        final_dimensions: {
+          width: asset.final.width,
+          height: asset.final.height,
+        },
+        source_bytes: asset.source.bytes,
+        final_bytes: asset.final.bytes,
+        public_id: uploaded.public_id,
+        version: uploaded.version,
+        secure_url: uploaded.secure_url,
+        format: uploaded.format,
       });
     }
 
