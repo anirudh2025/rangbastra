@@ -13,7 +13,7 @@ create table if not exists public.catalogue_products (
 insert into public.catalogue_products(id,slug,title) values
   (1,'gulnaar','Gulnaar'),(2,'elara','Elara'),(3,'noor','Noor'),
   (4,'inaayat','Inaayat'),(5,'amaira','Amaira'),(6,'naeyra','Naeyra'),
-  (7,'mahira','Mahira'),(8,'aayana','Aayana'),(9,'iraaya','Iraaya'),
+  (7,'mahira','Mahira'),(8,'ayana','Ayana'),(9,'iraaya','Iraaya'),
   (10,'riva','Riva'),(11,'anaahita','Anaahita'),(12,'aavya','Aavya'),
   (13,'ziana','Ziana'),(14,'eiraa','Eiraa'),(15,'eshaira','Eshaira'),
   (16,'ruhaaya','Ruhaaya'),(17,'lavanya','Lavanya'),(18,'varnika','Varnika'),
