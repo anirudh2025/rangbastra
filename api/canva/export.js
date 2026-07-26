@@ -48,6 +48,7 @@ export default async function handler(request, response) {
 
   const designId = firstQueryValue(request.query?.design_id);
   const requestedPage = firstQueryValue(request.query?.page);
+  const mode = firstQueryValue(request.query?.mode);
   const page = Number(requestedPage);
 
   if (
@@ -116,6 +117,11 @@ export default async function handler(request, response) {
     }
 
     if (job?.status === "success" && typeof job.urls?.[0] === "string") {
+      if (mode !== "json") {
+        response.setHeader("Location", job.urls[0]);
+        return response.status(302).end();
+      }
+
       return response.status(200).json({
         design_id: designId,
         page,
