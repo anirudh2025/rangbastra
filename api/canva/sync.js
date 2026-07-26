@@ -155,6 +155,23 @@ export const resolveProductBindings = ({ manifest, pages, product }) => {
   return Object.freeze(resolved);
 };
 
+export const exportProductBindings = async ({
+  bindings,
+  accessToken,
+  exportFn = createCanvaPngExport,
+}) =>
+  Promise.all(
+    bindings.map(async (binding) => ({
+      binding,
+      exported: await exportFn({
+        accessToken,
+        designId: "DAHPSPnYCvY",
+        page: binding.currentPageNumber,
+        quality: "pro",
+      }),
+    })),
+  );
+
 const safeCanvaPageError = (status, response) => {
   if (status === 401) {
     return response.status(401).json({
@@ -330,19 +347,27 @@ export default async function handler(request, response) {
       });
     }
 
-    const exports = [];
-    for (const binding of resolved) {
-      const exported = await createCanvaPngExport({
-        accessToken,
-        designId: "DAHPSPnYCvY",
-        page: binding.currentPageNumber,
-        quality: "pro",
-      });
+    const exportResults = await exportProductBindings({
+      bindings: resolved,
+      accessToken,
+    });
 
+    for (const { binding, exported } of exportResults) {
       if (exported.status === "provider_error") {
         return safeExportError(exported.providerStatus, response);
       }
       if (exported.status !== "success") {
+        const timeout =
+          exported.status === "timeout"
+            ? {
+                asset_key: binding.entry.assetKey,
+                canva_page_id: binding.entry.canvaPageId,
+                current_page_number: binding.currentPageNumber,
+                export_job_status: exported.jobStatus,
+                elapsed_ms: exported.elapsedMs,
+                poll_count: exported.pollCount,
+              }
+            : null;
         return response.status(
           exported.status === "timeout" ? 504 : 502,
         ).json({
@@ -350,17 +375,16 @@ export default async function handler(request, response) {
             exported.status === "timeout"
               ? "A Canva export timed out."
               : "Canva could not export every product asset.",
+          ...(timeout ? { timed_out_asset: timeout } : {}),
         });
       }
-
-      exports.push({ binding, downloadUrl: exported.downloadUrl });
     }
 
     const prepared = [];
-    for (const exported of exports) {
+    for (const { binding, exported } of exportResults) {
       const sourcePng = await downloadCanvaPng(exported.downloadUrl);
       const resized = await resizeCanvaPngForProduction(sourcePng);
-      prepared.push({ binding: exported.binding, ...resized });
+      prepared.push({ binding, ...resized });
     }
 
     const oversized = prepared
