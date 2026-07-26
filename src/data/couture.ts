@@ -1,3 +1,5 @@
+import { cloudinaryImageUrl } from "../lib/cloudinary";
+
 export type CoutureCategory =
   "Bridal" | "Festive" | "Reception" | "Engagement" | "Custom Couture";
 
@@ -899,13 +901,13 @@ const productImageUrls: Record<
   [string, string, string, string, string, string, string]
 > = {
   gulnaar: [
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784365269/Gulnaar_Web_01_gasunw.webp", // 01 hero
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784365270/Gulnaar_Web_02_gjfxct.webp", // 02 front
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784365270/Gulnaar_Web_03_h9rvca.webp", // 03 side
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784365270/Gulnaar_Web_04_kf5vnc.webp", // 04 back
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784365270/Gulnaar_Web_05_rrxwtl.webp", // 05 detail
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784365271/Gulnaar_Web_06_we87zg.webp", // 06 drape
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784365275/Gulnaar_Web_01_gasunw.webp", // 07 editorial
+    cloudinaryImageUrl("gulnaar-web-01"), // 01 hero
+    cloudinaryImageUrl("gulnaar-web-02"), // 02 front
+    cloudinaryImageUrl("gulnaar-web-03"), // 03 side
+    cloudinaryImageUrl("gulnaar-web-04"), // 04 back
+    cloudinaryImageUrl("gulnaar-web-05"), // 05 detail
+    cloudinaryImageUrl("gulnaar-web-06"), // 06 drape
+    cloudinaryImageUrl("gulnaar-web-01"), // 07 editorial
   ],
   elara: [
     "https://res.cloudinary.com/dfxlm7z58/image/upload/v1784188775/Elara_Web_01_wyoibr.webp", // 01 hero
@@ -1412,6 +1414,7 @@ for (const product of couturePieces) {
       throw new Error(`${product.slug}: ${id} must use an HTTPS image URL`);
     if (
       image.src.includes("res.cloudinary.com") &&
+      product.slug !== "gulnaar" &&
       !/\/image\/upload\/v\d+\//.test(image.src)
     )
       throw new Error(

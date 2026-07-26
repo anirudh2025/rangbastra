@@ -3,6 +3,12 @@ import {
   type CoutureImage,
   type CouturePiece,
 } from "../data/couture";
+import {
+  cloudinaryImageUrl,
+  GULNAAR_ASSETS,
+  isCloudinaryResponsiveWidth,
+  type GulnaarAssetKey,
+} from "./cloudinary";
 
 const productViewLabels = [
   "primary view",
@@ -59,6 +65,19 @@ export const getProductImages = (product: {
 export const getCloudinaryImageUrl = (src: string, width: number) => {
   if (!src.includes("res.cloudinary.com") || !src.includes("/image/upload/")) {
     return src;
+  }
+
+  const gulnaarAsset = Object.entries(GULNAAR_ASSETS).find(
+    ([, publicId]) => src.endsWith(`/${publicId}.webp`),
+  );
+  if (gulnaarAsset) {
+    if (!isCloudinaryResponsiveWidth(width)) {
+      throw new Error("Unsupported Gulnaar responsive image width.");
+    }
+    return cloudinaryImageUrl(
+      gulnaarAsset[0] as GulnaarAssetKey,
+      width,
+    );
   }
 
   return src.replace(
