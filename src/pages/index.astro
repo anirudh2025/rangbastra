@@ -11,13 +11,19 @@ import CraftDetails from "../sections/home/CraftDetails.astro";
 import Journey from "../components/journey/Journey.astro";
 import LuxuryConsultationCTA from "../sections/home/LuxuryConsultationCTA.astro";
 import Footer from "../sections/home/Footer.astro";
+import brandLogo from "../assets/branding/Rangbastra Web Logo.svg";
+
+const socialImage = new URL(
+  brandLogo.src,
+  "https://www.rangbastra.luxury",
+).toString();
 ---
 
 <PageLayout
   title="Rangbastra | Luxury Bridal Couture & Custom Occasion Wear"
   description="Rangbastra is an online luxury couture platform where customers explore bridal and occasion wear, save favourites, create an account and request personalised design consultations."
   canonical="https://www.rangbastra.luxury/"
-  image="https://res.cloudinary.com/dfxlm7z58/image/upload/v1782614896/Hero_Desktop_klovjb.webp"
+  image={socialImage}
   keywords="Rangbastra, luxury couture India, custom bridal lehenga, designer bridal wear Gujarat, couture boutique Anand, handcrafted occasion wear"
 >
   <div class="homepage-journey">

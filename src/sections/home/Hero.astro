@@ -1,75 +1,62 @@
 ---
+import LoomFallback from "../../components/hero/LoomFallback.astro";
 import Button from "../../components/primitives/Button.astro";
 import Label from "../../components/primitives/Label.astro";
 ---
 
-<header class="living-hero" data-living-hero aria-labelledby="hero-heading">
+<header
+  class="living-hero"
+  data-hero-root
+  data-hero-mode="static"
+  data-hero-state="BOOT"
+  aria-labelledby="hero-heading"
+>
   <div class="living-hero__stage">
-    <div class="living-hero__visual-mask">
-      <picture class="living-hero__media">
-        <source
-          media="(max-width:700px)"
-          srcset="https://res.cloudinary.com/dfxlm7z58/image/upload/v1782619685/Hero_Mobile_yt2m8f.webp"
-        />
-        <img
-          src="https://res.cloudinary.com/dfxlm7z58/image/upload/v1782614896/Hero_Desktop_klovjb.webp"
-          width="4096"
-          height="2731"
-          alt="Rangbastra couture model wearing an intricately handcrafted bridal ensemble"
-          loading="eager"
-          fetchpriority="high"
-          decoding="async"
-          draggable="false"
-        />
-      </picture>
-      <div class="living-hero__atmosphere" aria-hidden="true"></div>
-      <div class="living-hero__grain" aria-hidden="true"></div>
-      <div class="living-hero__veil" aria-hidden="true"></div>
-    </div>
+    <LoomFallback />
 
-    <div class="living-hero__content">
+    <div
+      class="living-hero__enhancement"
+      data-hero-enhancement
+      aria-hidden="true"
+    ></div>
+
+    <div class="living-hero__content" data-hero-content>
       <p class="living-hero__eyebrow">Bespoke Indian Couture</p>
-      <h1 id="hero-heading">
-        Not Designed for Everyone
-      </h1>
-      <div class="living-hero__support">
-        <div class="living-hero__actions">
-          <Button href="/design-your-outfit" class="living-hero__primary"
-            ><Label icon="sketch">Begin Yours</Label></Button
-          >
-          <a class="living-hero__secondary" href="/collections"
-            ><Label icon="journal">Explore the Collection</Label></a
-          >
-        </div>
+      <h1 id="hero-heading">Not Designed for Everyone</h1>
+      <div class="living-hero__actions">
+        <Button href="/design-your-outfit" class="living-hero__primary">
+          <Label icon="sketch">Begin Yours</Label>
+        </Button>
+        <a class="living-hero__secondary" href="/collections">
+          <Label icon="journal">Explore the Collection</Label>
+        </a>
       </div>
     </div>
+
+    <div class="living-hero__handoff" data-hero-handoff aria-hidden="true"></div>
   </div>
 </header>
+
+<script>
+  import {
+    disposeHeroController,
+    initHeroController,
+  } from "../../lib/hero/controller";
+
+  document.addEventListener("astro:page-load", initHeroController);
+  document.addEventListener("astro:before-swap", disposeHeroController);
+  initHeroController();
+</script>
 
 <style>
   .living-hero {
     position: relative;
     height: 100svh;
     min-height: 38rem;
-    background: var(--obsidian-1000);
+    overflow: hidden;
+    background: #000;
     color: var(--text-primary);
-  }
-
-  .living-hero::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 22%;
-    z-index: 3;
-    pointer-events: none;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(5, 5, 5, 0.4) 45%,
-      var(--surface-canvas) 100%
-    );
+    isolation: isolate;
   }
 
   .living-hero__stage {
@@ -78,168 +65,75 @@ import Label from "../../components/primitives/Label.astro";
     overflow: hidden;
   }
 
-  .living-hero__visual-mask {
+  .living-hero__enhancement {
     position: absolute;
     inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0 78%, rgba(0, 0, 0, .9) 86%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0 78%, rgba(0, 0, 0, .9) 86%, transparent 100%);
-  }
-
-  .living-hero__media,
-  .living-hero__media img,
-  .living-hero__atmosphere,
-  .living-hero__grain,
-  .living-hero__veil {
-    position: absolute;
-    inset: 0;
+    z-index: 1;
     width: 100%;
     height: 100%;
+    opacity: 0;
     pointer-events: none;
+    transition: opacity 760ms var(--ease-luxury);
   }
 
-  .living-hero__media {
-    z-index: 0;
-  }
-  .living-hero__media img {
-    object-fit: cover;
-    object-position: center 30%;
-    transform: scale(1.02);
+  :global([data-hero-fallback]) {
+    opacity: 1;
+    transition: opacity 920ms var(--ease-luxury);
   }
 
-  .living-hero__atmosphere {
-    z-index: 1;
-    background:
-      linear-gradient(
-        90deg,
-        rgba(0, 0, 0, 0.34),
-        transparent 25%,
-        transparent 75%,
-        rgba(0, 0, 0, 0.3)
-      ),
-      linear-gradient(0deg, rgba(0, 0, 0, 0.68), transparent 48%),
-      radial-gradient(
-        ellipse at center,
-        rgba(0, 0, 0, 0.04),
-        rgba(0, 0, 0, 0.46)
-      );
+  .living-hero[data-hero-enhanced-ready="true"] .living-hero__enhancement {
     opacity: 1;
   }
 
-  .living-hero__grain {
-    z-index: 2;
-    opacity: 0.03;
-    background-image: radial-gradient(#fff 0.55px, transparent 0.7px);
-    background-size: 7px 7px;
-  }
-
-  .living-hero__veil {
-    z-index: 6;
-    background: linear-gradient(112deg, #050202 5%, #1b080c 45%, #050505 80%);
-    transform: translateX(-105%);
-  }
-
-  .is-first-visit .living-hero__veil {
-    animation: veil-reveal 1.45s 0.32s var(--ease-luxury) both;
+  .living-hero[data-hero-enhanced-ready="true"] :global(
+      [data-hero-fallback]
+    ) {
+    opacity: 0;
   }
 
   .living-hero__content {
     position: relative;
-    z-index: 4;
+    z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: min(76rem, calc(100% - 4rem));
     height: 100%;
-    margin: auto;
-    padding: clamp(7rem, 13vh, 10rem) 0 4rem;
+    margin-inline: auto;
+    padding: clamp(7rem, 13vh, 10rem) 0 5rem;
     text-align: center;
-    pointer-events: auto;
-    transform: none;
   }
 
   .living-hero__eyebrow {
-    margin: 0 0 clamp(1.5rem, 3vh, 2.5rem);
-    font-size: var(--caption);
-    font-weight: var(--weight-semibold);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    margin: 0 0 clamp(1.35rem, 3vh, 2.25rem);
     color: var(--sand-200);
-    transform: none;
-  }
-
-  .living-hero__eyebrow-legacy {
-    display: none;
+    font-family: var(--font-ceremonial);
+    font-size: var(--caption);
+    font-weight: 400;
+    letter-spacing: .7em;
+    text-transform: uppercase;
   }
 
   h1 {
+    max-width: 13ch;
     margin: 0;
-    font-family: var(--font-display);
-    font-size: clamp(3.7rem, 7.1vw, 8.2rem);
-    font-weight: var(--weight-editorial);
-    font-synthesis: none;
-    line-height: 0.88;
-    letter-spacing: -0.035em;
-    text-shadow: 0 5px 36px rgba(0, 0, 0, 0.64);
-  }
-
-  .hero-heading__visual,
-  .hero-heading__line {
-    display: block;
-  }
-  .hero-heading__line {
-    overflow: clip;
-    padding: 0.14em 0.08em 0.18em;
-  }
-  .hero-heading__line > span {
-    display: block;
-  }
-  .hero-heading__second {
-    margin-top: 0.04em;
     color: var(--ivory-100);
-    font-size: 0.82em;
-    white-space: nowrap;
-  }
-  .hero-heading__caret {
-    display: inline-block;
-    width: 1px;
-    height: 0.74em;
-    background: rgb(var(--cocoa-rgb));
-    vertical-align: -0.02em;
-    animation: caret-fade 1.8s ease-in-out infinite;
-  }
-  @supports ((background-clip: text) or (-webkit-background-clip: text)) {
-    .hero-heading__second {
-      background: var(--gradient-editorial);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-    }
-  }
-
-  .living-hero__support {
-    transform: none;
-    opacity: 1;
-  }
-
-  .living-hero__copy {
-    max-width: 37rem;
-    margin: clamp(1.8rem, 4vh, 3rem) auto 0;
-    color: var(--text-secondary);
-    font-size: var(--body-md);
-    line-height: var(--leading-body);
+    font-family: var(--font-display);
+    font-size: clamp(3.35rem, 5.25vw, 5.125rem);
+    font-weight: 400;
+    line-height: .98;
+    letter-spacing: -.035em;
+    text-wrap: balance;
+    text-shadow: 0 6px 42px rgba(0, 0, 0, .88);
   }
 
   .living-hero__actions {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     gap: var(--space-6);
     margin-top: clamp(var(--space-7), 5vh, var(--space-9));
-    pointer-events: auto;
   }
 
   :global(.living-hero__primary) {
@@ -247,249 +141,100 @@ import Label from "../../components/primitives/Label.astro";
     border-color: var(--cocoa-border);
     border-radius: var(--radius-md);
     background: var(--gradient-obsidian);
-    pointer-events: auto;
   }
 
   .living-hero__secondary {
     position: relative;
-    padding: 0.8rem 0.1rem;
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    padding: .75rem .1rem;
     color: var(--ivory-100);
     font-size: var(--label-md);
-    text-decoration: none;
-    pointer-events: auto;
   }
+
   .living-hero__secondary::after {
     content: "";
     position: absolute;
-    left: 0;
     right: 0;
-    bottom: 0.35rem;
+    bottom: .3rem;
+    left: 0;
     height: 1px;
     background: var(--gradient-gold);
-    transform: scaleX(0.22);
+    transform: scaleX(.22);
     transform-origin: left;
     transition: transform var(--motion-medium) var(--ease-luxury);
   }
+
   .living-hero__secondary:hover::after,
   .living-hero__secondary:focus-visible::after {
     transform: scaleX(1);
   }
 
-  @keyframes veil-reveal {
-    0%,
-    55% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(105%);
-    }
-  }
-  @keyframes caret-fade {
-    50% {
-      opacity: 0.28;
-    }
+  .living-hero__secondary:focus-visible {
+    border-radius: var(--radius-sm);
+    outline: 1px solid var(--cocoa-300);
+    outline-offset: 5px;
   }
 
-  @media (max-width: 700px) {
-    .living-hero__stage {
-      min-height: 0;
-    }
-    .living-hero__media img {
-      object-position: center top;
-      transform: scale(1.02);
-    }
-    .living-hero__atmosphere {
-      background: linear-gradient(
-        0deg,
-        rgba(0, 0, 0, 0.9) 2%,
-        rgba(0, 0, 0, 0.55) 48%,
-        rgba(0, 0, 0, 0.16) 78%
-      );
-    }
-    .living-hero__content {
-      justify-content: center;
-      width: calc(100% - 2rem);
-      padding: calc(var(--navbar-height) + 3rem) 0 1rem;
-      transform: none;
-    }
-    .living-hero__eyebrow {
-      margin-bottom: 1rem;
-      font-size: 0.63rem;
-    }
-    h1 {
-      font-size: clamp(2.55rem, 12.2vw, 4.2rem);
-      line-height: 0.9;
-    }
-    .hero-heading__second {
-      font-size: 0.72em;
-    }
-    .hero-heading__word {
-      min-width: 10.1ch;
-    }
-    .living-hero__copy {
-      max-width: 29rem;
-      margin-top: 1.2rem;
-      font-size: 0.84rem;
-      line-height: 1.55;
-    }
-    .living-hero__actions {
-      flex-direction: column;
-      gap: 0.35rem;
-      margin-top: var(--space-6);
-    }
-    :global(.living-hero__primary) {
-      min-height: 48px;
-      padding-inline: 1.05rem;
-      font-size: 0.76rem;
-    }
-    .living-hero__secondary {
-      font-size: 0.76rem;
-    }
-  }
-
-  @media (max-width: 360px) {
-    .living-hero__content {
-      width: calc(100% - 1.25rem);
-    }
-    h1 {
-      font-size: clamp(2.25rem, 11.8vw, 2.9rem);
-    }
-    .living-hero__eyebrow {
-      font-size: 0.56rem;
-    }
-    .living-hero__copy {
-      font-size: 0.77rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .living-hero__visual-mask {
-      opacity: 1;
-    }
-    .living-hero__veil {
-      display: none;
-    }
-    .living-hero__media img,
-    .living-hero__content,
-    .living-hero__eyebrow,
-    .living-hero__support {
-      transform: none;
-    }
-    .hero-heading__caret {
-      display: none;
-    }
-  }
-
-  .living-hero__eyebrow {
-    font-family: var(--font-ceremonial);
-    font-weight: 400;
-    letter-spacing: 0.8em;
-  }
-
-  h1 {
-    font-size: clamp(3.35rem, 5.25vw, 5.125rem);
-    font-weight: 400;
-    line-height: 0.98;
-  }
-
-  .hero-heading__line {
-    overflow: clip;
-    padding: 0.16em 0.1em 0.2em;
-    margin-block: -0.16em -0.2em;
-  }
-
-  .hero-heading__second {
-    font-size: 0.86em;
-    line-height: 1.06;
-    white-space: nowrap;
-  }
-
-  .animated-phrase {
-    display: inline-flex !important;
-    align-items: baseline;
-    justify-content: flex-start;
-    gap: 0.18em;
-    white-space: nowrap;
-  }
-
-  .hero-heading__word {
-    position: relative;
-    display: inline-block !important;
-    min-width: 0 !important;
-    text-align: left;
-    line-height: inherit;
-    white-space: pre;
-  }
-
-  .hero-heading__caret {
+  .living-hero__handoff {
     position: absolute;
-    left: 100%;
-    bottom: 0.08em;
-    margin-left: 0.035em;
-    width: 1px;
-    height: 0.7em;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    height: clamp(5rem, 14vh, 9rem);
+    background: linear-gradient(to bottom, transparent, var(--surface-canvas));
     pointer-events: none;
   }
 
-  @media (max-width: 1366px) {
-    h1 {
-      font-size: clamp(3.2rem, 4.8vw, 4.25rem);
-    }
+  :global(html[data-hero-pointer-owner="living-loom"] .global-cursor-glow) {
+    opacity: 0 !important;
   }
 
-  @media (max-width: 1024px) {
-    h1 {
-      font-size: clamp(2.9rem, 5.5vw, 3.625rem);
-    }
-  }
-
-  @media (max-width: 700px) {
-    .living-hero { height: 100svh; min-height: 38rem; }
-    .living-hero__stage {
-      position: relative;
-      height: 100%;
-      min-height: 0;
-    }
+  @media (max-width: 700px), (orientation: portrait) {
     .living-hero__content {
-      transform: none !important;
+      justify-content: flex-end;
+      width: calc(100% - 2rem);
+      padding: calc(var(--navbar-height) + 4rem) 0 clamp(5.5rem, 13vh, 7.5rem);
     }
-    .living-hero__media img {
-      transform: scale(1.02) !important;
-    }
-    h1 {
-      width: 100%;
-      font-size: clamp(2rem, 8.8vw, 2.45rem);
-      line-height: 1;
-    }
-    .hero-heading__line {
-      overflow: visible;
-    }
-    .hero-heading__line:first-child > span {
-      max-width: 15ch;
-      margin-inline: auto;
-      text-wrap: balance;
-    }
-    .hero-heading__second {
-      font-size: 0.82em;
-    }
-    .living-hero__eyebrow {
-      font-size: 0.61rem;
-    }
-  }
 
-  @media (max-width: 360px) {
-    h1 {
-      font-size: clamp(1.85rem, 8.8vw, 2.15rem);
+    .living-hero__eyebrow {
+      margin-bottom: 1rem;
+      font-size: .61rem;
+      letter-spacing: .48em;
     }
-    .animated-phrase {
-      gap: 0.14em;
+
+    h1 {
+      max-width: 12ch;
+      font-size: clamp(2.25rem, 10vw, 3.4rem);
+      line-height: .98;
+    }
+
+    .living-hero__actions {
+      flex-direction: column;
+      gap: .35rem;
+      margin-top: var(--space-6);
+    }
+
+    :global(.living-hero__primary) {
+      min-height: 48px;
+      font-size: .76rem;
+    }
+
+    .living-hero__secondary {
+      font-size: .76rem;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .living-hero__content,
-    .living-hero__media img {
-      transform: none !important;
+    .living-hero,
+    .living-hero *,
+    .living-hero *::before,
+    .living-hero *::after {
+      animation: none !important;
+      scroll-behavior: auto !important;
+      transition: none !important;
     }
   }
 </style>

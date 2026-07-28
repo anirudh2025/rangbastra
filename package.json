@@ -20,7 +20,8 @@
     "@astrojs/sitemap": "^3.7.3",
     "@supabase/supabase-js": "^2.110.7",
     "astro": "^7.1.3",
-    "sharp": "^0.35.2"
+    "sharp": "^0.35.2",
+    "three": "0.185.1"
   },
   "overrides": {
     "fast-uri": "4.1.1",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "@types/three": "0.185.1",
     "prettier": "^3.9.5",
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^6.0.3"
