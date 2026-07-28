@@ -973,175 +973,175 @@ const productImageUrls: Record<
     cloudinaryImageUrl("ayana-web-07"), // 07 editorial
   ],
   iraaya: [
-    coutureImages.hero, // 01 hero
-    coutureImages.hero, // 02 front
-    coutureImages.hero, // 03 side
-    coutureImages.hero, // 04 back
-    coutureImages.hero, // 05 detail
-    coutureImages.hero, // 06 drape
-    coutureImages.hero, // 07 editorial
+    cloudinaryImageUrl("iraaya-web-01"), // 01 hero
+    cloudinaryImageUrl("iraaya-web-02"), // 02 front
+    cloudinaryImageUrl("iraaya-web-03"), // 03 side
+    cloudinaryImageUrl("iraaya-web-04"), // 04 back
+    cloudinaryImageUrl("iraaya-web-05"), // 05 detail
+    cloudinaryImageUrl("iraaya-web-06"), // 06 drape
+    cloudinaryImageUrl("iraaya-web-07"), // 07 editorial
   ],
   riva: [
-    coutureImages.bridal, // 01 hero
-    coutureImages.bridal, // 02 front
-    coutureImages.bridal, // 03 side
-    coutureImages.bridal, // 04 back
-    coutureImages.bridal, // 05 detail
-    coutureImages.bridal, // 06 drape
-    coutureImages.bridal, // 07 editorial
+    cloudinaryImageUrl("riva-web-01"), // 01 hero
+    cloudinaryImageUrl("riva-web-02"), // 02 front
+    cloudinaryImageUrl("riva-web-03"), // 03 side
+    cloudinaryImageUrl("riva-web-04"), // 04 back
+    cloudinaryImageUrl("riva-web-05"), // 05 detail
+    cloudinaryImageUrl("riva-web-06"), // 06 drape
+    cloudinaryImageUrl("riva-web-07"), // 07 editorial
   ],
   anaahita: [
-    coutureImages.signature, // 01 hero
-    coutureImages.signature, // 02 front
-    coutureImages.signature, // 03 side
-    coutureImages.signature, // 04 back
-    coutureImages.signature, // 05 detail
-    coutureImages.signature, // 06 drape
-    coutureImages.signature, // 07 editorial
+    cloudinaryImageUrl("anaahita-web-01"), // 01 hero
+    cloudinaryImageUrl("anaahita-web-02"), // 02 front
+    cloudinaryImageUrl("anaahita-web-03"), // 03 side
+    cloudinaryImageUrl("anaahita-web-04"), // 04 back
+    cloudinaryImageUrl("anaahita-web-05"), // 05 detail
+    cloudinaryImageUrl("anaahita-web-06"), // 06 drape
+    cloudinaryImageUrl("anaahita-web-07"), // 07 editorial
   ],
   aavya: [
-    coutureImages.couture, // 01 hero
-    coutureImages.couture, // 02 front
-    coutureImages.couture, // 03 side
-    coutureImages.couture, // 04 back
-    coutureImages.couture, // 05 detail
-    coutureImages.couture, // 06 drape
-    coutureImages.couture, // 07 editorial
+    cloudinaryImageUrl("aavya-web-01"), // 01 hero
+    cloudinaryImageUrl("aavya-web-02"), // 02 front
+    cloudinaryImageUrl("aavya-web-03"), // 03 side
+    cloudinaryImageUrl("aavya-web-04"), // 04 back
+    cloudinaryImageUrl("aavya-web-05"), // 05 detail
+    cloudinaryImageUrl("aavya-web-06"), // 06 drape
+    cloudinaryImageUrl("aavya-web-07"), // 07 editorial
   ],
   ziana: [
-    coutureImages.craft, // 01 hero
-    coutureImages.craft, // 02 front
-    coutureImages.craft, // 03 side
-    coutureImages.craft, // 04 back
-    coutureImages.craft, // 05 detail
-    coutureImages.craft, // 06 drape
-    coutureImages.craft, // 07 editorial
+    cloudinaryImageUrl("ziana-web-01"), // 01 hero
+    cloudinaryImageUrl("ziana-web-02"), // 02 front
+    cloudinaryImageUrl("ziana-web-03"), // 03 side
+    cloudinaryImageUrl("ziana-web-04"), // 04 back
+    cloudinaryImageUrl("ziana-web-05"), // 05 detail
+    cloudinaryImageUrl("ziana-web-06"), // 06 drape
+    cloudinaryImageUrl("ziana-web-07"), // 07 editorial
   ],
   eiraa: [
-    coutureImages.celebration, // 01 hero
-    coutureImages.celebration, // 02 front
-    coutureImages.celebration, // 03 side
-    coutureImages.celebration, // 04 back
-    coutureImages.celebration, // 05 detail
-    coutureImages.celebration, // 06 drape
-    coutureImages.celebration, // 07 editorial
+    cloudinaryImageUrl("eiraa-web-01"), // 01 hero
+    cloudinaryImageUrl("eiraa-web-02"), // 02 front
+    cloudinaryImageUrl("eiraa-web-03"), // 03 side
+    cloudinaryImageUrl("eiraa-web-04"), // 04 back
+    cloudinaryImageUrl("eiraa-web-05"), // 05 detail
+    cloudinaryImageUrl("eiraa-web-06"), // 06 drape
+    cloudinaryImageUrl("eiraa-web-07"), // 07 editorial
   ],
   eshaira: [
-    coutureImages.festive, // 01 hero
-    coutureImages.festive, // 02 front
-    coutureImages.festive, // 03 side
-    coutureImages.festive, // 04 back
-    coutureImages.festive, // 05 detail
-    coutureImages.festive, // 06 drape
-    coutureImages.festive, // 07 editorial
+    cloudinaryImageUrl("eshaira-web-01"), // 01 hero
+    cloudinaryImageUrl("eshaira-web-02"), // 02 front
+    cloudinaryImageUrl("eshaira-web-03"), // 03 side
+    cloudinaryImageUrl("eshaira-web-04"), // 04 back
+    cloudinaryImageUrl("eshaira-web-05"), // 05 detail
+    cloudinaryImageUrl("eshaira-web-06"), // 06 drape
+    cloudinaryImageUrl("eshaira-web-07"), // 07 editorial
   ],
   ruhaaya: [
-    coutureImages.bridal, // 01 hero
-    coutureImages.bridal, // 02 front
-    coutureImages.bridal, // 03 side
-    coutureImages.bridal, // 04 back
-    coutureImages.bridal, // 05 detail
-    coutureImages.bridal, // 06 drape
-    coutureImages.bridal, // 07 editorial
+    cloudinaryImageUrl("ruhaaya-web-01"), // 01 hero
+    cloudinaryImageUrl("ruhaaya-web-02"), // 02 front
+    cloudinaryImageUrl("ruhaaya-web-03"), // 03 side
+    cloudinaryImageUrl("ruhaaya-web-04"), // 04 back
+    cloudinaryImageUrl("ruhaaya-web-05"), // 05 detail
+    cloudinaryImageUrl("ruhaaya-web-06"), // 06 drape
+    cloudinaryImageUrl("ruhaaya-web-07"), // 07 editorial
   ],
   lavanya: [
-    coutureImages.signature, // 01 hero
-    coutureImages.signature, // 02 front
-    coutureImages.signature, // 03 side
-    coutureImages.signature, // 04 back
-    coutureImages.signature, // 05 detail
-    coutureImages.signature, // 06 drape
-    coutureImages.signature, // 07 editorial
+    cloudinaryImageUrl("lavanya-web-01"), // 01 hero
+    cloudinaryImageUrl("lavanya-web-02"), // 02 front
+    cloudinaryImageUrl("lavanya-web-03"), // 03 side
+    cloudinaryImageUrl("lavanya-web-04"), // 04 back
+    cloudinaryImageUrl("lavanya-web-05"), // 05 detail
+    cloudinaryImageUrl("lavanya-web-06"), // 06 drape
+    cloudinaryImageUrl("lavanya-web-07"), // 07 editorial
   ],
   varnika: [
-    coutureImages.hero, // 01 hero
-    coutureImages.hero, // 02 front
-    coutureImages.hero, // 03 side
-    coutureImages.hero, // 04 back
-    coutureImages.hero, // 05 detail
-    coutureImages.hero, // 06 drape
-    coutureImages.hero, // 07 editorial
+    cloudinaryImageUrl("varnika-web-01"), // 01 hero
+    cloudinaryImageUrl("varnika-web-02"), // 02 front
+    cloudinaryImageUrl("varnika-web-03"), // 03 side
+    cloudinaryImageUrl("varnika-web-04"), // 04 back
+    cloudinaryImageUrl("varnika-web-05"), // 05 detail
+    cloudinaryImageUrl("varnika-web-06"), // 06 drape
+    cloudinaryImageUrl("varnika-web-07"), // 07 editorial
   ],
   mishka: [
-    coutureImages.atelier, // 01 hero
-    coutureImages.atelier, // 02 front
-    coutureImages.atelier, // 03 side
-    coutureImages.atelier, // 04 back
-    coutureImages.atelier, // 05 detail
-    coutureImages.atelier, // 06 drape
-    coutureImages.atelier, // 07 editorial
+    cloudinaryImageUrl("mishka-web-01"), // 01 hero
+    cloudinaryImageUrl("mishka-web-02"), // 02 front
+    cloudinaryImageUrl("mishka-web-03"), // 03 side
+    cloudinaryImageUrl("mishka-web-04"), // 04 back
+    cloudinaryImageUrl("mishka-web-05"), // 05 detail
+    cloudinaryImageUrl("mishka-web-06"), // 06 drape
+    cloudinaryImageUrl("mishka-web-07"), // 07 editorial
   ],
   aureya: [
-    coutureImages.couture, // 01 hero
-    coutureImages.couture, // 02 front
-    coutureImages.couture, // 03 side
-    coutureImages.couture, // 04 back
-    coutureImages.couture, // 05 detail
-    coutureImages.couture, // 06 drape
-    coutureImages.couture, // 07 editorial
+    cloudinaryImageUrl("aureya-web-01"), // 01 hero
+    cloudinaryImageUrl("aureya-web-02"), // 02 front
+    cloudinaryImageUrl("aureya-web-03"), // 03 side
+    cloudinaryImageUrl("aureya-web-04"), // 04 back
+    cloudinaryImageUrl("aureya-web-05"), // 05 detail
+    cloudinaryImageUrl("aureya-web-06"), // 06 drape
+    cloudinaryImageUrl("aureya-web-07"), // 07 editorial
   ],
   zavira: [
-    coutureImages.bridal, // 01 hero
-    coutureImages.bridal, // 02 front
-    coutureImages.bridal, // 03 side
-    coutureImages.bridal, // 04 back
-    coutureImages.bridal, // 05 detail
-    coutureImages.bridal, // 06 drape
-    coutureImages.bridal, // 07 editorial
+    cloudinaryImageUrl("zavira-web-01"), // 01 hero
+    cloudinaryImageUrl("zavira-web-02"), // 02 front
+    cloudinaryImageUrl("zavira-web-03"), // 03 side
+    cloudinaryImageUrl("zavira-web-04"), // 04 back
+    cloudinaryImageUrl("zavira-web-05"), // 05 detail
+    cloudinaryImageUrl("zavira-web-06"), // 06 drape
+    cloudinaryImageUrl("zavira-web-07"), // 07 editorial
   ],
   sahira: [
-    coutureImages.signature, // 01 hero
-    coutureImages.signature, // 02 front
-    coutureImages.signature, // 03 side
-    coutureImages.signature, // 04 back
-    coutureImages.signature, // 05 detail
-    coutureImages.signature, // 06 drape
-    coutureImages.signature, // 07 editorial
+    cloudinaryImageUrl("sahira-web-01"), // 01 hero
+    cloudinaryImageUrl("sahira-web-02"), // 02 front
+    cloudinaryImageUrl("sahira-web-03"), // 03 side
+    cloudinaryImageUrl("sahira-web-04"), // 04 back
+    cloudinaryImageUrl("sahira-web-05"), // 05 detail
+    cloudinaryImageUrl("sahira-web-06"), // 06 drape
+    cloudinaryImageUrl("sahira-web-07"), // 07 editorial
   ],
   nirvi: [
-    coutureImages.festive, // 01 hero
-    coutureImages.festive, // 02 front
-    coutureImages.festive, // 03 side
-    coutureImages.festive, // 04 back
-    coutureImages.festive, // 05 detail
-    coutureImages.festive, // 06 drape
-    coutureImages.festive, // 07 editorial
+    cloudinaryImageUrl("nirvi-web-01"), // 01 hero
+    cloudinaryImageUrl("nirvi-web-02"), // 02 front
+    cloudinaryImageUrl("nirvi-web-03"), // 03 side
+    cloudinaryImageUrl("nirvi-web-04"), // 04 back
+    cloudinaryImageUrl("nirvi-web-05"), // 05 detail
+    cloudinaryImageUrl("nirvi-web-06"), // 06 drape
+    cloudinaryImageUrl("nirvi-web-07"), // 07 editorial
   ],
   aarini: [
-    coutureImages.swatches, // 01 hero
-    coutureImages.swatches, // 02 front
-    coutureImages.swatches, // 03 side
-    coutureImages.swatches, // 04 back
-    coutureImages.swatches, // 05 detail
-    coutureImages.swatches, // 06 drape
-    coutureImages.swatches, // 07 editorial
+    cloudinaryImageUrl("aarini-web-01"), // 01 hero
+    cloudinaryImageUrl("aarini-web-02"), // 02 front
+    cloudinaryImageUrl("aarini-web-03"), // 03 side
+    cloudinaryImageUrl("aarini-web-04"), // 04 back
+    cloudinaryImageUrl("aarini-web-05"), // 05 detail
+    cloudinaryImageUrl("aarini-web-06"), // 06 drape
+    cloudinaryImageUrl("aarini-web-07"), // 07 editorial
   ],
   bahaar: [
-    coutureImages.celebration, // 01 hero
-    coutureImages.celebration, // 02 front
-    coutureImages.celebration, // 03 side
-    coutureImages.celebration, // 04 back
-    coutureImages.celebration, // 05 detail
-    coutureImages.celebration, // 06 drape
-    coutureImages.celebration, // 07 editorial
+    cloudinaryImageUrl("bahaar-web-01"), // 01 hero
+    cloudinaryImageUrl("bahaar-web-02"), // 02 front
+    cloudinaryImageUrl("bahaar-web-03"), // 03 side
+    cloudinaryImageUrl("bahaar-web-04"), // 04 back
+    cloudinaryImageUrl("bahaar-web-05"), // 05 detail
+    cloudinaryImageUrl("bahaar-web-06"), // 06 drape
+    cloudinaryImageUrl("bahaar-web-07"), // 07 editorial
   ],
   tiara: [
-    coutureImages.craft, // 01 hero
-    coutureImages.craft, // 02 front
-    coutureImages.craft, // 03 side
-    coutureImages.craft, // 04 back
-    coutureImages.craft, // 05 detail
-    coutureImages.craft, // 06 drape
-    coutureImages.craft, // 07 editorial
+    cloudinaryImageUrl("tiara-web-01"), // 01 hero
+    cloudinaryImageUrl("tiara-web-02"), // 02 front
+    cloudinaryImageUrl("tiara-web-03"), // 03 side
+    cloudinaryImageUrl("tiara-web-04"), // 04 back
+    cloudinaryImageUrl("tiara-web-05"), // 05 detail
+    cloudinaryImageUrl("tiara-web-06"), // 06 drape
+    cloudinaryImageUrl("tiara-web-07"), // 07 editorial
   ],
   chaarvi: [
-    coutureImages.swatches, // 01 hero
-    coutureImages.swatches, // 02 front
-    coutureImages.swatches, // 03 side
-    coutureImages.swatches, // 04 back
-    coutureImages.swatches, // 05 detail
-    coutureImages.swatches, // 06 drape
-    coutureImages.swatches, // 07 editorial
+    cloudinaryImageUrl("chaarvi-web-01"), // 01 hero
+    cloudinaryImageUrl("chaarvi-web-02"), // 02 front
+    cloudinaryImageUrl("chaarvi-web-03"), // 03 side
+    cloudinaryImageUrl("chaarvi-web-04"), // 04 back
+    cloudinaryImageUrl("chaarvi-web-05"), // 05 detail
+    cloudinaryImageUrl("chaarvi-web-06"), // 06 drape
+    cloudinaryImageUrl("chaarvi-web-07"), // 07 editorial
   ],
 };
 
