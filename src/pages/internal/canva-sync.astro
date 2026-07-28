@@ -8,6 +8,25 @@ const syncProducts = Object.freeze([
   Object.freeze({ slug: "naeyra", label: "Naeyra" }),
   Object.freeze({ slug: "mahira", label: "Mahira" }),
   Object.freeze({ slug: "ayana", label: "Ayana" }),
+  Object.freeze({ slug: "chaarvi", label: "Chaarvi" }),
+  Object.freeze({ slug: "tiara", label: "Tiara" }),
+  Object.freeze({ slug: "bahaar", label: "Bahaar" }),
+  Object.freeze({ slug: "aarini", label: "Aarini" }),
+  Object.freeze({ slug: "nirvi", label: "Nirvi" }),
+  Object.freeze({ slug: "sahira", label: "Sahira" }),
+  Object.freeze({ slug: "zavira", label: "Zavira" }),
+  Object.freeze({ slug: "aureya", label: "Aureya" }),
+  Object.freeze({ slug: "mishka", label: "Mishka" }),
+  Object.freeze({ slug: "varnika", label: "Varnika" }),
+  Object.freeze({ slug: "lavanya", label: "Lavanya" }),
+  Object.freeze({ slug: "ruhaaya", label: "Ruhaaya" }),
+  Object.freeze({ slug: "eshaira", label: "Eshaira" }),
+  Object.freeze({ slug: "eiraa", label: "Eiraa" }),
+  Object.freeze({ slug: "ziana", label: "Ziana" }),
+  Object.freeze({ slug: "aavya", label: "Aavya" }),
+  Object.freeze({ slug: "anaahita", label: "Anaahita" }),
+  Object.freeze({ slug: "riva", label: "Riva" }),
+  Object.freeze({ slug: "iraaya", label: "Iraaya" }),
 ]);
 ---
 
@@ -48,6 +67,10 @@ const syncProducts = Object.freeze([
             ))
           }
         </div>
+
+        <button type="button" data-sync-batch>
+          Sync Remaining Ready Products
+        </button>
       </form>
 
       <section aria-live="polite" aria-atomic="true">
@@ -59,18 +82,63 @@ const syncProducts = Object.freeze([
     <script>
       const form = document.querySelector("[data-sync-form]");
       const secretInput = document.querySelector("#sync-secret");
-      const buttons = [
-        ...document.querySelectorAll("[data-sync-button]"),
-      ];
+      const buttons = [...document.querySelectorAll("[data-sync-button]")];
+      const batchButton = document.querySelector("[data-sync-batch]");
       const result = document.querySelector("[data-sync-result]");
+      const remainingReadyProducts = [
+        { slug: "chaarvi", label: "Chaarvi" },
+        { slug: "tiara", label: "Tiara" },
+        { slug: "bahaar", label: "Bahaar" },
+        { slug: "aarini", label: "Aarini" },
+        { slug: "nirvi", label: "Nirvi" },
+        { slug: "sahira", label: "Sahira" },
+        { slug: "zavira", label: "Zavira" },
+        { slug: "aureya", label: "Aureya" },
+        { slug: "mishka", label: "Mishka" },
+        { slug: "varnika", label: "Varnika" },
+        { slug: "lavanya", label: "Lavanya" },
+        { slug: "ruhaaya", label: "Ruhaaya" },
+        { slug: "eshaira", label: "Eshaira" },
+        { slug: "eiraa", label: "Eiraa" },
+        { slug: "ziana", label: "Ziana" },
+        { slug: "aavya", label: "Aavya" },
+        { slug: "anaahita", label: "Anaahita" },
+        { slug: "riva", label: "Riva" },
+        { slug: "iraaya", label: "Iraaya" },
+      ];
+      const completedReadyProducts = new Set();
 
       if (
         !(form instanceof HTMLFormElement) ||
         !(secretInput instanceof HTMLInputElement) ||
+        !(batchButton instanceof HTMLButtonElement) ||
         !(result instanceof HTMLElement)
       ) {
         throw new Error("Canva sync controls are unavailable.");
       }
+
+      const setBusy = (busy) => {
+        [...buttons, batchButton].forEach((button) => {
+          if (button instanceof HTMLButtonElement) button.disabled = busy;
+        });
+      };
+
+      const requestSync = async (product, secret) => {
+        const response = await fetch(
+          `/api/canva/sync?product=${encodeURIComponent(product)}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${secret}`,
+            },
+          },
+        );
+        const payload = await response.json().catch(() => ({
+          error: "The sync endpoint returned an unreadable response.",
+        }));
+
+        return { ok: response.ok, status: response.status, payload };
+      };
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -81,7 +149,8 @@ const syncProducts = Object.freeze([
             ? event.submitter
             : null;
         const product = submitter?.value ?? "";
-        const productLabel = submitter?.textContent?.replace(/^Sync\s+/, "") ?? product;
+        const productLabel =
+          submitter?.textContent?.replace(/^Sync\s+/, "") ?? product;
         const secret = secretInput.value;
 
         if (!product || !secret) {
@@ -89,27 +158,20 @@ const syncProducts = Object.freeze([
           return;
         }
 
-        buttons.forEach((button) => {
-          if (button instanceof HTMLButtonElement) button.disabled = true;
-        });
+        secretInput.value = "";
+        setBusy(true);
         result.textContent = `Synchronizing ${productLabel}...`;
 
         try {
-          const response = await fetch(
-            `/api/canva/sync?product=${encodeURIComponent(product)}`,
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${secret}`,
-              },
-            },
-          );
-          const payload = await response.json().catch(() => ({
-            error: "The sync endpoint returned an unreadable response.",
-          }));
-
-          result.textContent = JSON.stringify(payload, null, 2);
-          result.dataset.status = response.ok ? "success" : "error";
+          const sync = await requestSync(product, secret);
+          result.textContent = JSON.stringify(sync.payload, null, 2);
+          result.dataset.status = sync.ok ? "success" : "error";
+          if (
+            sync.ok &&
+            remainingReadyProducts.some(({ slug }) => slug === product)
+          ) {
+            completedReadyProducts.add(product);
+          }
         } catch {
           result.textContent = JSON.stringify(
             { error: "The sync request could not be completed." },
@@ -118,10 +180,100 @@ const syncProducts = Object.freeze([
           );
           result.dataset.status = "error";
         } finally {
+          setBusy(false);
+        }
+      });
+
+      batchButton.addEventListener("click", async () => {
+        const secret = secretInput.value;
+        if (!secret) {
+          result.textContent = "Enter the sync secret.";
+          return;
+        }
+
+        const pending = remainingReadyProducts.filter(
+          ({ slug }) => !completedReadyProducts.has(slug),
+        );
+        if (pending.length === 0) {
           secretInput.value = "";
-          buttons.forEach((button) => {
-            if (button instanceof HTMLButtonElement) button.disabled = false;
-          });
+          result.textContent = JSON.stringify(
+            {
+              status: "success",
+              message: "All remaining products are complete.",
+            },
+            null,
+            2,
+          );
+          result.dataset.status = "success";
+          return;
+        }
+
+        secretInput.value = "";
+        setBusy(true);
+        const completed = [];
+        let activeProduct = null;
+
+        try {
+          for (const product of pending) {
+            activeProduct = product.slug;
+            result.textContent = JSON.stringify(
+              {
+                status: "running",
+                current_product: product.slug,
+                completed_products: [...completedReadyProducts],
+              },
+              null,
+              2,
+            );
+
+            const sync = await requestSync(product.slug, secret);
+            if (!sync.ok) {
+              result.textContent = JSON.stringify(
+                {
+                  status: "stopped",
+                  failed_product: product.slug,
+                  http_status: sync.status,
+                  response: sync.payload,
+                  completed_products: [...completedReadyProducts],
+                },
+                null,
+                2,
+              );
+              result.dataset.status = "error";
+              return;
+            }
+
+            completedReadyProducts.add(product.slug);
+            completed.push({
+              product: product.slug,
+              response: sync.payload,
+            });
+          }
+
+          result.textContent = JSON.stringify(
+            {
+              status: "success",
+              completed_products: [...completedReadyProducts],
+              results: completed,
+            },
+            null,
+            2,
+          );
+          result.dataset.status = "success";
+        } catch {
+          result.textContent = JSON.stringify(
+            {
+              status: "stopped",
+              error: "The batch sync request could not be completed.",
+              failed_product: activeProduct,
+              completed_products: [...completedReadyProducts],
+            },
+            null,
+            2,
+          );
+          result.dataset.status = "error";
+        } finally {
+          setBusy(false);
         }
       });
     </script>
