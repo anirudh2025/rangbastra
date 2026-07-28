@@ -1,3 +1,5 @@
+import { cloudinaryImageUrl } from "../lib/cloudinary";
+
 export interface JournalArticle {
   slug: string;
   title: string;
@@ -22,8 +24,7 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "A calm editorial guide to beginning your custom bridal lehenga journey with clarity, emotion and trust.",
     category: "Bridal Guidance",
-    heroImage:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648330/Bridal_Edit_wajwba.webp",
+    heroImage: cloudinaryImageUrl("amaira-web-01"),
     heroAlt: "Editorial bridal couture portrait in warm atelier light",
     excerpt:
       "A custom lehenga begins before fabric. It begins with memory, celebration and the quiet details a bride wants to carry.",
@@ -39,8 +40,7 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "Understand the difference between couture and ready-made fashion through craft, fit, emotion and personal detail.",
     category: "Couture Knowledge",
-    heroImage:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648334/Couture_Edit_u7kmac.webp",
+    heroImage: cloudinaryImageUrl("gulnaar-web-05"),
     heroAlt: "Handcrafted couture detail photographed editorially",
     excerpt:
       "Ready-made fashion asks you to fit into an existing idea. Couture begins with your story and builds around it.",
@@ -56,8 +56,7 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "A Rangbastra editorial note on choosing bridal colour through season, ceremony, jewellery and personal feeling.",
     category: "Colour",
-    heroImage:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
+    heroImage: cloudinaryImageUrl("amaira-web-06"),
     heroAlt: "Bride in a richly coloured couture ensemble",
     excerpt:
       "A bridal colour story should flatter the moment, honour the ceremony and still feel unmistakably personal.",
@@ -73,8 +72,7 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "A couture knowledge note on handwork, embroidery density, detail placement and why restraint matters.",
     category: "Craft",
-    heroImage:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648351/Festive_Edit_cq2w5g.webp",
+    heroImage: cloudinaryImageUrl("gulnaar-web-05"),
     heroAlt: "Close view of ornate handcrafted embroidery",
     excerpt:
       "Embroidery becomes luxurious when it knows where to speak, where to rest and how to move with the bride.",
@@ -107,8 +105,7 @@ const journalDrafts: Array<Omit<JournalArticle, "readingTime" | "wordCount" | "a
     description:
       "Why personal details, emotional references and private symbols make bridal couture more meaningful.",
     category: "Personalisation",
-    heroImage:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648338/Custom_Edit_vbbzxk.webp",
+    heroImage: cloudinaryImageUrl("gulnaar-web-05"),
     heroAlt: "Custom couture details arranged in an editorial composition",
     excerpt:
       "Personalisation is not excess. At its best, it is the quiet signature that makes couture belong to one bride only.",

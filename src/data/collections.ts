@@ -1,3 +1,5 @@
+import { cloudinaryImageUrl } from "../lib/cloudinary";
+
 export interface Collection {
 
     title:string;
@@ -65,7 +67,7 @@ export const collectionPersonas: Record<CollectionPersonaId, CollectionPersona> 
     heading: "Ceremony, held close",
     statement: "Heirloom silhouettes for a deeply personal beginning.",
     introduction: "Bridal couture composed with intimate detail, considered proportion and the quiet permanence of pieces made to become memory.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648330/Bridal_Edit_wajwba.webp",
+    image: cloudinaryImageUrl("amaira-web-01"),
     imageAlt: "Rangbastra bridal couture in an intimate ceremonial setting",
     imagePosition: "50% 34%",
     accent: "104 52 47",
@@ -78,7 +80,7 @@ export const collectionPersonas: Record<CollectionPersonaId, CollectionPersona> 
     heading: "Joy, made luminous",
     statement: "Expressive couture for celebrations in full colour.",
     introduction: "Festive pieces shaped through fluid movement, vivid craft and a confident glow that remains distinctly personal.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648338/Festive_Edit_boj0wo.webp",
+    image: cloudinaryImageUrl("gulnaar-web-01"),
     imageAlt: "Rangbastra festive couture with luminous handcrafted detail",
     imagePosition: "50% 38%",
     accent: "128 70 44",
@@ -91,7 +93,7 @@ export const collectionPersonas: Record<CollectionPersonaId, CollectionPersona> 
     heading: "Poise after dusk",
     statement: "Sculptural silhouettes with an evening presence.",
     introduction: "Reception couture balancing architectural drape, restrained lustre and a composed confidence designed for the night.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
+    image: cloudinaryImageUrl("elara-web-01"),
     imageAlt: "Rangbastra reception couture styled for an evening celebration",
     imagePosition: "50% 30%",
     accent: "83 50 62",
@@ -104,7 +106,7 @@ export const collectionPersonas: Record<CollectionPersonaId, CollectionPersona> 
     heading: "A promise in detail",
     statement: "Romantic couture for the celebration before forever.",
     introduction: "Engagement silhouettes with refined texture, gentle radiance and thoughtful detail for a moment filled with anticipation.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648334/Couture_Edit_u7kmac.webp",
+    image: cloudinaryImageUrl("mahira-web-07"),
     imageAlt: "Rangbastra engagement couture with refined romantic detailing",
     imagePosition: "50% 36%",
     accent: "112 71 76",

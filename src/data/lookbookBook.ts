@@ -1,3 +1,5 @@
+import { cloudinaryImageUrl } from "../lib/cloudinary";
+
 export interface LookbookPage {
   id: string;
   kind: "cover" | "contents" | "editorial";
@@ -33,8 +35,7 @@ export const lookbookPages: LookbookPage[] = [
     eyebrow: "Chapter One",
     title: "Ceremony, held close",
     copy: "A study of colour, proportion and ceremonial presence.",
-    image:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648330/Bridal_Edit_wajwba.webp",
+    image: cloudinaryImageUrl("amaira-web-01"),
     imageAlt: "Bridal couture in a ceremonial editorial portrait",
     annotation:
       "Layered lehenga · contrasting drape · handcrafted surface detail",
@@ -46,8 +47,7 @@ export const lookbookPages: LookbookPage[] = [
     eyebrow: "Garment Note",
     title: "Built around movement",
     copy: "The silhouette is read from a respectful distance, then through the smaller details that hold the composition together.",
-    image:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Crafted_with_Precision_yh1xgw.webp",
+    image: cloudinaryImageUrl("gulnaar-web-05"),
     imageAlt: "Close editorial view of Rangbastra craftsmanship",
     annotation: "Detail study · atelier-selected finish",
     pieceSlug: "gulnaar",
@@ -58,8 +58,7 @@ export const lookbookPages: LookbookPage[] = [
     eyebrow: "Chapter Two",
     title: "After-dark poise",
     copy: "An evening frame shaped by a quieter palette and sculptural fall.",
-    image:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
+    image: cloudinaryImageUrl("elara-web-06"),
     imageAlt: "Rangbastra evening couture editorial portrait",
     annotation: "Evening silhouette · jewel-tone direction",
     pieceSlug: "elara",
@@ -70,8 +69,7 @@ export const lookbookPages: LookbookPage[] = [
     eyebrow: "Chapter Three",
     title: "Colour in motion",
     copy: "Celebration dressing that keeps expression, comfort and personal presence in balance.",
-    image:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648338/Festive_Edit_boj0wo.webp",
+    image: cloudinaryImageUrl("noor-web-07"),
     imageAlt: "Festive Rangbastra couture in an editorial frame",
     annotation: "Festive palette · fluid occasion silhouette",
     pieceSlug: "noor",
