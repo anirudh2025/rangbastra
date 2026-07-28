@@ -15,6 +15,7 @@ class HeroController {
   #observer?: IntersectionObserver;
   #renderer?: HeroRenderer;
   #state: HeroState = "BOOT";
+  #stateFamily: "desktop" | "mobile" = "desktop";
   #visible = true;
 
   constructor(root: HTMLElement) {
@@ -26,6 +27,7 @@ class HeroController {
   async mount() {
     const mode =
       this.capabilities.mode === "silk-portal" ? "mobile" : "desktop";
+    this.#stateFamily = mode;
     this.#state = mode === "mobile" ? "THREAD_READY" : "FALLBACK_READY";
     this.root.dataset.heroReady = "true";
     this.root.dataset.heroTier = this.capabilities.tier;
@@ -58,50 +60,66 @@ class HeroController {
       "change",
       (event) => {
         if (!event.matches) return;
-        this.#state = "STATIC";
-        this.root.dataset.heroState = this.#state;
-        this.#renderer?.dispose();
-        this.#renderer = undefined;
-        this.releasePointerOwnership();
+        this.#returnToFallback();
       },
       { signal: this.signal },
     );
 
-    if (
-      this.capabilities.mode !== "living-loom" ||
-      (this.capabilities.tier !== "A" && this.capabilities.tier !== "B")
-    ) {
+    if (this.capabilities.mode === "static") {
       return;
     }
 
     try {
-      const { createLivingLoomDesktop } = await import("./livingLoomDesktop");
+      const renderer =
+        this.capabilities.mode === "silk-portal"
+          ? await this.#createMobileRenderer()
+          : await this.#createDesktopRenderer();
       if (this.signal.aborted) return;
-
-      const renderer = createLivingLoomDesktop({
-        root: this.root,
-        mount: this.root.querySelector<HTMLElement>(
-          "[data-hero-enhancement]",
-        )!,
-        tier: this.capabilities.tier,
-        signal: this.signal,
-        onStateChange: (state) => this.#setState(state),
-        onReady: () => {
-          this.root.dataset.heroEnhancedReady = "true";
-        },
-        onPointerOwnershipChange: (owned) => {
-          if (owned) this.claimPointerOwnership();
-          else this.releasePointerOwnership();
-        },
-        onFailure: () => this.#fail(),
-        onIneligible: () => this.#returnToFallback(),
-      });
-
+      if (!renderer) return;
       this.attachRenderer(renderer);
       await renderer.mount();
     } catch {
       this.#fail();
     }
+  }
+
+  async #createDesktopRenderer() {
+    if (
+      this.capabilities.tier !== "A" &&
+      this.capabilities.tier !== "B"
+    ) {
+      return;
+    }
+    const { createLivingLoomDesktop } = await import("./livingLoomDesktop");
+    return createLivingLoomDesktop({
+      ...this.#rendererOptions(),
+      tier: this.capabilities.tier,
+      onPointerOwnershipChange: (owned) => {
+        if (owned) this.claimPointerOwnership();
+        else this.releasePointerOwnership();
+      },
+    });
+  }
+
+  async #createMobileRenderer() {
+    const { createSilkPortalMobile } = await import("./silkPortalMobile");
+    return createSilkPortalMobile(this.#rendererOptions());
+  }
+
+  #rendererOptions() {
+    return {
+      root: this.root,
+      mount: this.root.querySelector<HTMLElement>(
+        "[data-hero-enhancement]",
+      )!,
+      signal: this.signal,
+      onStateChange: (state: HeroState) => this.#setState(state),
+      onReady: () => {
+        this.root.dataset.heroEnhancedReady = "true";
+      },
+      onFailure: () => this.#fail(),
+      onIneligible: () => this.#restartForCapabilities(),
+    };
   }
 
   attachRenderer(renderer: HeroRenderer) {
@@ -121,13 +139,23 @@ class HeroController {
 
   #setState(next: HeroState) {
     if (
-      !canTransitionHeroState("desktop", this.#state, next) &&
+      !canTransitionHeroState(this.#stateFamily, this.#state, next) &&
       next !== "FAILED"
     ) {
       return;
     }
     this.#state = next;
     this.root.dataset.heroState = next;
+  }
+
+  #restartForCapabilities() {
+    queueMicrotask(() => {
+      if (activeController !== this || this.signal.aborted) return;
+      const root = this.root;
+      this.dispose();
+      activeController = new HeroController(root);
+      void activeController.mount();
+    });
   }
 
   #returnToFallback() {

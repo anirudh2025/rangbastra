@@ -31,11 +31,13 @@ const IDLE_FRAME_INTERVAL = 1000 / 30;
 const vertexShader = /* glsl */ `
   uniform float uTime;
   uniform float uFormation;
+  uniform float uUnravel;
   uniform vec2 uPointer;
   varying vec2 vUv;
   varying vec3 vWorldPosition;
   varying float vFold;
   varying float vEdge;
+  varying float vUnravelEdge;
 
   float coutureWidth(float vertical) {
     float upper = smoothstep(-0.7, 0.45, vertical);
@@ -78,8 +80,14 @@ const vertexShader = /* glsl */ `
     formed.x += train * 0.18 * formation;
     formed.z += train * 0.12 * formation;
 
+    float release = pow(abs(horizontal), 1.7) * uUnravel;
+    formed.x += sign(horizontal) * release * (0.62 + uv.y * 0.25);
+    formed.y -= uUnravel * (0.18 + release * 0.54);
+    formed.z += sin(vertical * 5.0 + horizontal * 2.0) * release * 0.12;
+
     vFold = weightedMotion;
     vEdge = 1.0 - smoothstep(0.82, 1.0, abs(horizontal));
+    vUnravelEdge = release;
     vec4 worldPosition = modelMatrix * vec4(formed, 1.0);
     vWorldPosition = worldPosition.xyz;
     gl_Position = projectionMatrix * viewMatrix * worldPosition;
@@ -89,11 +97,14 @@ const vertexShader = /* glsl */ `
 const fragmentShader = /* glsl */ `
   uniform float uTime;
   uniform float uFormation;
+  uniform float uMotif;
+  uniform float uUnravel;
   uniform vec2 uPointer;
   varying vec2 vUv;
   varying vec3 vWorldPosition;
   varying float vFold;
   varying float vEdge;
+  varying float vUnravelEdge;
 
   float wovenLine(float coordinate, float frequency, float phase) {
     float wave = abs(sin((coordinate * frequency + phase) * 3.14159265));
@@ -141,10 +152,31 @@ const fragmentShader = /* glsl */ `
     color += antiqueGold * selvedge;
     color += antiqueGold * (zariPattern * 0.13 + driftingZari);
 
+    vec2 motifUv = (vUv - vec2(0.56, 0.53)) * vec2(1.0, 1.35);
+    float curvedStem = abs(
+      motifUv.x - 0.085 * sin(motifUv.y * 11.0 + 0.7)
+    );
+    float stem = 1.0 - smoothstep(0.008, 0.021, curvedStem);
+    vec2 petalUv = motifUv - vec2(0.105, 0.055);
+    float petal = 1.0 - smoothstep(
+      0.012,
+      0.026,
+      abs(length(petalUv * vec2(1.1, 0.72)) - 0.16)
+    );
+    float motifGate =
+      smoothstep(-0.38, -0.27, motifUv.y) *
+      (1.0 - smoothstep(0.31, 0.44, motifUv.y));
+    float pearlA = 1.0 - smoothstep(0.008, 0.017, distance(motifUv, vec2(0.12, -0.19)));
+    float pearlB = 1.0 - smoothstep(0.007, 0.015, distance(motifUv, vec2(-0.02, 0.24)));
+    color += antiqueGold * (stem * 0.16 + petal * motifGate * 0.22) * uMotif;
+    color += pearl * (pearlA + pearlB) * 0.31 * uMotif;
+
     float verticalEdge = smoothstep(0.0, 0.08, vUv.y) *
       (1.0 - smoothstep(0.94, 1.0, vUv.y));
     float formation = smoothstep(0.02, 0.78, uFormation);
-    float alpha = vEdge * verticalEdge * formation * (0.84 + broadSilk * 0.16);
+    float releaseAlpha = 1.0 - smoothstep(0.42, 1.05, vUnravelEdge);
+    float alpha = vEdge * verticalEdge * formation * releaseAlpha *
+      (0.84 + broadSilk * 0.16);
     gl_FragColor = vec4(color, alpha);
   }
 `;
@@ -172,7 +204,13 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
   #qualityFrames = 0;
   #qualityAssessmentDone = false;
   #coutureStateReached = false;
+  #motifStateReached = false;
   #idleStateReached = false;
+  #unravelStateReached = false;
+  #handoffStateReached = false;
+  #completeStateReached = false;
+  #unravelTarget = 0;
+  #unravelCurrent = 0;
   #pointerTarget = new THREE.Vector2(0, 0);
   #pointerCurrent = new THREE.Vector2(0, 0);
 
@@ -268,6 +306,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     this.#renderer?.forceContextLoss();
     this.#renderer?.domElement.remove();
     this.#options.mount.replaceChildren();
+    this.#options.root.style.removeProperty("--hero-unravel");
   }
 
   #createFabric() {
@@ -291,6 +330,8 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       uniforms: {
         uTime: { value: 0 },
         uFormation: { value: 0 },
+        uMotif: { value: 0 },
+        uUnravel: { value: 0 },
         uPointer: { value: this.#pointerCurrent },
       },
     });
@@ -366,6 +407,10 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     window.addEventListener("orientationchange", this.#onOrientationChange, {
       signal,
     });
+    window.addEventListener("scroll", this.#onScroll, {
+      passive: true,
+      signal,
+    });
     this.#renderer?.domElement.addEventListener(
       "webglcontextlost",
       this.#onContextLost,
@@ -399,6 +444,22 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
   #onOrientationChange = () => {
     if (matchMedia("(orientation: portrait)").matches) {
       this.#options.onIneligible();
+    }
+  };
+
+  #onScroll = () => {
+    const rect = this.#options.root.getBoundingClientRect();
+    this.#unravelTarget = THREE.MathUtils.clamp(
+      -rect.top / Math.max(1, rect.height * 0.72),
+      0,
+      1,
+    );
+    this.#options.root.style.setProperty(
+      "--hero-unravel",
+      this.#unravelTarget.toFixed(4),
+    );
+    if (!this.#frame && !this.#paused) {
+      this.#frame = requestAnimationFrame(this.#render);
     }
   };
 
@@ -447,12 +508,26 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
 
     this.#lastFrameTime = now;
     this.#pointerCurrent.lerp(this.#pointerTarget, isForming ? 0.045 : 0.075);
+    this.#unravelCurrent = THREE.MathUtils.lerp(
+      this.#unravelCurrent,
+      this.#unravelTarget,
+      0.085,
+    );
     this.#fabric.material.uniforms.uTime.value = elapsed / 1000;
     this.#fabric.material.uniforms.uFormation.value =
       formation * formation * (3 - 2 * formation);
+    this.#fabric.material.uniforms.uMotif.value = THREE.MathUtils.smoothstep(
+      formation,
+      0.66,
+      0.94,
+    );
+    this.#fabric.material.uniforms.uUnravel.value = this.#unravelCurrent;
     this.#strands.material.opacity =
       Math.min(0.13, formation * 0.15) *
-      (this.#options.tier === "A" ? 1 : 0.68);
+      (this.#options.tier === "A" ? 1 : 0.68) *
+      (1 - this.#unravelCurrent * 0.72);
+    this.#strands.position.y = -this.#unravelCurrent * 0.72;
+    this.#strands.scale.x = 1 + this.#unravelCurrent * 0.28;
 
     try {
       this.#renderer.render(this.#scene, this.#camera);
@@ -472,13 +547,44 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       this.#coutureStateReached = true;
       this.#options.onStateChange("COUTURE_FORM");
     }
+    if (!this.#motifStateReached && formation >= 0.7) {
+      this.#motifStateReached = true;
+      this.#options.onStateChange("MOTIF_EMERGE");
+    }
     if (!this.#idleStateReached && formation >= 1) {
       this.#idleStateReached = true;
       this.#options.onStateChange("IDLE_BREATH");
     }
+    if (
+      this.#idleStateReached &&
+      !this.#unravelStateReached &&
+      this.#unravelTarget >= 0.04
+    ) {
+      this.#unravelStateReached = true;
+      this.#options.onStateChange("UNRAVEL");
+    }
+    if (
+      this.#unravelStateReached &&
+      !this.#handoffStateReached &&
+      this.#unravelTarget >= 0.52
+    ) {
+      this.#handoffStateReached = true;
+      this.#options.onStateChange("SECTION_HANDOFF");
+    }
+    if (
+      this.#handoffStateReached &&
+      !this.#completeStateReached &&
+      this.#unravelCurrent >= 0.985
+    ) {
+      this.#completeStateReached = true;
+      this.#options.onStateChange("COMPLETE");
+      this.#options.onPointerOwnershipChange(false);
+    }
 
     if (!this.#assessQuality(now)) return;
-    this.#frame = requestAnimationFrame(this.#render);
+    if (!this.#completeStateReached) {
+      this.#frame = requestAnimationFrame(this.#render);
+    }
   };
 
   #assessQuality(now: number): boolean {

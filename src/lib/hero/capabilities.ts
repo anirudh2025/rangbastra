@@ -29,7 +29,7 @@ export function classifyHeroCapabilities(
     return { tier: "D", mode: "static" };
   }
 
-  if (snapshot.portrait || snapshot.coarsePointer) {
+  if (snapshot.portrait) {
     return { tier: "C", mode: "silk-portal" };
   }
 
