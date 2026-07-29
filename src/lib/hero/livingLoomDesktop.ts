@@ -28,6 +28,52 @@ const QUALITY: Record<"A" | "B", LoomQuality> = {
 const FORMATION_DURATION = 7600;
 const IDLE_FRAME_INTERVAL = 1000 / 24;
 
+const atmosphereVertexShader = /* glsl */ `
+  uniform float uTime;
+  uniform float uSide;
+  uniform vec2 uPointer;
+  varying vec2 vUv;
+
+  void main() {
+    vUv = uv;
+    vec3 shaped = position;
+    float vertical = uv.y * 2.0 - 1.0;
+    float horizontal = uv.x * 2.0 - 1.0;
+    float drift = sin(vertical * 2.4 + uTime * 0.09 + uSide) * 0.055;
+    float pointerResponse = uPointer.x * uSide * 0.045;
+    shaped.x += (drift + pointerResponse) * (0.35 + uv.y * 0.65);
+    shaped.z += sin(vertical * 3.1 - horizontal * 1.7 + uTime * 0.07) * 0.07;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(shaped, 1.0);
+  }
+`;
+
+const atmosphereFragmentShader = /* glsl */ `
+  uniform float uTime;
+  uniform float uSide;
+  varying vec2 vUv;
+
+  void main() {
+    vec2 centered = vUv - 0.5;
+    float curvedFold =
+      sin(vUv.y * 5.2 + vUv.x * 2.4 * uSide + uTime * 0.05) * 0.5 + 0.5;
+    float broadFold =
+      sin(vUv.y * 2.35 - vUv.x * 3.1 + uSide * 0.8) * 0.5 + 0.5;
+    float horizontalFade = smoothstep(0.02, 0.32, vUv.x) *
+      (1.0 - smoothstep(0.68, 0.99, vUv.x));
+    float verticalFade = smoothstep(0.02, 0.24, vUv.y) *
+      (1.0 - smoothstep(0.76, 0.99, vUv.y));
+    float edgeFalloff = 1.0 - smoothstep(0.28, 0.72, length(centered));
+    float light = curvedFold * 0.55 + broadFold * 0.45;
+    vec3 charcoal = vec3(0.004, 0.003, 0.003);
+    vec3 cocoa = vec3(0.145, 0.072, 0.048);
+    vec3 color = mix(charcoal, cocoa, 0.2 + light * 0.4);
+    float alpha = horizontalFade * verticalFade *
+      (0.12 + light * 0.2) * (0.5 + edgeFalloff * 0.5);
+    if (alpha < 0.004) discard;
+    gl_FragColor = vec4(color, alpha);
+  }
+`;
+
 const vertexShader = /* glsl */ `
   uniform float uTime;
   uniform float uCouture;
@@ -161,6 +207,9 @@ const fragmentShader = /* glsl */ `
     );
     color += pearl * silk * 0.16;
     color += antiqueGold * smoothstep(0.7, 0.96, abs(vHorizontal)) * 0.022;
+    float selectedFold = pow(max(0.0, 1.0 - abs(vFold * 8.0 - 0.22)), 3.0);
+    color += vec3(0.19, 0.095, 0.055) * selectedFold * uCouture * 0.11;
+    color *= 0.88 + (1.0 - abs(vHorizontal)) * 0.12;
 
     float edge = 1.0 - smoothstep(0.88, 1.0, abs(vHorizontal));
     float verticalEdge =
@@ -189,6 +238,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     THREE.BufferGeometry,
     THREE.LineBasicMaterial
   >;
+  #atmosphere: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>[] = [];
   #needle?: THREE.Points<THREE.BufferGeometry, THREE.PointsMaterial>;
   #patternPaths: Path[] = [];
   #motifPaths: Path[] = [];
@@ -313,6 +363,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       this.#motif,
       this.#releaseThreads,
       this.#needle,
+      ...this.#atmosphere,
     ]) {
       object?.geometry.dispose();
       object?.material.dispose();
@@ -336,6 +387,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       this.#motif,
       this.#releaseThreads,
       this.#needle,
+      ...this.#atmosphere,
     ]) {
       if (object) {
         object.geometry.dispose();
@@ -343,6 +395,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
         this.#scene.remove(object);
       }
     }
+    this.#atmosphere = [];
 
     this.#patternPaths = this.#buildPatternPaths();
     this.#motifPaths = this.#buildMotifPaths();
@@ -429,6 +482,11 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     this.#fabric.position.set(0.18, -0.03, 0);
     this.#fabric.rotation.set(-0.018, -0.075, -0.018);
 
+    this.#atmosphere = [
+      this.#createAtmospherePlane(-1, -2.25, 0.18, 4.7, 5.6),
+      this.#createAtmospherePlane(1, 2.55, -0.2, 4.25, 5.2),
+    ];
+
     const needleGeometry = new THREE.BufferGeometry();
     needleGeometry.setAttribute(
       "position",
@@ -447,6 +505,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     );
 
     this.#scene.add(
+      ...this.#atmosphere,
       this.#fabric,
       this.#draft,
       this.#stitches,
@@ -454,6 +513,34 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       this.#releaseThreads,
       this.#needle,
     );
+  }
+
+  #createAtmospherePlane(
+    side: -1 | 1,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ) {
+    const material = new THREE.ShaderMaterial({
+      vertexShader: atmosphereVertexShader,
+      fragmentShader: atmosphereFragmentShader,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      uniforms: {
+        uTime: { value: 0 },
+        uSide: { value: side },
+        uPointer: { value: this.#pointerCurrent },
+      },
+    });
+    const plane = new THREE.Mesh(
+      new THREE.PlaneGeometry(width, height, 18, 28),
+      material,
+    );
+    plane.position.set(x, y, -0.42);
+    plane.rotation.set(0.02 * side, -0.09 * side, 0.09 * side);
+    return plane;
   }
 
   #buildPatternPaths(): Path[] {
@@ -693,7 +780,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       0.085,
     );
     const construction = this.#constructionCurrent;
-    const exit = this.#smoothRange(0.42, 0.94, this.#scrollCurrent);
+    const exit = this.#smoothRange(0.52, 0.94, this.#scrollCurrent);
 
     if (
       construction >= 1 &&
@@ -722,15 +809,19 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     this.#releaseThreads.material.opacity =
       0.58 * this.#smoothRange(0.08, 0.52, exit);
     this.#draft.material.opacity =
-      0.1 * (1 - this.#smoothRange(0.42, 0.76, construction));
+      0.1 * (1 - this.#smoothRange(0.42, 0.78, construction));
     this.#stitches.material.opacity =
-      0.34 * (1 - this.#smoothRange(0.54, 1, construction) * 0.76) *
-      (1 - exit * 0.45);
+      0.34 * (1 - this.#smoothRange(0.54, 0.94, construction));
+    this.#motif.material.opacity =
+      0.5 + this.#smoothRange(0.82, 1, construction) * 0.08;
 
     this.#fabric.material.uniforms.uTime.value = elapsed / 1000;
     this.#fabric.material.uniforms.uCoverage.value = coverage;
     this.#fabric.material.uniforms.uCouture.value = couture;
     this.#fabric.material.uniforms.uUnravel.value = exit;
+    for (const plane of this.#atmosphere) {
+      plane.material.uniforms.uTime.value = elapsed / 1000;
+    }
 
     const headProgress = motifProgress > 0
       ? motifProgress
@@ -803,7 +894,8 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     ) as THREE.BufferAttribute;
     attribute.setXYZ(0, point.x, point.y, point.z);
     attribute.needsUpdate = true;
-    this.#needle.material.opacity = (1 - exit) * (progress < 1 ? 0.92 : 0.28);
+    const completionFade = 1 - this.#smoothRange(0.9, 0.995, progress);
+    this.#needle.material.opacity = (1 - exit) * 0.92 * completionFade;
   }
 
   #setDrawProgress(geometry: THREE.BufferGeometry, progress: number) {

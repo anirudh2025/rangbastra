@@ -19,6 +19,8 @@ type StitchPath = Point[];
 
 const DPR_CAP = 1.25;
 const INTRO_DURATION = 1700;
+const EXIT_START = 0.76;
+const EXIT_END = 0.98;
 
 class LivingStitchMobileRenderer implements HeroRenderer {
   #options: LivingStitchOptions;
@@ -159,7 +161,7 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     const target = Math.max(intro, scrollConstruction);
     this.#constructionCurrent +=
       (target - this.#constructionCurrent) * 0.1;
-    const exit = this.#smoothRange(0.7, 0.98, this.#scrollCurrent);
+    const exit = this.#smoothRange(EXIT_START, EXIT_END, this.#scrollCurrent);
     this.#draw();
     this.#updateState(exit);
 
@@ -189,14 +191,14 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     context.clearRect(0, 0, width, height);
 
     const construction = this.#constructionCurrent;
-    const exit = this.#smoothRange(0.7, 0.98, this.#scrollCurrent);
+    const exit = this.#smoothRange(EXIT_START, EXIT_END, this.#scrollCurrent);
     const structure = this.#smoothRange(0, 0.36, construction);
     const coverage = this.#smoothRange(0.28, 0.72, construction);
     const couture = this.#smoothRange(0.58, 0.86, construction);
     const motif = this.#smoothRange(0.82, 1, construction);
     const paths = this.#buildPaths(width, height);
     const guideAlpha =
-      0.62 - this.#smoothRange(0.5, 0.92, construction) * 0.55;
+      0.62 * (1 - this.#smoothRange(0.5, 0.92, construction));
 
     const atmosphere = context.createRadialGradient(
       width * 0.5,
@@ -229,12 +231,12 @@ class LivingStitchMobileRenderer implements HeroRenderer {
         motifPaths,
         motif,
         "194, 146, 84",
-        0.72,
-        1.1,
+        0.52,
+        0.88,
       );
-      if (motifHead) this.#drawNeedle(context, motifHead);
+      if (motifHead && motif < 0.96) this.#drawNeedle(context, motifHead);
       this.#drawPearls(context, width, height, motif);
-    } else if (head) {
+    } else if (head && structure < 0.96) {
       this.#drawNeedle(context, head);
     }
 
@@ -325,64 +327,77 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     exit: number,
   ) {
     const cx = width * 0.5;
-    const top = height * 0.115;
-    const shoulder = height * 0.25;
+    const top = height * 0.11;
+    const shoulder = height * 0.225;
     const waist = height * 0.43;
     const hem = height * 0.7;
     if (coverage <= 0) return;
     const silhouette = new Path2D();
-    silhouette.moveTo(cx - width * 0.045, top);
-    silhouette.quadraticCurveTo(
-      cx - width * 0.15,
-      shoulder - height * 0.035,
-      cx - width * 0.17,
+    silhouette.moveTo(cx - width * 0.05, top);
+    silhouette.bezierCurveTo(
+      cx - width * 0.075,
+      top + height * 0.018,
+      cx - width * 0.135,
+      shoulder - height * 0.045,
+      cx - width * 0.155,
       shoulder,
     );
     silhouette.bezierCurveTo(
-      cx - width * 0.14,
-      height * 0.32,
-      cx - width * 0.15,
-      height * 0.38,
+      cx - width * 0.175,
+      height * 0.29,
+      cx - width * 0.135,
+      height * 0.36,
       cx - width * 0.13,
       waist,
     );
     silhouette.bezierCurveTo(
-      cx - width * 0.18,
-      height * 0.51,
-      cx - width * 0.31,
-      height * 0.62,
-      cx - width * 0.38,
-      hem,
-    );
-    silhouette.quadraticCurveTo(
-      cx + width * 0.03,
-      height * 0.745,
-      cx + width * 0.4,
+      cx - width * 0.14,
+      height * 0.485,
+      cx - width * 0.285,
+      height * 0.61,
+      cx - width * 0.39,
       hem,
     );
     silhouette.bezierCurveTo(
-      cx + width * 0.32,
-      height * 0.61,
+      cx - width * 0.18,
+      height * 0.735,
       cx + width * 0.19,
-      height * 0.5,
+      height * 0.75,
+      cx + width * 0.405,
+      hem,
+    );
+    silhouette.bezierCurveTo(
+      cx + width * 0.31,
+      height * 0.6,
+      cx + width * 0.16,
+      height * 0.49,
       cx + width * 0.14,
       waist,
     );
     silhouette.bezierCurveTo(
-      cx + width * 0.15,
-      height * 0.37,
-      cx + width * 0.14,
-      height * 0.31,
-      cx + width * 0.17,
+      cx + width * 0.135,
+      height * 0.36,
+      cx + width * 0.18,
+      height * 0.29,
+      cx + width * 0.165,
       shoulder,
     );
-    silhouette.quadraticCurveTo(
-      cx + width * 0.15,
-      shoulder - height * 0.035,
-      cx + width * 0.045,
+    silhouette.bezierCurveTo(
+      cx + width * 0.145,
+      shoulder - height * 0.045,
+      cx + width * 0.078,
+      top + height * 0.018,
+      cx + width * 0.05,
       top,
     );
-    silhouette.quadraticCurveTo(cx, top + 12, cx - width * 0.045, top);
+    silhouette.bezierCurveTo(
+      cx + width * 0.025,
+      top + height * 0.014,
+      cx - width * 0.024,
+      top + height * 0.014,
+      cx - width * 0.05,
+      top,
+    );
     silhouette.closePath();
 
     context.save();
@@ -399,19 +414,23 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     textile.addColorStop(0.62, `rgba(102, 58, 38, ${0.34 + couture * 0.14})`);
     textile.addColorStop(1, "rgba(17, 10, 8, .94)");
     context.fillStyle = textile;
-    const solidEdge = Math.max(top, revealY - height * 0.045);
+    const edgeSoftness =
+      height * 0.045 * (1 - this.#smoothRange(0.84, 1, coverage));
+    const solidEdge = Math.max(top, revealY - edgeSoftness);
     context.fillRect(0, top, width, solidEdge - top);
-    const growingEdge = context.createLinearGradient(
-      0,
-      solidEdge,
-      0,
-      revealY + height * 0.045,
-    );
-    growingEdge.addColorStop(0, "rgba(82, 47, 33, .72)");
-    growingEdge.addColorStop(0.55, "rgba(67, 38, 28, .34)");
-    growingEdge.addColorStop(1, "rgba(30, 18, 14, 0)");
-    context.fillStyle = growingEdge;
-    context.fillRect(0, solidEdge, width, height * 0.09);
+    if (edgeSoftness > 0.5) {
+      const growingEdge = context.createLinearGradient(
+        0,
+        solidEdge,
+        0,
+        revealY + edgeSoftness,
+      );
+      growingEdge.addColorStop(0, "rgba(82, 47, 33, .78)");
+      growingEdge.addColorStop(0.55, "rgba(67, 38, 28, .36)");
+      growingEdge.addColorStop(1, "rgba(30, 18, 14, 0)");
+      context.fillStyle = growingEdge;
+      context.fillRect(0, solidEdge, width, edgeSoftness * 2);
+    }
 
     for (const [x, y, radius, alpha] of [
       [cx - width * 0.15, height * 0.3, width * 0.28, 0.08],
@@ -424,6 +443,17 @@ class LivingStitchMobileRenderer implements HeroRenderer {
       context.fillStyle = depth;
       context.fillRect(0, top, width, revealY - top + height * 0.05);
     }
+
+    this.#drawFabricFolds(
+      context,
+      width,
+      height,
+      top,
+      waist,
+      hem,
+      revealY,
+      couture,
+    );
 
     context.strokeStyle = `rgba(224, 199, 174, ${0.008 + couture * 0.016})`;
     context.lineWidth = 0.45;
@@ -471,24 +501,98 @@ class LivingStitchMobileRenderer implements HeroRenderer {
       for (let lane = -3; lane <= 3; lane += 1) {
         const threshold = releaseOrder[lane + 3]!;
         if (exit <= threshold) continue;
-        context.globalAlpha = this.#smoothRange(threshold, threshold + 0.22, exit);
+        const release = this.#smoothRange(threshold, threshold + 0.32, exit);
+        context.globalAlpha = release * 0.86;
         const x = cx + lane * width * 0.092;
-        context.lineWidth = width * (0.018 + (lane % 3 + 1) * 0.006);
+        const endY =
+          hem - release * height * (0.1 + ((lane + 3) % 3) * 0.018);
+        context.lineWidth =
+          width * (0.006 + ((lane + 3) % 3) * 0.0035);
         context.beginPath();
-        context.moveTo(x, height * (0.57 + Math.abs(lane) * 0.008));
+        context.moveTo(x + lane * 1.4, hem + height * 0.012);
         context.bezierCurveTo(
-          x + lane * 2.8,
-          height * 0.62,
-          x - lane * 3.6,
-          height * 0.68,
-          x + lane * 1.5,
-          height * 0.735,
+          x - lane * 2.2,
+          hem - height * 0.025,
+          x + lane * 3.6,
+          endY + height * 0.035,
+          x - lane * 1.2,
+          endY,
         );
         context.strokeStyle = "#000";
         context.stroke();
       }
     }
     context.restore();
+  }
+
+  #drawFabricFolds(
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    top: number,
+    waist: number,
+    hem: number,
+    revealY: number,
+    couture: number,
+  ) {
+    if (couture <= 0) return;
+    const cx = width * 0.5;
+    context.save();
+    context.globalCompositeOperation = "screen";
+    context.lineCap = "round";
+    context.filter = "blur(8px)";
+    const folds = [
+      [-0.19, -0.11, -0.24, 0.046, 0.052],
+      [-0.07, -0.035, -0.08, 0.032, 0.038],
+      [0.045, 0.025, 0.095, 0.038, 0.046],
+      [0.17, 0.1, 0.25, 0.028, 0.034],
+    ] as const;
+    for (const [topOffset, waistOffset, hemOffset, intensity, widthFactor] of folds) {
+      const gradient = context.createLinearGradient(
+        cx + topOffset * width,
+        top,
+        cx + hemOffset * width,
+        hem,
+      );
+      gradient.addColorStop(0, "rgba(112, 66, 45, 0)");
+      gradient.addColorStop(
+        0.42,
+        `rgba(210, 147, 102, ${intensity * couture})`,
+      );
+      gradient.addColorStop(
+        0.72,
+        `rgba(164, 98, 66, ${intensity * couture * 0.75})`,
+      );
+      gradient.addColorStop(1, "rgba(74, 42, 31, 0)");
+      context.strokeStyle = gradient;
+      context.lineWidth = width * widthFactor;
+      context.beginPath();
+      context.moveTo(cx + topOffset * width, top + height * 0.08);
+      context.bezierCurveTo(
+        cx + waistOffset * width,
+        waist - height * 0.06,
+        cx + hemOffset * width * 0.78,
+        height * 0.58,
+        cx + hemOffset * width,
+        Math.min(hem, revealY),
+      );
+      context.stroke();
+    }
+    context.restore();
+
+    const edgeShade = context.createRadialGradient(
+      cx,
+      height * 0.43,
+      width * 0.08,
+      cx,
+      height * 0.43,
+      width * 0.46,
+    );
+    edgeShade.addColorStop(0, "rgba(0, 0, 0, 0)");
+    edgeShade.addColorStop(0.66, "rgba(0, 0, 0, .04)");
+    edgeShade.addColorStop(1, `rgba(0, 0, 0, ${0.32 * couture})`);
+    context.fillStyle = edgeShade;
+    context.fillRect(0, top, width, Math.max(0, revealY - top));
   }
 
   #drawSequencedPaths(
@@ -558,7 +662,7 @@ class LivingStitchMobileRenderer implements HeroRenderer {
   ) {
     if (progress < 0.58) return;
     const alpha = this.#smoothRange(0.58, 0.92, progress);
-    context.fillStyle = `rgba(225, 205, 178, ${alpha * 0.68})`;
+    context.fillStyle = `rgba(225, 205, 178, ${alpha * 0.52})`;
     for (const [x, y, radius] of [
       [0.44, 0.375, 1.15],
       [0.565, 0.405, 1.45],
