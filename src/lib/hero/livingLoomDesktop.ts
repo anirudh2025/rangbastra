@@ -106,7 +106,7 @@ const sparkleVertexShader = /* glsl */ `
       max(0.0, sin(uTime * (0.22 + aStrength * 0.16) + aPhase)),
       12.0
     );
-    vLight = (0.22 + pulse * 0.78) * (1.0 - uExit * 0.92);
+    vLight = (0.08 + pulse * 0.92) * (1.0 - uExit * 0.92);
     vRare = step(0.86, aStrength);
     vec3 point = position;
     point.y += sin(uTime * 0.035 + aPhase) * 0.018 * aStrength;
@@ -137,6 +137,7 @@ const vertexShader = /* glsl */ `
   uniform float uTime;
   uniform float uCouture;
   uniform float uUnravel;
+  uniform float uLayer;
   uniform vec2 uPointer;
   varying vec2 vUv;
   varying vec3 vWorldPosition;
@@ -157,13 +158,16 @@ const vertexShader = /* glsl */ `
     float horizontal = uv.x * 2.0 - 1.0;
     float widthShape = coutureWidth(vertical);
 
-    formed.x *= mix(0.94, widthShape, uCouture);
+    float layerWidth = 1.0 + uLayer * 0.055 * (1.0 - uv.y);
+    formed.x *= mix(0.94, widthShape * layerWidth, uCouture);
     formed.x += (0.105 * (1.0 - uv.y) - 0.04 * uv.y) * uCouture;
 
     float slowTime = uTime * 0.12;
     float fold =
-      sin(horizontal * 7.2 + vertical * 1.1 + slowTime) * 0.06 +
-      sin(horizontal * 3.35 - vertical * 2.0 - slowTime * 0.58) * 0.038;
+      sin(horizontal * (6.2 + uLayer * 0.73) + vertical * 1.1 + slowTime + uLayer) *
+        (0.052 + uLayer * 0.006) +
+      sin(horizontal * (2.7 + uLayer * 0.41) - vertical * 2.0 - slowTime * 0.58) *
+        (0.032 + uLayer * 0.004);
     float microTension = sin(vertical * 6.0 + horizontal * 2.2 + slowTime) * 0.012;
 
     vec2 pointerUv = uPointer * 0.5 + 0.5;
@@ -193,6 +197,7 @@ const fragmentShader = /* glsl */ `
   uniform float uCoverage;
   uniform float uCouture;
   uniform float uUnravel;
+  uniform float uLayer;
   uniform vec2 uPointer;
   varying vec2 vUv;
   varying vec3 vWorldPosition;
@@ -270,6 +275,14 @@ const fragmentShader = /* glsl */ `
       smoothstep(0.0, 0.045, vUv.y) *
       (1.0 - smoothstep(0.96, 1.0, vUv.y));
     float alpha = coverage * retainedTextile * edge * verticalEdge;
+    float rearMask = smoothstep(0.02, 0.72, lower);
+    float leftMask = 1.0 - smoothstep(0.48, 0.82, vUv.x);
+    float rightMask = smoothstep(0.18, 0.55, vUv.x);
+    float layerMask = 1.0;
+    if (uLayer > 0.5 && uLayer < 1.5) layerMask = rearMask * 0.82;
+    if (uLayer > 1.5 && uLayer < 2.5) layerMask = leftMask * 0.72;
+    if (uLayer > 2.5) layerMask = rightMask * 0.68;
+    alpha *= layerMask;
     alpha *= 0.94 + broadSilk * 0.06;
     if (alpha < 0.008) discard;
     gl_FragColor = vec4(color, alpha);
@@ -284,7 +297,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
   #renderer?: THREE.WebGLRenderer;
   #scene?: THREE.Scene;
   #camera?: THREE.PerspectiveCamera;
-  #fabric?: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
+  #fabrics: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>[] = [];
   #draft?: THREE.LineSegments<THREE.BufferGeometry, THREE.LineBasicMaterial>;
   #stitches?: THREE.LineSegments<THREE.BufferGeometry, THREE.LineBasicMaterial>;
   #motif?: THREE.LineSegments<THREE.BufferGeometry, THREE.LineBasicMaterial>;
@@ -408,7 +421,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     this.#resizeObserver?.disconnect();
     this.#events.abort();
     for (const object of [
-      this.#fabric,
+      ...this.#fabrics,
       this.#draft,
       this.#stitches,
       this.#motif,
@@ -432,7 +445,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
   #createVisualSystem() {
     if (!this.#scene) return;
     for (const object of [
-      this.#fabric,
+      ...this.#fabrics,
       this.#draft,
       this.#stitches,
       this.#motif,
@@ -447,6 +460,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       }
     }
     this.#atmosphere = [];
+    this.#fabrics = [];
 
     this.#patternPaths = this.#buildPatternPaths();
     this.#motifPaths = this.#buildMotifPaths();
@@ -485,29 +499,12 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     );
     this.#motif.geometry.setDrawRange(0, 0);
 
-    const fabricGeometry = new THREE.PlaneGeometry(
-      3.35,
-      4.62,
-      this.#quality.segmentsX,
-      this.#quality.segmentsY,
-    );
-    const fabricMaterial = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      transparent: true,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-      uniforms: {
-        uTime: { value: 0 },
-        uCoverage: { value: 0 },
-        uCouture: { value: 0 },
-        uUnravel: { value: 0 },
-        uPointer: { value: this.#pointerCurrent },
-      },
-    });
-    this.#fabric = new THREE.Mesh(fabricGeometry, fabricMaterial);
-    this.#fabric.position.set(0.18, -0.03, 0);
-    this.#fabric.rotation.set(-0.018, -0.075, -0.018);
+    this.#fabrics = [
+      this.#createFabricLayer(0, 0.18, -0.03, 0, -0.075, -0.018),
+      this.#createFabricLayer(1, 0.06, -0.1, -0.24, 0.055, 0.035),
+      this.#createFabricLayer(2, -0.08, -0.04, -0.11, 0.12, 0.028),
+      this.#createFabricLayer(3, 0.34, -0.08, -0.08, -0.14, -0.036),
+    ];
 
     this.#atmosphere = [
       this.#createAtmospherePlane(-1, 0, -2.35, 0.2, 4.9, 5.7),
@@ -536,13 +533,48 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
 
     this.#scene.add(
       ...this.#atmosphere,
-      this.#fabric,
+      ...this.#fabrics,
       this.#sparkles,
       this.#draft,
       this.#stitches,
       this.#motif,
       this.#needle,
     );
+  }
+
+  #createFabricLayer(
+    layer: number,
+    x: number,
+    y: number,
+    z: number,
+    rotationY: number,
+    rotationZ: number,
+  ) {
+    const geometry = new THREE.PlaneGeometry(
+      3.35,
+      4.62,
+      this.#quality.segmentsX,
+      this.#quality.segmentsY,
+    );
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      uniforms: {
+        uTime: { value: 0 },
+        uCoverage: { value: 0 },
+        uCouture: { value: 0 },
+        uUnravel: { value: 0 },
+        uLayer: { value: layer },
+        uPointer: { value: this.#pointerCurrent },
+      },
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    mesh.rotation.set(-0.018 + layer * 0.006, rotationY, rotationZ);
+    return mesh;
   }
 
   #createAtmospherePlane(
@@ -580,9 +612,13 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     const positions: number[] = [];
     const phases: number[] = [];
     const strengths: number[] = [];
-    for (let index = 0; index < 28; index += 1) {
+    const count = this.#options.tier === "A" ? 760 : 460;
+    for (let index = 0; index < count; index += 1) {
       const side = index % 2 === 0 ? -1 : 1;
-      const radial = 1.48 + ((index * 37) % 100) / 100 * 2.85;
+      const openSpace = index % 5 === 0;
+      const radial =
+        1.34 +
+        ((index * 37) % 100) / 100 * (openSpace ? 3.05 : 1.42);
       const x = side * radial + Math.sin(index * 2.17) * 0.16;
       const y = -2.05 + ((index * 61) % 100) / 100 * 4.2;
       positions.push(x, y, -0.12 - (index % 4) * 0.08);
@@ -844,7 +880,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       !this.#renderer ||
       !this.#scene ||
       !this.#camera ||
-      !this.#fabric ||
+      this.#fabrics.length !== 4 ||
       !this.#draft ||
       !this.#stitches ||
       !this.#motif ||
@@ -899,10 +935,12 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       (0.1 + this.#smoothRange(0.82, 1, construction) * 0.04) *
       (1 - exit * 0.82);
 
-    this.#fabric.material.uniforms.uTime.value = elapsed / 1000;
-    this.#fabric.material.uniforms.uCoverage.value = coverage;
-    this.#fabric.material.uniforms.uCouture.value = couture;
-    this.#fabric.material.uniforms.uUnravel.value = exit;
+    for (const fabric of this.#fabrics) {
+      fabric.material.uniforms.uTime.value = elapsed / 1000;
+      fabric.material.uniforms.uCoverage.value = coverage;
+      fabric.material.uniforms.uCouture.value = couture;
+      fabric.material.uniforms.uUnravel.value = exit;
+    }
     for (const plane of this.#atmosphere) {
       plane.material.uniforms.uTime.value = elapsed / 1000;
       plane.material.uniforms.uExit.value = exit;

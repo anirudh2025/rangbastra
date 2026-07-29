@@ -29,10 +29,6 @@ export function classifyHeroCapabilities(
     return { tier: "D", mode: "static" };
   }
 
-  if (snapshot.portrait) {
-    return { tier: "C", mode: "silk-portal" };
-  }
-
   if (!snapshot.webgl2) {
     return { tier: "D", mode: "static" };
   }
@@ -42,6 +38,17 @@ export function classifyHeroCapabilities(
   const constrainedCpu =
     snapshot.hardwareConcurrency !== undefined &&
     snapshot.hardwareConcurrency < 4;
+
+  if (snapshot.portrait) {
+    const mobileMemoryTooLow =
+      snapshot.deviceMemory !== undefined && snapshot.deviceMemory < 3;
+    const mobileCpuTooLow =
+      snapshot.hardwareConcurrency !== undefined &&
+      snapshot.hardwareConcurrency < 4;
+    return mobileMemoryTooLow || mobileCpuTooLow
+      ? { tier: "D", mode: "static" }
+      : { tier: "C", mode: "silk-portal" };
+  }
 
   if (
     snapshot.finePointer &&
