@@ -232,12 +232,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       this.#scene = new THREE.Scene();
       this.#camera = new THREE.PerspectiveCamera(31, 1, 0.1, 30);
       this.#camera.position.set(0, 0.04, 8.65);
-      this.#renderer = new THREE.WebGLRenderer({
-        alpha: true,
-        antialias: true,
-        powerPreference: "high-performance",
-        failIfMajorPerformanceCaveat: true,
-      });
+      this.#renderer = this.#createRenderer();
       this.#renderer.setClearColor(0x000000, 0);
       this.#renderer.outputColorSpace = THREE.SRGBColorSpace;
       this.#renderer.debug.checkShaderErrors = true;
@@ -258,6 +253,28 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     } catch {
       this.#options.onFailure();
     }
+  }
+
+  #createRenderer() {
+    const probe = document.createElement("canvas");
+    const strictContext = probe.getContext("webgl2", {
+      failIfMajorPerformanceCaveat: true,
+    });
+    strictContext?.getExtension("WEBGL_lose_context")?.loseContext();
+    const strict = Boolean(strictContext);
+
+    if (!strict) {
+      this.#quality = { ...QUALITY.B };
+    }
+    this.#options.root.dataset.heroRendererProfile =
+      strict ? "strict" : "compatibility";
+
+    return new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+      powerPreference: strict ? "high-performance" : "default",
+      failIfMajorPerformanceCaveat: strict,
+    });
   }
 
   pause() {
@@ -307,6 +324,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     this.#options.mount.replaceChildren();
     this.#options.root.style.removeProperty("--hero-unravel");
     this.#options.root.style.removeProperty("--hero-scene-progress");
+    delete this.#options.root.dataset.heroRendererProfile;
   }
 
   #createVisualSystem() {

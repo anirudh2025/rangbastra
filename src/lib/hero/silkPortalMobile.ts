@@ -217,7 +217,8 @@ class LivingStitchMobileRenderer implements HeroRenderer {
       context,
       paths,
       structure,
-      `rgba(185, 143, 94, ${guideAlpha})`,
+      "185, 143, 94",
+      guideAlpha,
       1,
     );
 
@@ -227,15 +228,18 @@ class LivingStitchMobileRenderer implements HeroRenderer {
         context,
         motifPaths,
         motif,
-        "rgba(194, 146, 84, .72)",
+        "194, 146, 84",
+        0.72,
         1.1,
       );
       if (motifHead) this.#drawNeedle(context, motifHead);
+      this.#drawPearls(context, width, height, motif);
     } else if (head) {
       this.#drawNeedle(context, head);
     }
 
     if (exit > 0) this.#drawReleaseThreads(context, width, height, exit);
+    this.#drawContentQuietZone(context, width, height);
     this.#options.root.style.setProperty("--hero-unravel", exit.toFixed(4));
   }
 
@@ -294,6 +298,20 @@ class LivingStitchMobileRenderer implements HeroRenderer {
         { x: cx - 25, y: cy + 48 },
         { x: cx - 25, y: cy + 78 },
         { x: cx + 13, y: cy + 102 },
+      ),
+      this.#cubic(
+        { x: cx + 1, y: cy + 8 },
+        { x: cx - 18, y: cy - 2 },
+        { x: cx - 28, y: cy + 7 },
+        { x: cx - 34, y: cy + 20 },
+        18,
+      ),
+      this.#cubic(
+        { x: cx - 7, y: cy + 68 },
+        { x: cx + 12, y: cy + 61 },
+        { x: cx + 24, y: cy + 70 },
+        { x: cx + 30, y: cy + 84 },
+        18,
       ),
     ];
   }
@@ -377,11 +395,51 @@ class LivingStitchMobileRenderer implements HeroRenderer {
       revealY,
     );
     textile.addColorStop(0, "rgba(22, 13, 11, .94)");
-    textile.addColorStop(0.42, `rgba(96, 54, 37, ${0.48 + couture * 0.18})`);
-    textile.addColorStop(0.62, `rgba(132, 78, 50, ${0.4 + couture * 0.17})`);
+    textile.addColorStop(0.42, `rgba(68, 38, 29, ${0.46 + couture * 0.14})`);
+    textile.addColorStop(0.62, `rgba(102, 58, 38, ${0.34 + couture * 0.14})`);
     textile.addColorStop(1, "rgba(17, 10, 8, .94)");
     context.fillStyle = textile;
-    context.fillRect(0, top, width, revealY - top);
+    const solidEdge = Math.max(top, revealY - height * 0.045);
+    context.fillRect(0, top, width, solidEdge - top);
+    const growingEdge = context.createLinearGradient(
+      0,
+      solidEdge,
+      0,
+      revealY + height * 0.045,
+    );
+    growingEdge.addColorStop(0, "rgba(82, 47, 33, .72)");
+    growingEdge.addColorStop(0.55, "rgba(67, 38, 28, .34)");
+    growingEdge.addColorStop(1, "rgba(30, 18, 14, 0)");
+    context.fillStyle = growingEdge;
+    context.fillRect(0, solidEdge, width, height * 0.09);
+
+    for (const [x, y, radius, alpha] of [
+      [cx - width * 0.15, height * 0.3, width * 0.28, 0.08],
+      [cx + width * 0.18, height * 0.48, width * 0.34, 0.07],
+      [cx - width * 0.04, height * 0.62, width * 0.4, 0.055],
+    ] as const) {
+      const depth = context.createRadialGradient(x, y, 0, x, y, radius);
+      depth.addColorStop(0, `rgba(205, 154, 105, ${alpha * couture})`);
+      depth.addColorStop(1, "rgba(0, 0, 0, 0)");
+      context.fillStyle = depth;
+      context.fillRect(0, top, width, revealY - top + height * 0.05);
+    }
+
+    context.strokeStyle = `rgba(224, 199, 174, ${0.008 + couture * 0.016})`;
+    context.lineWidth = 0.45;
+    for (let x = cx - width * 0.36; x <= cx + width * 0.39; x += 5.5) {
+      context.beginPath();
+      context.moveTo(x, top);
+      context.bezierCurveTo(
+        x + Math.sin(x * 0.08) * 1.4,
+        waist,
+        x + Math.sin(x * 0.05) * 2.2,
+        height * 0.57,
+        x,
+        revealY,
+      );
+      context.stroke();
+    }
     context.strokeStyle = `rgba(222, 198, 174, ${0.012 + couture * 0.018})`;
     context.lineWidth = 0.5;
     for (let y = top; y <= revealY; y += 6) {
@@ -408,16 +466,26 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     }
     if (exit > 0.08) {
       context.globalCompositeOperation = "destination-out";
+      context.lineCap = "round";
+      const releaseOrder = [0.2, 0.1, 0.31, 0.16, 0.38, 0.24, 0.44];
       for (let lane = -3; lane <= 3; lane += 1) {
-        const threshold = 0.12 + (lane + 3) * 0.075;
+        const threshold = releaseOrder[lane + 3]!;
         if (exit <= threshold) continue;
         context.globalAlpha = this.#smoothRange(threshold, threshold + 0.22, exit);
-        context.fillRect(
-          cx + lane * width * 0.095 - width * 0.025,
-          height * 0.58,
-          width * 0.05,
-          height * 0.18,
+        const x = cx + lane * width * 0.092;
+        context.lineWidth = width * (0.018 + (lane % 3 + 1) * 0.006);
+        context.beginPath();
+        context.moveTo(x, height * (0.57 + Math.abs(lane) * 0.008));
+        context.bezierCurveTo(
+          x + lane * 2.8,
+          height * 0.62,
+          x - lane * 3.6,
+          height * 0.68,
+          x + lane * 1.5,
+          height * 0.735,
         );
+        context.strokeStyle = "#000";
+        context.stroke();
       }
     }
     context.restore();
@@ -427,36 +495,79 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     context: CanvasRenderingContext2D,
     paths: StitchPath[],
     progress: number,
-    color: string,
+    rgb: string,
+    baseAlpha: number,
     width: number,
   ): Point | undefined {
     if (progress <= 0 || paths.length === 0) return;
-    const scaled = Math.min(0.9999, progress) * paths.length;
-    const activePath = Math.min(paths.length - 1, Math.floor(scaled));
     let head: Point | undefined;
-    context.strokeStyle = color;
-    context.lineWidth = width;
     context.lineCap = "round";
-    for (let index = 0; index <= activePath; index += 1) {
+    for (let index = 0; index < paths.length; index += 1) {
       const path = paths[index]!;
-      const local = index < activePath ? 1 : scaled - activePath;
-      const end = Math.max(1, Math.floor(local * (path.length - 1)));
-      context.beginPath();
-      context.moveTo(path[0]!.x, path[0]!.y);
-      for (let point = 1; point <= end; point += 1) {
+      const start = index / (paths.length + 0.55);
+      const finish = (index + 1.35) / (paths.length + 0.55);
+      const local = this.#smoothRange(start, finish, progress);
+      if (local <= 0) continue;
+      const endIndex = Math.max(1, Math.floor(local * (path.length - 1)));
+      for (let point = 1; point <= endIndex; point += 1) {
+        const distanceFromHead = endIndex - point;
+        const trail = local < 0.995
+          ? 0.18 + Math.exp(-distanceFromHead / 5.5) * 0.82
+          : 0.26;
+        context.strokeStyle = `rgba(${rgb}, ${baseAlpha * trail})`;
+        context.lineWidth =
+          width * (0.76 + Math.sin((point + index * 3) * 0.42) * 0.16);
+        context.beginPath();
+        context.moveTo(path[point - 1]!.x, path[point - 1]!.y);
         context.lineTo(path[point]!.x, path[point]!.y);
+        context.stroke();
       }
-      context.stroke();
-      if (index === activePath) head = path[end];
+      if (local < 0.995 || index === paths.length - 1) {
+        head = path[endIndex];
+      }
     }
     return head;
   }
 
   #drawNeedle(context: CanvasRenderingContext2D, point: Point) {
-    context.fillStyle = "rgba(231, 205, 169, .9)";
+    const glow = context.createRadialGradient(
+      point.x,
+      point.y,
+      0,
+      point.x,
+      point.y,
+      7,
+    );
+    glow.addColorStop(0, "rgba(238, 213, 176, .34)");
+    glow.addColorStop(1, "rgba(208, 164, 108, 0)");
+    context.fillStyle = glow;
     context.beginPath();
-    context.arc(point.x, point.y, 2.1, 0, Math.PI * 2);
+    context.arc(point.x, point.y, 7, 0, Math.PI * 2);
     context.fill();
+    context.fillStyle = "rgba(238, 215, 183, .88)";
+    context.beginPath();
+    context.arc(point.x, point.y, 1.55, 0, Math.PI * 2);
+    context.fill();
+  }
+
+  #drawPearls(
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    progress: number,
+  ) {
+    if (progress < 0.58) return;
+    const alpha = this.#smoothRange(0.58, 0.92, progress);
+    context.fillStyle = `rgba(225, 205, 178, ${alpha * 0.68})`;
+    for (const [x, y, radius] of [
+      [0.44, 0.375, 1.15],
+      [0.565, 0.405, 1.45],
+      [0.465, 0.485, 1.05],
+    ] as const) {
+      context.beginPath();
+      context.arc(width * x, height * y, radius, 0, Math.PI * 2);
+      context.fill();
+    }
   }
 
   #drawReleaseThreads(
@@ -467,23 +578,52 @@ class LivingStitchMobileRenderer implements HeroRenderer {
   ) {
     const cx = width * 0.5;
     const startY = height * 0.66;
-    const endY = height * (0.7 + progress * 0.32);
-    context.strokeStyle = `rgba(167, 121, 78, ${progress * 0.62})`;
-    context.lineWidth = 0.85;
-    for (let lane = -2; lane <= 2; lane += 1) {
-      const startX = cx + lane * width * 0.12;
+    const releaseOrder = [0.06, 0.2, 0.12, 0.28, 0.16, 0.34];
+    const offsets = [-0.28, -0.17, -0.06, 0.07, 0.19, 0.31];
+    context.lineCap = "round";
+    for (let lane = 0; lane < offsets.length; lane += 1) {
+      const local = this.#smoothRange(
+        releaseOrder[lane]!,
+        releaseOrder[lane]! + 0.62,
+        progress,
+      );
+      if (local <= 0) continue;
+      const offset = offsets[lane]!;
+      const startX = cx + offset * width;
+      const endY = height * (0.69 + local * (0.25 + (lane % 2) * 0.035));
+      context.strokeStyle = `rgba(167, 121, 78, ${local * (0.34 + (lane % 3) * 0.06)})`;
+      context.lineWidth = 0.58 + (lane % 3) * 0.13;
       context.beginPath();
       context.moveTo(startX, startY);
       context.bezierCurveTo(
-        startX + lane * 5,
-        height * 0.76,
-        cx + lane * width * 0.075,
+        startX + offset * width * 0.18,
+        height * (0.72 + (lane % 2) * 0.025),
+        cx + offset * width * 0.72,
         endY - 22,
-        cx + lane * width * 0.055,
+        cx + offset * width * 0.52,
         endY,
       );
       context.stroke();
     }
+  }
+
+  #drawContentQuietZone(
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+  ) {
+    const quiet = context.createLinearGradient(
+      0,
+      height * 0.52,
+      0,
+      height * 0.9,
+    );
+    quiet.addColorStop(0, "rgba(0, 0, 0, 0)");
+    quiet.addColorStop(0.38, "rgba(0, 0, 0, .16)");
+    quiet.addColorStop(0.7, "rgba(0, 0, 0, .42)");
+    quiet.addColorStop(1, "rgba(0, 0, 0, 0)");
+    context.fillStyle = quiet;
+    context.fillRect(0, height * 0.52, width, height * 0.38);
   }
 
   #updateState(exit: number) {
