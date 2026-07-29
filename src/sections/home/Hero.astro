@@ -33,15 +33,7 @@ import Label from "../../components/primitives/Label.astro";
       </div>
     </div>
 
-    <div class="living-hero__handoff" data-hero-handoff aria-hidden="true">
-      <svg viewBox="0 0 1440 150" preserveAspectRatio="none">
-        <path pathLength="1" d="M560 0 C 520 48, 520 98, 490 150" />
-        <path pathLength="1" d="M640 0 C 620 52, 630 102, 610 150" />
-        <path pathLength="1" d="M720 0 C 708 54, 732 102, 720 150" />
-        <path pathLength="1" d="M800 0 C 820 52, 810 102, 832 150" />
-        <path pathLength="1" d="M880 0 C 920 48, 918 98, 952 150" />
-      </svg>
-    </div>
+    <div class="living-hero__handoff" data-hero-handoff aria-hidden="true"></div>
   </div>
 </header>
 
@@ -199,23 +191,6 @@ import Label from "../../components/primitives/Label.astro";
     height: clamp(5rem, 14vh, 9rem);
     background: linear-gradient(to bottom, transparent, var(--surface-canvas));
     pointer-events: none;
-  }
-
-  .living-hero__handoff svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: calc(var(--hero-unravel, 0) * .72);
-  }
-
-  .living-hero__handoff path {
-    fill: none;
-    stroke: rgba(139, 94, 61, .42);
-    stroke-dasharray: 1;
-    stroke-dashoffset: calc(1 - var(--hero-unravel, 0));
-    stroke-width: 1;
-    vector-effect: non-scaling-stroke;
   }
 
   :global(html[data-hero-pointer-owner="living-loom"] .global-cursor-glow) {

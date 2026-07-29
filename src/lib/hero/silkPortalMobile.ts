@@ -33,6 +33,7 @@ class LivingStitchMobileRenderer implements HeroRenderer {
   #scrollTarget = 0;
   #scrollCurrent = 0;
   #constructionCurrent = 0;
+  #elapsedSeconds = 0;
   #paused = false;
   #disposed = false;
   #ready = false;
@@ -161,6 +162,7 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     const target = Math.max(intro, scrollConstruction);
     this.#constructionCurrent +=
       (target - this.#constructionCurrent) * 0.1;
+    this.#elapsedSeconds = (now - this.#startTime) / 1000;
     const exit = this.#smoothRange(EXIT_START, EXIT_END, this.#scrollCurrent);
     this.#draw();
     this.#updateState(exit);
@@ -213,6 +215,7 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     atmosphere.addColorStop(1, "rgba(0, 0, 0, 0)");
     context.fillStyle = atmosphere;
     context.fillRect(0, 0, width, height);
+    this.#drawVeilAtmosphere(context, width, height, couture, exit);
 
     this.#drawTextile(context, width, height, coverage, couture, exit);
     const head = this.#drawSequencedPaths(
@@ -231,16 +234,22 @@ class LivingStitchMobileRenderer implements HeroRenderer {
         motifPaths,
         motif,
         "194, 146, 84",
-        0.52,
+        0.52 * (1 - exit * 0.78),
         0.88,
       );
       if (motifHead && motif < 0.96) this.#drawNeedle(context, motifHead);
-      this.#drawPearls(context, width, height, motif);
+      this.#drawPearls(context, width, height, motif, exit);
     } else if (head && structure < 0.96) {
       this.#drawNeedle(context, head);
     }
 
-    if (exit > 0) this.#drawReleaseThreads(context, width, height, exit);
+    this.#drawSparkles(
+      context,
+      width,
+      height,
+      this.#smoothRange(0.68, 1, construction),
+      exit,
+    );
     this.#drawContentQuietZone(context, width, height);
     this.#options.root.style.setProperty("--hero-unravel", exit.toFixed(4));
   }
@@ -353,8 +362,16 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     silhouette.bezierCurveTo(
       cx - width * 0.14,
       height * 0.485,
-      cx - width * 0.285,
+      cx - width * 0.2,
+      height * 0.52,
+      cx - width * 0.27,
+      height * 0.57,
+    );
+    silhouette.bezierCurveTo(
+      cx - width * 0.33,
       height * 0.61,
+      cx - width * 0.39,
+      height * 0.67,
       cx - width * 0.39,
       hem,
     );
@@ -368,7 +385,15 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     );
     silhouette.bezierCurveTo(
       cx + width * 0.31,
-      height * 0.6,
+      height * 0.61,
+      cx + width * 0.23,
+      height * 0.53,
+      cx + width * 0.18,
+      height * 0.49,
+    );
+    silhouette.bezierCurveTo(
+      cx + width * 0.15,
+      height * 0.46,
       cx + width * 0.16,
       height * 0.49,
       cx + width * 0.14,
@@ -494,33 +519,21 @@ class LivingStitchMobileRenderer implements HeroRenderer {
         context.stroke();
       }
     }
-    if (exit > 0.08) {
+    if (exit > 0) {
       context.globalCompositeOperation = "destination-out";
-      context.lineCap = "round";
-      const releaseOrder = [0.2, 0.1, 0.31, 0.16, 0.38, 0.24, 0.44];
-      for (let lane = -3; lane <= 3; lane += 1) {
-        const threshold = releaseOrder[lane + 3]!;
-        if (exit <= threshold) continue;
-        const release = this.#smoothRange(threshold, threshold + 0.32, exit);
-        context.globalAlpha = release * 0.86;
-        const x = cx + lane * width * 0.092;
-        const endY =
-          hem - release * height * (0.1 + ((lane + 3) % 3) * 0.018);
-        context.lineWidth =
-          width * (0.006 + ((lane + 3) % 3) * 0.0035);
-        context.beginPath();
-        context.moveTo(x + lane * 1.4, hem + height * 0.012);
-        context.bezierCurveTo(
-          x - lane * 2.2,
-          hem - height * 0.025,
-          x + lane * 3.6,
-          endY + height * 0.035,
-          x - lane * 1.2,
-          endY,
-        );
-        context.strokeStyle = "#000";
-        context.stroke();
-      }
+      const dissolveTop = hem - height * (0.02 + exit * 0.22);
+      const dissolve = context.createLinearGradient(0, dissolveTop, 0, hem);
+      dissolve.addColorStop(0, "rgba(0, 0, 0, 0)");
+      dissolve.addColorStop(
+        0.58,
+        `rgba(0, 0, 0, ${this.#smoothRange(0.08, 0.78, exit) * 0.32})`,
+      );
+      dissolve.addColorStop(
+        1,
+        `rgba(0, 0, 0, ${this.#smoothRange(0, 0.86, exit) * 0.84})`,
+      );
+      context.fillStyle = dissolve;
+      context.fillRect(0, dissolveTop, width, hem - dissolveTop + 2);
     }
     context.restore();
   }
@@ -538,14 +551,41 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     if (couture <= 0) return;
     const cx = width * 0.5;
     context.save();
+    context.globalCompositeOperation = "multiply";
+    context.lineCap = "round";
+    context.filter = "blur(10px)";
+    for (const [topOffset, waistOffset, hemOffset, widthFactor, alpha] of [
+      [-0.13, -0.08, -0.26, 0.09, 0.2],
+      [-0.025, -0.01, -0.07, 0.065, 0.17],
+      [0.08, 0.045, 0.13, 0.075, 0.18],
+      [0.17, 0.11, 0.29, 0.085, 0.16],
+    ] as const) {
+      context.strokeStyle = `rgba(7, 4, 3, ${alpha * couture})`;
+      context.lineWidth = width * widthFactor;
+      context.beginPath();
+      context.moveTo(cx + topOffset * width, top + height * 0.07);
+      context.bezierCurveTo(
+        cx + waistOffset * width,
+        waist - height * 0.04,
+        cx + hemOffset * width * 0.7,
+        height * 0.58,
+        cx + hemOffset * width,
+        Math.min(hem, revealY),
+      );
+      context.stroke();
+    }
+    context.restore();
+
+    context.save();
     context.globalCompositeOperation = "screen";
     context.lineCap = "round";
     context.filter = "blur(8px)";
     const folds = [
-      [-0.19, -0.11, -0.24, 0.046, 0.052],
-      [-0.07, -0.035, -0.08, 0.032, 0.038],
-      [0.045, 0.025, 0.095, 0.038, 0.046],
-      [0.17, 0.1, 0.25, 0.028, 0.034],
+      [-0.19, -0.11, -0.24, 0.068, 0.058],
+      [-0.07, -0.035, -0.08, 0.052, 0.042],
+      [0.045, 0.025, 0.095, 0.06, 0.052],
+      [0.17, 0.1, 0.25, 0.046, 0.04],
+      [0.27, 0.16, 0.34, 0.032, 0.032],
     ] as const;
     for (const [topOffset, waistOffset, hemOffset, intensity, widthFactor] of folds) {
       const gradient = context.createLinearGradient(
@@ -659,10 +699,11 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     width: number,
     height: number,
     progress: number,
+    exit: number,
   ) {
     if (progress < 0.58) return;
     const alpha = this.#smoothRange(0.58, 0.92, progress);
-    context.fillStyle = `rgba(225, 205, 178, ${alpha * 0.52})`;
+    context.fillStyle = `rgba(225, 205, 178, ${alpha * 0.52 * (1 - exit * 0.82)})`;
     for (const [x, y, radius] of [
       [0.44, 0.375, 1.15],
       [0.565, 0.405, 1.45],
@@ -674,41 +715,82 @@ class LivingStitchMobileRenderer implements HeroRenderer {
     }
   }
 
-  #drawReleaseThreads(
+  #drawVeilAtmosphere(
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    couture: number,
+    exit: number,
+  ) {
+    if (couture <= 0) return;
+    const veilAlpha = couture * (1 - exit * 0.82);
+    context.save();
+    context.filter = "blur(18px)";
+    context.lineCap = "round";
+    for (const [side, startY, endY, lineWidth, alpha] of [
+      [-1, 0.18, 0.72, 0.18, 0.045],
+      [1, 0.26, 0.67, 0.15, 0.038],
+      [-1, 0.42, 0.84, 0.11, 0.027],
+    ] as const) {
+      const startX = width * (side < 0 ? -0.04 : 1.04);
+      const endX = width * (side < 0 ? 0.22 : 0.82);
+      context.strokeStyle = `rgba(111, 64, 43, ${veilAlpha * alpha})`;
+      context.lineWidth = width * lineWidth;
+      context.beginPath();
+      context.moveTo(startX, height * startY);
+      context.bezierCurveTo(
+        width * (side < 0 ? 0.08 : 0.92),
+        height * (startY + 0.12),
+        width * (side < 0 ? 0.04 : 0.96),
+        height * (endY - 0.12),
+        endX,
+        height * endY,
+      );
+      context.stroke();
+    }
+    context.restore();
+  }
+
+  #drawSparkles(
     context: CanvasRenderingContext2D,
     width: number,
     height: number,
     progress: number,
+    exit: number,
   ) {
-    const cx = width * 0.5;
-    const startY = height * 0.66;
-    const releaseOrder = [0.06, 0.2, 0.12, 0.28, 0.16, 0.34];
-    const offsets = [-0.28, -0.17, -0.06, 0.07, 0.19, 0.31];
-    context.lineCap = "round";
-    for (let lane = 0; lane < offsets.length; lane += 1) {
-      const local = this.#smoothRange(
-        releaseOrder[lane]!,
-        releaseOrder[lane]! + 0.62,
-        progress,
-      );
-      if (local <= 0) continue;
-      const offset = offsets[lane]!;
-      const startX = cx + offset * width;
-      const endY = height * (0.69 + local * (0.25 + (lane % 2) * 0.035));
-      context.strokeStyle = `rgba(167, 121, 78, ${local * (0.34 + (lane % 3) * 0.06)})`;
-      context.lineWidth = 0.58 + (lane % 3) * 0.13;
+    if (progress <= 0) return;
+    const visibility = progress * (1 - exit * 0.9);
+    context.save();
+    for (let index = 0; index < 18; index += 1) {
+      const side = index % 2 === 0 ? -1 : 1;
+      const x =
+        width * (0.5 + side * (0.27 + ((index * 19) % 11) * 0.012));
+      const y = height * (0.16 + ((index * 37) % 42) / 100);
+      const pulse =
+        0.18 +
+        Math.max(
+          0,
+          Math.sin(this.#elapsedSeconds * (0.19 + (index % 4) * 0.035) + index * 2.31),
+        ) ** 10 *
+          0.82;
+      const rare = index === 5 || index === 14;
+      const alpha = visibility * pulse * (rare ? 0.46 : 0.24);
+      context.fillStyle = `rgba(205, 159, 99, ${alpha})`;
       context.beginPath();
-      context.moveTo(startX, startY);
-      context.bezierCurveTo(
-        startX + offset * width * 0.18,
-        height * (0.72 + (lane % 2) * 0.025),
-        cx + offset * width * 0.72,
-        endY - 22,
-        cx + offset * width * 0.52,
-        endY,
-      );
-      context.stroke();
+      context.arc(x, y, rare ? 1.15 : 0.68, 0, Math.PI * 2);
+      context.fill();
+      if (rare && pulse > 0.72) {
+        context.strokeStyle = `rgba(225, 189, 137, ${alpha * 0.42})`;
+        context.lineWidth = 0.45;
+        context.beginPath();
+        context.moveTo(x - 4, y);
+        context.lineTo(x + 4, y);
+        context.moveTo(x, y - 4);
+        context.lineTo(x, y + 4);
+        context.stroke();
+      }
     }
+    context.restore();
   }
 
   #drawContentQuietZone(

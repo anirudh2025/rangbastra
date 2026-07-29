@@ -28,6 +28,7 @@
   const initialiseJourneyThread = () => {
     const thread = document.querySelector<HTMLElement>("[data-journey-thread]");
     const wrapper = thread?.parentElement;
+    const hero = wrapper?.querySelector<HTMLElement>("[data-hero-root]");
     if (!thread || !wrapper || thread.dataset.ready === "true") return;
     thread.dataset.ready = "true";
 
@@ -49,6 +50,10 @@
       const rect = wrapper.getBoundingClientRect();
       top = rect.top + scrollY;
       height = Math.max(1, wrapper.offsetHeight);
+      thread.style.setProperty(
+        "--journey-thread-start",
+        `${hero?.offsetHeight ?? innerHeight}px`,
+      );
       queueRender();
     };
     const queueMeasure = () => {
@@ -58,6 +63,7 @@
 
     const observer = new ResizeObserver(queueMeasure);
     observer.observe(wrapper);
+    if (hero) observer.observe(hero);
     addEventListener("scroll", queueRender, { passive: true });
     addEventListener("resize", queueMeasure, { passive: true });
     addEventListener("orientationchange", queueMeasure, { passive: true });
@@ -80,7 +86,7 @@
 </script>
 
 <style>
-  .journey-thread{--journey-progress:.11;position:absolute;inset:0;z-index:2;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .journey-thread{--journey-progress:.11;--journey-thread-start:100svh;position:absolute;inset:0;z-index:2;width:100%;height:100%;overflow:visible;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0,transparent var(--journey-thread-start),#000 calc(var(--journey-thread-start) + 8rem));mask-image:linear-gradient(to bottom,transparent 0,transparent var(--journey-thread-start),#000 calc(var(--journey-thread-start) + 8rem))}
   svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
   .journey-thread__route{display:none;fill:none;stroke:url(#journey-thread-metal);stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
   .journey-thread__route--desktop{display:block}

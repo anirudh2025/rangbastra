@@ -31,6 +31,8 @@ const IDLE_FRAME_INTERVAL = 1000 / 24;
 const atmosphereVertexShader = /* glsl */ `
   uniform float uTime;
   uniform float uSide;
+  uniform float uLayer;
+  uniform float uExit;
   uniform vec2 uPointer;
   varying vec2 vUv;
 
@@ -39,10 +41,21 @@ const atmosphereVertexShader = /* glsl */ `
     vec3 shaped = position;
     float vertical = uv.y * 2.0 - 1.0;
     float horizontal = uv.x * 2.0 - 1.0;
-    float drift = sin(vertical * 2.4 + uTime * 0.09 + uSide) * 0.055;
-    float pointerResponse = uPointer.x * uSide * 0.045;
-    shaped.x += (drift + pointerResponse) * (0.35 + uv.y * 0.65);
-    shaped.z += sin(vertical * 3.1 - horizontal * 1.7 + uTime * 0.07) * 0.07;
+    float drift = sin(
+      vertical * (1.8 + uLayer * 0.24) +
+      uTime * (0.045 + uLayer * 0.006) +
+      uSide
+    ) * (0.065 + uLayer * 0.012);
+    float pointerResponse = uPointer.x * uSide * 0.032;
+    shaped.x += (drift + pointerResponse) * (0.32 + uv.y * 0.68);
+    shaped.x += uSide * uExit * (0.42 + uLayer * 0.1);
+    shaped.z += sin(
+      vertical * 2.6 -
+      horizontal * 1.45 +
+      uTime * 0.035 +
+      uLayer
+    ) * 0.085;
+    shaped.z -= uExit * 0.22;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(shaped, 1.0);
   }
 `;
@@ -50,12 +63,17 @@ const atmosphereVertexShader = /* glsl */ `
 const atmosphereFragmentShader = /* glsl */ `
   uniform float uTime;
   uniform float uSide;
+  uniform float uLayer;
+  uniform float uExit;
   varying vec2 vUv;
 
   void main() {
     vec2 centered = vUv - 0.5;
-    float curvedFold =
-      sin(vUv.y * 5.2 + vUv.x * 2.4 * uSide + uTime * 0.05) * 0.5 + 0.5;
+    float curvedFold = sin(
+      vUv.y * (4.1 + uLayer * 0.42) +
+      vUv.x * (2.1 + uLayer * 0.3) * uSide +
+      uTime * 0.028
+    ) * 0.5 + 0.5;
     float broadFold =
       sin(vUv.y * 2.35 - vUv.x * 3.1 + uSide * 0.8) * 0.5 + 0.5;
     float horizontalFade = smoothstep(0.02, 0.32, vUv.x) *
@@ -64,13 +82,54 @@ const atmosphereFragmentShader = /* glsl */ `
       (1.0 - smoothstep(0.76, 0.99, vUv.y));
     float edgeFalloff = 1.0 - smoothstep(0.28, 0.72, length(centered));
     float light = curvedFold * 0.55 + broadFold * 0.45;
-    vec3 charcoal = vec3(0.004, 0.003, 0.003);
-    vec3 cocoa = vec3(0.145, 0.072, 0.048);
-    vec3 color = mix(charcoal, cocoa, 0.2 + light * 0.4);
+    vec3 charcoal = vec3(0.007, 0.005, 0.004);
+    vec3 cocoa = vec3(0.22, 0.105, 0.07);
+    vec3 color = mix(charcoal, cocoa, 0.28 + light * 0.45);
     float alpha = horizontalFade * verticalFade *
-      (0.12 + light * 0.2) * (0.5 + edgeFalloff * 0.5);
+      (0.18 + light * 0.28) * (0.5 + edgeFalloff * 0.5);
+    alpha *= 1.0 - uExit * 0.82;
     if (alpha < 0.004) discard;
     gl_FragColor = vec4(color, alpha);
+  }
+`;
+
+const sparkleVertexShader = /* glsl */ `
+  uniform float uTime;
+  uniform float uExit;
+  attribute float aPhase;
+  attribute float aStrength;
+  varying float vLight;
+  varying float vRare;
+
+  void main() {
+    float pulse = pow(
+      max(0.0, sin(uTime * (0.22 + aStrength * 0.16) + aPhase)),
+      12.0
+    );
+    vLight = (0.22 + pulse * 0.78) * (1.0 - uExit * 0.92);
+    vRare = step(0.86, aStrength);
+    vec3 point = position;
+    point.y += sin(uTime * 0.035 + aPhase) * 0.018 * aStrength;
+    vec4 viewPosition = modelViewMatrix * vec4(point, 1.0);
+    gl_PointSize = 1.2 + aStrength * 1.8 + pulse * vRare * 2.2;
+    gl_Position = projectionMatrix * viewPosition;
+  }
+`;
+
+const sparkleFragmentShader = /* glsl */ `
+  varying float vLight;
+  varying float vRare;
+
+  void main() {
+    vec2 point = gl_PointCoord - 0.5;
+    float radius = length(point);
+    float pin = 1.0 - smoothstep(0.04, 0.5, radius);
+    float flare = exp(-abs(point.x) * 34.0) * exp(-abs(point.y) * 5.0) +
+      exp(-abs(point.y) * 34.0) * exp(-abs(point.x) * 5.0);
+    float alpha = (pin + flare * vRare * 0.34) * vLight;
+    vec3 gold = mix(vec3(0.48, 0.31, 0.16), vec3(0.9, 0.74, 0.5), pin);
+    if (alpha < 0.012) discard;
+    gl_FragColor = vec4(gold, alpha * 0.5);
   }
 `;
 
@@ -114,12 +173,11 @@ const vertexShader = /* glsl */ `
     formed.z += (fold + microTension + pointerResponse) * uCouture;
     formed.y += sin(horizontal * 2.1 + slowTime * 0.4) * 0.018 * uCouture;
 
-    float lower = 1.0 - smoothstep(0.0, 0.66, uv.y);
+    float lower = 1.0 - smoothstep(0.02, 0.72, uv.y);
     float release = lower * uUnravel;
-    float lane = sin((horizontal + 1.0) * 10.9956);
-    formed.x += sign(horizontal + 0.001) * release * (0.22 + abs(lane) * 0.32);
-    formed.y -= release * (0.3 + abs(lane) * 0.52);
-    formed.z += lane * release * 0.1;
+    formed.x += sign(horizontal + 0.001) * release * 0.16;
+    formed.y -= release * (0.12 + lower * 0.18);
+    formed.z -= release * 0.12;
 
     vFold = fold;
     vRelease = release;
@@ -148,10 +206,6 @@ const fragmentShader = /* glsl */ `
     return smoothstep(0.82 - width, 0.82 + width, wave);
   }
 
-  float hash(float value) {
-    return fract(sin(value * 91.713) * 43758.5453);
-  }
-
   void main() {
     vec3 dx = dFdx(vWorldPosition);
     vec3 dy = dFdy(vWorldPosition);
@@ -172,14 +226,13 @@ const fragmentShader = /* glsl */ `
       exp(-26.0 * abs(vUv.y - 0.56)) * smoothstep(0.28, 0.55, uCoverage);
     float coverage = max(regionalCoverage, min(seamField, 1.0));
 
-    float strip = floor((vHorizontal + 1.0) * 8.0);
-    float stripRelease = smoothstep(
-      0.18 + hash(strip) * 0.24,
-      0.72 + hash(strip + 3.0) * 0.16,
-      uUnravel
-    );
     float lower = 1.0 - smoothstep(0.02, 0.62, vUv.y);
-    float retainedTextile = 1.0 - stripRelease * lower;
+    float releaseFade = smoothstep(
+      0.12,
+      1.0,
+      uUnravel * lower
+    );
+    float retainedTextile = 1.0 - releaseFade * (0.55 + lower * 0.34);
 
     vec2 pointerLight = vec2(uPointer.x * 0.08, uPointer.y * 0.06);
     vec3 lightDirection = normalize(vec3(
@@ -197,7 +250,7 @@ const fragmentShader = /* glsl */ `
     float weave = warp * 0.58 + weft * 0.27;
 
     vec3 charcoal = vec3(0.012, 0.01, 0.009);
-    vec3 cocoa = vec3(0.185, 0.102, 0.064);
+    vec3 cocoa = vec3(0.125, 0.064, 0.043);
     vec3 pearl = vec3(0.67, 0.59, 0.51);
     vec3 antiqueGold = vec3(0.42, 0.3, 0.18);
     vec3 color = mix(
@@ -210,6 +263,7 @@ const fragmentShader = /* glsl */ `
     float selectedFold = pow(max(0.0, 1.0 - abs(vFold * 8.0 - 0.22)), 3.0);
     color += vec3(0.19, 0.095, 0.055) * selectedFold * uCouture * 0.11;
     color *= 0.88 + (1.0 - abs(vHorizontal)) * 0.12;
+    color = mix(color, charcoal, uUnravel * lower * 0.78);
 
     float edge = 1.0 - smoothstep(0.88, 1.0, abs(vHorizontal));
     float verticalEdge =
@@ -234,11 +288,8 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
   #draft?: THREE.LineSegments<THREE.BufferGeometry, THREE.LineBasicMaterial>;
   #stitches?: THREE.LineSegments<THREE.BufferGeometry, THREE.LineBasicMaterial>;
   #motif?: THREE.LineSegments<THREE.BufferGeometry, THREE.LineBasicMaterial>;
-  #releaseThreads?: THREE.LineSegments<
-    THREE.BufferGeometry,
-    THREE.LineBasicMaterial
-  >;
   #atmosphere: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>[] = [];
+  #sparkles?: THREE.Points<THREE.BufferGeometry, THREE.ShaderMaterial>;
   #needle?: THREE.Points<THREE.BufferGeometry, THREE.PointsMaterial>;
   #patternPaths: Path[] = [];
   #motifPaths: Path[] = [];
@@ -361,7 +412,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       this.#draft,
       this.#stitches,
       this.#motif,
-      this.#releaseThreads,
+      this.#sparkles,
       this.#needle,
       ...this.#atmosphere,
     ]) {
@@ -385,7 +436,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       this.#draft,
       this.#stitches,
       this.#motif,
-      this.#releaseThreads,
+      this.#sparkles,
       this.#needle,
       ...this.#atmosphere,
     ]) {
@@ -434,30 +485,6 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     );
     this.#motif.geometry.setDrawRange(0, 0);
 
-    const releasePaths: Path[] = [];
-    for (let lane = 0; lane < 7; lane += 1) {
-      const x = -1.18 + lane * 0.39;
-      releasePaths.push(
-        this.#sampleCubic(
-          new THREE.Vector3(x, -1.82, 0.04),
-          new THREE.Vector3(x + (lane % 2 ? 0.14 : -0.12), -2.18, 0.06),
-          new THREE.Vector3(x * 0.72, -2.55, 0),
-          new THREE.Vector3(x * 0.56, -3.18, -0.04),
-          this.#quality.pathSamples,
-        ),
-      );
-    }
-    this.#releaseThreads = new THREE.LineSegments(
-      this.#pathsToSegments(releasePaths),
-      new THREE.LineBasicMaterial({
-        color: 0xa77b54,
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-      }),
-    );
-    this.#releaseThreads.geometry.setDrawRange(0, 0);
-
     const fabricGeometry = new THREE.PlaneGeometry(
       3.35,
       4.62,
@@ -483,9 +510,12 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     this.#fabric.rotation.set(-0.018, -0.075, -0.018);
 
     this.#atmosphere = [
-      this.#createAtmospherePlane(-1, -2.25, 0.18, 4.7, 5.6),
-      this.#createAtmospherePlane(1, 2.55, -0.2, 4.25, 5.2),
+      this.#createAtmospherePlane(-1, 0, -2.35, 0.2, 4.9, 5.7),
+      this.#createAtmospherePlane(-1, 1, -3.25, -0.32, 5.1, 4.8),
+      this.#createAtmospherePlane(1, 2, 2.62, -0.12, 4.65, 5.35),
+      this.#createAtmospherePlane(1, 3, 3.48, 0.44, 5.25, 4.5),
     ];
+    this.#sparkles = this.#createSparkles();
 
     const needleGeometry = new THREE.BufferGeometry();
     needleGeometry.setAttribute(
@@ -507,16 +537,17 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     this.#scene.add(
       ...this.#atmosphere,
       this.#fabric,
+      this.#sparkles,
       this.#draft,
       this.#stitches,
       this.#motif,
-      this.#releaseThreads,
       this.#needle,
     );
   }
 
   #createAtmospherePlane(
     side: -1 | 1,
+    layer: number,
     x: number,
     y: number,
     width: number,
@@ -531,6 +562,8 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       uniforms: {
         uTime: { value: 0 },
         uSide: { value: side },
+        uLayer: { value: layer },
+        uExit: { value: 0 },
         uPointer: { value: this.#pointerCurrent },
       },
     });
@@ -541,6 +574,48 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     plane.position.set(x, y, -0.42);
     plane.rotation.set(0.02 * side, -0.09 * side, 0.09 * side);
     return plane;
+  }
+
+  #createSparkles() {
+    const positions: number[] = [];
+    const phases: number[] = [];
+    const strengths: number[] = [];
+    for (let index = 0; index < 28; index += 1) {
+      const side = index % 2 === 0 ? -1 : 1;
+      const radial = 1.48 + ((index * 37) % 100) / 100 * 2.85;
+      const x = side * radial + Math.sin(index * 2.17) * 0.16;
+      const y = -2.05 + ((index * 61) % 100) / 100 * 4.2;
+      positions.push(x, y, -0.12 - (index % 4) * 0.08);
+      phases.push((index * 2.399 + (index % 5) * 0.73) % (Math.PI * 2));
+      strengths.push(0.22 + ((index * 43) % 100) / 100 * 0.78);
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(positions, 3),
+    );
+    geometry.setAttribute(
+      "aPhase",
+      new THREE.Float32BufferAttribute(phases, 1),
+    );
+    geometry.setAttribute(
+      "aStrength",
+      new THREE.Float32BufferAttribute(strengths, 1),
+    );
+    return new THREE.Points(
+      geometry,
+      new THREE.ShaderMaterial({
+        vertexShader: sparkleVertexShader,
+        fragmentShader: sparkleFragmentShader,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: {
+          uTime: { value: 0 },
+          uExit: { value: 0 },
+        },
+      }),
+    );
   }
 
   #buildPatternPaths(): Path[] {
@@ -595,25 +670,39 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     const s = Math.max(14, Math.round(this.#quality.pathSamples * 0.72));
     return [
       this.#sampleCubic(
-        new THREE.Vector3(-0.06, 0.46, 0.16),
-        new THREE.Vector3(0.26, 0.56, 0.18),
-        new THREE.Vector3(0.3, 0.18, 0.18),
-        new THREE.Vector3(0.06, 0.08, 0.16),
+        new THREE.Vector3(-0.62, -0.32, 0.16),
+        new THREE.Vector3(-0.78, -0.7, 0.18),
+        new THREE.Vector3(-0.54, -1.12, 0.18),
+        new THREE.Vector3(-0.34, -1.48, 0.16),
         s,
       ),
       this.#sampleCubic(
-        new THREE.Vector3(0.06, 0.08, 0.16),
-        new THREE.Vector3(-0.2, -0.03, 0.18),
-        new THREE.Vector3(-0.2, -0.28, 0.18),
-        new THREE.Vector3(0.02, -0.42, 0.16),
+        new THREE.Vector3(-0.56, -0.72, 0.17),
+        new THREE.Vector3(-0.34, -0.58, 0.18),
+        new THREE.Vector3(-0.2, -0.64, 0.18),
+        new THREE.Vector3(-0.12, -0.82, 0.16),
+        Math.round(s * 0.68),
+      ),
+      this.#sampleCubic(
+        new THREE.Vector3(-0.46, -1.08, 0.17),
+        new THREE.Vector3(-0.72, -1.02, 0.18),
+        new THREE.Vector3(-0.84, -1.18, 0.18),
+        new THREE.Vector3(-0.76, -1.34, 0.16),
+        Math.round(s * 0.68),
+      ),
+      this.#sampleCubic(
+        new THREE.Vector3(0.52, -0.12, 0.16),
+        new THREE.Vector3(0.72, -0.48, 0.18),
+        new THREE.Vector3(0.6, -0.98, 0.18),
+        new THREE.Vector3(0.82, -1.38, 0.16),
         s,
       ),
       this.#sampleCubic(
-        new THREE.Vector3(0.02, -0.42, 0.16),
-        new THREE.Vector3(0.24, -0.54, 0.18),
-        new THREE.Vector3(0.26, -0.72, 0.18),
-        new THREE.Vector3(0.15, -0.86, 0.16),
-        s,
+        new THREE.Vector3(0.34, 1.08, 0.16),
+        new THREE.Vector3(0.48, 0.94, 0.18),
+        new THREE.Vector3(0.44, 0.7, 0.18),
+        new THREE.Vector3(0.31, 0.58, 0.16),
+        Math.round(s * 0.58),
       ),
     ];
   }
@@ -759,7 +848,7 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
       !this.#draft ||
       !this.#stitches ||
       !this.#motif ||
-      !this.#releaseThreads ||
+      !this.#sparkles ||
       !this.#needle
     ) {
       return;
@@ -802,18 +891,13 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     this.#setDrawProgress(this.#draft.geometry, draftProgress);
     this.#setDrawProgress(this.#stitches.geometry, stitchProgress);
     this.#setDrawProgress(this.#motif.geometry, motifProgress);
-    this.#setDrawProgress(
-      this.#releaseThreads.geometry,
-      this.#smoothRange(0.12, 0.88, exit),
-    );
-    this.#releaseThreads.material.opacity =
-      0.58 * this.#smoothRange(0.08, 0.52, exit);
     this.#draft.material.opacity =
       0.1 * (1 - this.#smoothRange(0.42, 0.78, construction));
     this.#stitches.material.opacity =
       0.34 * (1 - this.#smoothRange(0.54, 0.94, construction));
     this.#motif.material.opacity =
-      0.5 + this.#smoothRange(0.82, 1, construction) * 0.08;
+      (0.1 + this.#smoothRange(0.82, 1, construction) * 0.04) *
+      (1 - exit * 0.82);
 
     this.#fabric.material.uniforms.uTime.value = elapsed / 1000;
     this.#fabric.material.uniforms.uCoverage.value = coverage;
@@ -821,7 +905,10 @@ class LivingLoomDesktopRenderer implements HeroRenderer {
     this.#fabric.material.uniforms.uUnravel.value = exit;
     for (const plane of this.#atmosphere) {
       plane.material.uniforms.uTime.value = elapsed / 1000;
+      plane.material.uniforms.uExit.value = exit;
     }
+    this.#sparkles.material.uniforms.uTime.value = elapsed / 1000;
+    this.#sparkles.material.uniforms.uExit.value = exit;
 
     const headProgress = motifProgress > 0
       ? motifProgress
