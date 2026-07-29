@@ -90,20 +90,19 @@ class HeroController {
     ) {
       return;
     }
-    const { createLivingLoomDesktop } = await import("./livingLoomDesktop");
-    return createLivingLoomDesktop({
+    const { createCinematicHero } = await import("./cinematicHero");
+    return createCinematicHero({
       ...this.#rendererOptions(),
-      tier: this.capabilities.tier,
-      onPointerOwnershipChange: (owned) => {
-        if (owned) this.claimPointerOwnership();
-        else this.releasePointerOwnership();
-      },
+      portrait: false,
     });
   }
 
   async #createMobileRenderer() {
-    const { createSilkPortalMobile } = await import("./silkPortalMobile");
-    return createSilkPortalMobile(this.#rendererOptions());
+    const { createCinematicHero } = await import("./cinematicHero");
+    return createCinematicHero({
+      ...this.#rendererOptions(),
+      portrait: true,
+    });
   }
 
   #rendererOptions() {
