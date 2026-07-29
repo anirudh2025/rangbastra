@@ -11,7 +11,7 @@ import Label from "../../components/primitives/Label.astro";
   data-hero-state="BOOT"
   aria-labelledby="hero-heading"
 >
-  <div class="living-hero__stage">
+  <div class="living-hero__stage" data-hero-stage>
     <LoomFallback />
 
     <div
@@ -19,16 +19,6 @@ import Label from "../../components/primitives/Label.astro";
       data-hero-enhancement
       aria-hidden="true"
     ></div>
-
-    <button
-      class="living-hero__pull"
-      type="button"
-      data-hero-pull-control
-      aria-label="Pull the couture thread to reveal the textile"
-    >
-      <span class="living-hero__pull-handle" aria-hidden="true"></span>
-      <span class="living-hero__pull-label">Pull to reveal</span>
-    </button>
 
     <div class="living-hero__content" data-hero-content>
       <p class="living-hero__eyebrow">Bespoke Indian Couture</p>
@@ -45,9 +35,11 @@ import Label from "../../components/primitives/Label.astro";
 
     <div class="living-hero__handoff" data-hero-handoff aria-hidden="true">
       <svg viewBox="0 0 1440 150" preserveAspectRatio="none">
-        <path d="M160 0 C 310 54, 420 45, 560 150" />
-        <path d="M712 0 C 690 58, 746 93, 720 150" />
-        <path d="M1260 0 C 1120 55, 1045 62, 920 150" />
+        <path pathLength="1" d="M560 0 C 520 48, 520 98, 490 150" />
+        <path pathLength="1" d="M640 0 C 620 52, 630 102, 610 150" />
+        <path pathLength="1" d="M720 0 C 708 54, 732 102, 720 150" />
+        <path pathLength="1" d="M800 0 C 820 52, 810 102, 832 150" />
+        <path pathLength="1" d="M880 0 C 920 48, 918 98, 952 150" />
       </svg>
     </div>
   </div>
@@ -67,18 +59,23 @@ import Label from "../../components/primitives/Label.astro";
 <style>
   .living-hero {
     position: relative;
-    height: 100svh;
+    height: 210svh;
     min-height: 38rem;
-    overflow: hidden;
+    overflow: visible;
     background: #000;
     color: var(--text-primary);
     isolation: isolate;
   }
 
   .living-hero__stage {
-    position: relative;
-    height: 100%;
+    position: sticky;
+    top: 0;
+    height: 100svh;
     overflow: hidden;
+  }
+
+  .living-hero[data-hero-ready="true"][data-hero-mode="static"] {
+    height: 100svh;
   }
 
   .living-hero__enhancement {
@@ -119,10 +116,6 @@ import Label from "../../components/primitives/Label.astro";
     margin-inline: auto;
     padding: clamp(7rem, 13vh, 10rem) 0 5rem;
     text-align: center;
-  }
-
-  .living-hero__pull {
-    display: none;
   }
 
   .living-hero__eyebrow {
@@ -230,49 +223,8 @@ import Label from "../../components/primitives/Label.astro";
   }
 
   @media (max-width: 700px), (orientation: portrait) {
-    .living-hero[data-hero-mode="silk-portal"][data-hero-pull-ready="true"]
-      .living-hero__pull {
-      position: absolute;
-      top: 30%;
-      left: 50%;
-      z-index: 4;
-      display: grid;
-      min-width: 5.5rem;
-      min-height: 6.5rem;
-      place-items: start center;
-      border: 0;
-      background: transparent;
-      color: rgba(231, 211, 184, .76);
-      font: inherit;
-      touch-action: none;
-      transform: translate(-50%, calc(var(--hero-pull-progress, 0) * 9rem));
-      transition: opacity 300ms ease;
-    }
-
-    .living-hero__pull-handle {
-      display: block;
-      width: 1.7rem;
-      height: 1.7rem;
-      border: 1px solid rgba(202, 163, 111, .62);
-      border-radius: 50%;
-      background:
-        radial-gradient(circle, rgba(226, 197, 155, .52) 0 8%, transparent 10%),
-        rgba(12, 8, 7, .76);
-      box-shadow: 0 0 0 .45rem rgba(123, 80, 52, .08);
-    }
-
-    .living-hero__pull-label {
-      margin-top: .7rem;
-      font-family: var(--font-ceremonial);
-      font-size: .58rem;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .living-hero[data-hero-state="COMPLETE"] .living-hero__pull {
-      opacity: 0;
-      pointer-events: none;
+    .living-hero {
+      height: 195svh;
     }
 
     .living-hero__content {
@@ -320,3 +272,9 @@ import Label from "../../components/primitives/Label.astro";
     }
   }
 </style>
+
+<noscript>
+  <style>
+    .living-hero { height: 100svh !important; }
+  </style>
+</noscript>
