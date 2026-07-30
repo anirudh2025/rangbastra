@@ -3,7 +3,7 @@ import type { HeroRenderer, HeroState } from "./states";
 
 type PremiumTier = "A" | "B" | "C";
 
-interface ProceduralCoutureOptions {
+interface CoutureSceneOptions {
   root: HTMLElement;
   mount: HTMLElement;
   signal: AbortSignal;
@@ -19,126 +19,116 @@ interface ProceduralCoutureOptions {
 interface SceneQuality {
   garmentX: number;
   garmentY: number;
-  ribbonSegments: number;
-  particleCount: number;
-  embroideryMotifs: number;
+  garmentLayers: number;
+  drapeSegments: number;
+  drapeBands: number;
+  handworkClusters: number;
+  particles: number;
+  beads: number;
   dpr: number;
-  panelCount: number;
-}
-
-interface PetalSpec {
-  center: THREE.Vector3;
-  angle: number;
-  length: number;
-  width: number;
-  order: number;
-  intensity: number;
 }
 
 const QUALITY: Record<PremiumTier, SceneQuality> = {
   A: {
-    garmentX: 64,
-    garmentY: 80,
-    ribbonSegments: 64,
-    particleCount: 1120,
-    embroideryMotifs: 12,
+    garmentX: 58,
+    garmentY: 74,
+    garmentLayers: 5,
+    drapeSegments: 64,
+    drapeBands: 6,
+    handworkClusters: 18,
+    particles: 1080,
+    beads: 150,
     dpr: 1.5,
-    panelCount: 6,
   },
   B: {
-    garmentX: 48,
-    garmentY: 62,
-    ribbonSegments: 46,
-    particleCount: 640,
-    embroideryMotifs: 10,
+    garmentX: 44,
+    garmentY: 58,
+    garmentLayers: 5,
+    drapeSegments: 48,
+    drapeBands: 5,
+    handworkClusters: 13,
+    particles: 630,
+    beads: 100,
     dpr: 1.25,
-    panelCount: 6,
   },
   C: {
-    garmentX: 34,
-    garmentY: 48,
-    ribbonSegments: 34,
-    particleCount: 360,
-    embroideryMotifs: 4,
+    garmentX: 32,
+    garmentY: 46,
+    garmentLayers: 4,
+    drapeSegments: 34,
+    drapeBands: 4,
+    handworkClusters: 7,
+    particles: 350,
+    beads: 64,
     dpr: 1.2,
-    panelCount: 5,
   },
 };
 
 const garmentVertex = /* glsl */ `
   uniform float uTime;
-  uniform float uCoverage;
+  uniform float uProgress;
   uniform float uExit;
-  uniform float uScroll;
   uniform float uPortrait;
+  uniform float uScroll;
   uniform vec2 uPointer;
-  attribute float aPanel;
+  attribute float aLayer;
   varying vec2 vUv;
-  varying float vPanel;
-  varying float vFold;
   varying vec3 vWorld;
+  varying float vLayer;
+  varying float vFold;
 
-  float garmentWidth(float y) {
-    float hemToHip = mix(1.42, 0.59, smoothstep(0.02, 0.47, y));
-    float hipToWaist = mix(0.59, 0.335, smoothstep(0.47, 0.61, y));
-    float waistToBust = mix(0.335, 0.53, smoothstep(0.61, 0.83, y));
-    float bustToTop = mix(0.53, 0.365, smoothstep(0.83, 1.0, y));
-    return y < 0.47 ? hemToHip :
-      y < 0.61 ? hipToWaist :
-      y < 0.83 ? waistToBust : bustToTop;
+  float ease(float value) {
+    return value * value * (3.0 - 2.0 * value);
+  }
+
+  float coutureWidth(float y) {
+    float hem = mix(1.62, 0.76, ease(clamp(y / 0.43, 0.0, 1.0)));
+    float hip = mix(0.76, 0.36, ease(clamp((y - 0.43) / 0.18, 0.0, 1.0)));
+    float bodice = mix(0.36, 0.57, ease(clamp((y - 0.61) / 0.23, 0.0, 1.0)));
+    float top = mix(0.57, 0.39, ease(clamp((y - 0.84) / 0.16, 0.0, 1.0)));
+    return y < 0.43 ? hem : y < 0.61 ? hip : y < 0.84 ? bodice : top;
   }
 
   void main() {
     vUv = uv;
-    vPanel = aPanel;
-    float nx = position.x;
+    vLayer = aLayer;
     float y = uv.y;
-    float portraitScale = mix(1.0, 0.68, uPortrait);
-    float panel = aPanel;
-    float width = garmentWidth(y);
+    float nx = position.x;
+    float portraitScale = mix(1.0, 0.7, uPortrait);
+    float width = coutureWidth(y);
+    float lower = 1.0 - smoothstep(0.48, 0.82, y);
 
     vec3 shaped = vec3(
-      nx * width * 1.78 * portraitScale,
-      (y - 0.5) * mix(4.92, 5.12, uPortrait) - 0.1,
-      0.0
+      nx * width * 1.72 * portraitScale,
+      (y - 0.5) * mix(5.05, 5.36, uPortrait) - 0.12,
+      -0.28 + aLayer * 0.13
     );
 
-    float neckline = smoothstep(0.88, 1.0, y) *
-      (1.0 - pow(clamp(abs(nx), 0.0, 1.0), 0.7));
-    shaped.y -= neckline * 0.36;
+    float sweetheart = smoothstep(0.87, 1.0, y) *
+      (1.0 - pow(abs(nx), 0.58));
+    shaped.y -= sweetheart * 0.34;
+    shaped.x += lower * (0.05 * sin(y * 7.0 + aLayer * 1.9));
+    shaped.x += lower * 0.075 * (1.0 - y) * mix(-0.35, 0.65, aLayer / 4.0);
 
-    float time = uTime * 0.055;
-    float broadFold =
-      sin(nx * (5.1 + panel * 0.67) + y * (1.2 + panel * 0.19) + panel * 1.37) *
-        (0.075 + mod(panel, 2.0) * 0.018) +
-      sin(nx * (2.25 + panel * 0.31) - y * (2.15 + panel * 0.23) - panel * 0.81) *
-        (0.052 + mod(panel + 1.0, 2.0) * 0.014);
-    float diagonal =
-      sin((nx * 1.4 + y * (2.6 + panel * 0.21)) * 2.4 + panel * 0.9) * 0.024;
-    float lower = 1.0 - smoothstep(0.48, 0.8, y);
-    float breathing = sin(time + panel * 1.1 + y * 2.0) * 0.012;
+    float foldA = sin(nx * (7.3 + aLayer * 0.71) + y * 3.1 + aLayer * 1.37);
+    float foldB = sin(nx * (3.25 + aLayer * 0.43) - y * 5.2 - aLayer * 0.82);
+    float foldC = sin((nx * 1.7 + y * 2.2) * 4.1 + aLayer * 2.17);
+    float fold = foldA * 0.068 + foldB * 0.041 + foldC * 0.019;
+    shaped.z += fold * (0.28 + lower * 1.35);
+    shaped.z += sin(uTime * 0.08 + y * 2.0 + aLayer) * 0.008 * lower;
+    shaped.z += uScroll * fold * 0.08;
 
-    float panelDepth = 0.0;
-    if (panel < 0.5) panelDepth = -0.34;
-    else if (panel < 1.5) panelDepth = -0.08;
-    else if (panel < 2.5) panelDepth = 0.08;
-    else if (panel < 3.5) panelDepth = 0.15;
-    else if (panel < 4.5) panelDepth = 0.12;
-    else panelDepth = 0.19;
+    float gather = smoothstep(0.05, 0.52, uProgress);
+    shaped.x *= mix(0.86, 1.0, gather);
+    shaped.z *= mix(0.68, 1.0, gather);
+    shaped.y += (1.0 - gather) * lower * 0.08;
 
-    shaped.z = panelDepth + (broadFold + diagonal) * (0.36 + lower * 1.28);
-    shaped.z += breathing * (0.35 + lower);
-    shaped.x += sin(y * 3.2 + panel * 1.6) * 0.035 * lower;
-    shaped.x += uPointer.x * (0.016 + lower * 0.026) * (panel + 1.0) / 6.0;
-    shaped.z += uPointer.y * 0.018 * lower;
-    shaped.z += uScroll * broadFold * 0.12 * lower;
+    shaped.x += uPointer.x * lower * 0.018 * (1.0 - uPortrait);
+    shaped.z += uPointer.y * lower * 0.014 * (1.0 - uPortrait);
+    shaped.x += sign(nx + 0.001) * uExit * lower * 0.12;
+    shaped.y -= uExit * lower * 0.1;
 
-    float unravel = smoothstep(0.05, 1.0, uExit) * lower;
-    shaped.x += sign(nx + 0.001) * unravel * (0.08 + panel * 0.012);
-    shaped.y -= unravel * 0.13;
-    shaped.z -= unravel * 0.09;
-
-    vFold = broadFold + diagonal;
+    vFold = fold;
     vec4 world = modelMatrix * vec4(shaped, 1.0);
     vWorld = world.xyz;
     gl_Position = projectionMatrix * viewMatrix * world;
@@ -147,14 +137,14 @@ const garmentVertex = /* glsl */ `
 
 const garmentFragment = /* glsl */ `
   uniform float uTime;
-  uniform float uCoverage;
+  uniform float uProgress;
   uniform float uExit;
-  uniform float uScroll;
+  uniform float uPortrait;
   uniform vec2 uPointer;
   varying vec2 vUv;
-  varying float vPanel;
-  varying float vFold;
   varying vec3 vWorld;
+  varying float vLayer;
+  varying float vFold;
 
   float hash21(vec2 p) {
     p = fract(p * vec2(123.34, 456.21));
@@ -162,222 +152,148 @@ const garmentFragment = /* glsl */ `
     return fract(p.x * p.y);
   }
 
-  float garmentWidth(float y) {
-    float hemToHip = mix(1.42, 0.59, smoothstep(0.02, 0.47, y));
-    float hipToWaist = mix(0.59, 0.335, smoothstep(0.47, 0.61, y));
-    float waistToBust = mix(0.335, 0.53, smoothstep(0.61, 0.83, y));
-    float bustToTop = mix(0.53, 0.365, smoothstep(0.83, 1.0, y));
-    return y < 0.47 ? hemToHip :
-      y < 0.61 ? hipToWaist :
-      y < 0.83 ? waistToBust : bustToTop;
-  }
-
   void main() {
-    float y = vUv.y;
     float nx = vUv.x * 2.0 - 1.0;
-    float lower = 1.0 - smoothstep(0.42, 0.72, y);
+    float y = vUv.y;
+    float lower = 1.0 - smoothstep(0.48, 0.8, y);
 
-    float panelMask = 1.0;
-    if (vPanel < 0.5) panelMask = lower * 0.72;
-    else if (vPanel < 1.5) {
-      panelMask = smoothstep(0.01, 0.22, y) *
-        (1.0 - smoothstep(0.58, 0.84, y)) * 0.66;
-    } else if (vPanel < 2.5) panelMask = 0.84;
-    else if (vPanel < 3.5) {
-      panelMask = (1.0 - smoothstep(0.54, 0.9, vUv.x)) * lower * 0.72;
-    } else if (vPanel < 4.5) {
-      panelMask = smoothstep(0.1, 0.48, vUv.x) * lower * 0.7;
-    } else {
-      panelMask = smoothstep(0.47, 0.59, y) *
-        (1.0 - smoothstep(0.94, 1.0, y)) * 0.92;
-    }
-
-    float frontA = y * 0.78 + abs(nx) * 0.14;
-    float frontB = y * 0.46 + (nx * 0.5 + 0.5) * 0.24;
-    float irregular = (hash21(floor(vUv * vec2(34.0, 48.0))) - 0.5) * 0.065;
-    float revealA = smoothstep(frontA - 0.1, frontA + 0.055, uCoverage + irregular);
-    float revealB = smoothstep(frontB - 0.15, frontB + 0.06, uCoverage - 0.17);
-    float coverage = max(revealA, revealB * 0.78);
-
-    vec3 dx = dFdx(vWorld);
-    vec3 dy = dFdy(vWorld);
-    vec3 normal = normalize(cross(dx, dy));
-    if (!gl_FrontFacing) normal = -normal;
-    vec3 viewDirection = normalize(cameraPosition - vWorld);
-    vec3 keyLight = normalize(vec3(
-      -0.32 + uPointer.x * 0.16 + uScroll * 0.08,
-      0.58 - uScroll * 0.06,
-      0.78
-    ));
-    vec3 rimLight = normalize(vec3(0.72, 0.2, 0.54));
-    vec3 halfDirection = normalize(keyLight + viewDirection);
-
-    float diffuse = max(dot(normal, keyLight), 0.0);
-    float rim = pow(1.0 - max(dot(normal, viewDirection), 0.0), 2.25);
-    float broadSheen = pow(max(dot(normal, halfDirection), 0.0), 4.2);
-    float silkSheen = pow(max(dot(normal, halfDirection), 0.0), 18.0);
-    float sideSheen = pow(max(dot(normal, normalize(rimLight + viewDirection)), 0.0), 11.0);
-
-    float warp = abs(sin((vUv.x * 520.0 + sin(vUv.y * 19.0) * 0.45) * 3.14159));
-    float weft = abs(sin((vUv.y * 330.0 + sin(vUv.x * 13.0) * 0.32) * 3.14159));
-    float warpWidth = max(fwidth(warp) * 1.25, 0.018);
-    float weftWidth = max(fwidth(weft) * 1.25, 0.018);
-    float weave = smoothstep(0.88 - warpWidth, 0.88 + warpWidth, warp) * 0.7 +
-      smoothstep(0.9 - weftWidth, 0.9 + weftWidth, weft) * 0.3;
-    float weaveDistanceFade = smoothstep(3.5, 1.4, length(cameraPosition - vWorld));
-
-    vec3 black = vec3(0.013, 0.01, 0.008);
-    vec3 warmBlack = vec3(0.075, 0.038, 0.023);
-    vec3 cocoa = vec3(0.16, 0.077, 0.043);
-    vec3 highlight = vec3(0.39, 0.205, 0.105);
-    vec3 gold = vec3(0.56, 0.37, 0.17);
-
-    float valley = smoothstep(0.018, 0.085, abs(vFold));
-    float pleat = pow(
-      0.5 + 0.5 * sin(nx * (17.0 + vPanel * 1.7) + y * 3.2),
-      7.0
-    ) * lower;
-    vec3 color = vec3(0.045, 0.022, 0.013);
-    color += mix(black, warmBlack, 0.18 + diffuse * 0.44 + broadSheen * 0.58);
-    color += cocoa * (diffuse * 0.12 + broadSheen * 0.58);
-    color += highlight * silkSheen * 0.46;
-    color += gold * sideSheen * rim * 0.25;
-    color += mix(cocoa, highlight, pleat) * pleat * (0.26 + broadSheen * 0.38);
-    color *= 0.8 + valley * 0.2;
-    color += vec3(0.25, 0.19, 0.14) * weave * weaveDistanceFade * (0.012 + silkSheen * 0.03);
+    float layerMask = 1.0;
+    if (vLayer < 0.5) layerMask = 0.48;
+    else if (vLayer < 1.5) layerMask = 1.0 - smoothstep(0.03, 0.24, vUv.x);
+    else if (vLayer < 2.5) layerMask = smoothstep(0.76, 0.97, vUv.x);
+    else if (vLayer < 3.5) layerMask = 1.0 - smoothstep(0.32, 0.55, abs(nx));
+    else layerMask = lower * 0.28;
 
     float edge = smoothstep(0.0, 0.035, vUv.x) *
       (1.0 - smoothstep(0.965, 1.0, vUv.x));
-    float verticalEdge = smoothstep(0.0, 0.022, y) *
-      (1.0 - smoothstep(0.978, 1.0, y));
-    float release = 1.0 - smoothstep(0.2, 1.0, uExit) * lower * 0.88;
-    float alpha = coverage * panelMask * edge * verticalEdge * release;
-    alpha *= 0.9 + broadSheen * 0.1;
-    if (alpha < 0.008) discard;
+    float verticalEdge = smoothstep(0.0, 0.025, y) *
+      (1.0 - smoothstep(0.982, 1.0, y));
+
+    float frontA = y * 0.72 + abs(nx) * 0.1;
+    float frontB = y * 0.43 + (nx * 0.5 + 0.5) * 0.18;
+    float variation = (hash21(floor(vUv * vec2(28.0, 42.0))) - 0.5) * 0.045;
+    float coverage = max(
+      smoothstep(frontA - 0.13, frontA + 0.08, uProgress + variation),
+      smoothstep(frontB - 0.2, frontB + 0.08, uProgress - 0.08)
+    );
+
+    vec3 normal = normalize(cross(dFdx(vWorld), dFdy(vWorld)));
+    if (!gl_FrontFacing) normal = -normal;
+    vec3 viewDirection = normalize(cameraPosition - vWorld);
+    vec3 lightDirection = normalize(vec3(
+      -0.28 + uPointer.x * 0.13,
+      0.62 + uPointer.y * 0.06,
+      0.74
+    ));
+    vec3 halfDirection = normalize(viewDirection + lightDirection);
+    float diffuse = max(dot(normal, lightDirection), 0.0);
+    float grazing = pow(1.0 - max(dot(normal, viewDirection), 0.0), 2.5);
+    float broadSheen = pow(max(dot(normal, halfDirection), 0.0), 4.5);
+    float silkSheen = pow(max(dot(normal, halfDirection), 0.0), 21.0);
+    float foldLight = pow(0.5 + 0.5 * sin(nx * 19.0 + y * 5.0 + vLayer), 8.0) * lower;
+
+    float warp = abs(sin((vUv.x * 430.0 + sin(vUv.y * 17.0) * 0.35) * 3.14159));
+    float weft = abs(sin((vUv.y * 280.0 + sin(vUv.x * 11.0) * 0.28) * 3.14159));
+    float weave = smoothstep(0.9 - fwidth(warp), 0.9 + fwidth(warp), warp) * 0.7 +
+      smoothstep(0.92 - fwidth(weft), 0.92 + fwidth(weft), weft) * 0.3;
+
+    vec3 black = vec3(0.0035, 0.003, 0.0027);
+    vec3 warmBlack = vec3(0.047, 0.023, 0.014);
+    vec3 cocoa = vec3(0.17, 0.078, 0.038);
+    vec3 litCocoa = vec3(0.34, 0.17, 0.078);
+    vec3 antiqueGold = vec3(0.56, 0.36, 0.15);
+    float lightArrival = smoothstep(0.18, 0.68, uProgress);
+
+    vec3 color = mix(black, warmBlack, 0.36 + diffuse * 0.34);
+    color += cocoa * broadSheen * (0.48 + lightArrival * 0.58);
+    color += litCocoa * silkSheen * (0.24 + lightArrival * 0.68);
+    color += antiqueGold * grazing * silkSheen * 0.22;
+    color += litCocoa * foldLight * (0.09 + lightArrival * 0.2);
+    color += vec3(0.19, 0.13, 0.075) * weave * silkSheen * 0.018;
+    color *= 0.84 + smoothstep(0.018, 0.09, abs(vFold)) * 0.3;
+
+    float alpha = coverage * layerMask * edge * verticalEdge;
+    alpha *= mix(0.78, 1.0, lightArrival) * (1.0 - uExit * 0.68);
+    if (alpha < 0.006) discard;
     gl_FragColor = vec4(color, alpha);
   }
 `;
 
-const ribbonVertex = /* glsl */ `
+const drapeVertex = /* glsl */ `
   uniform float uTime;
-  uniform float uReveal;
+  uniform float uProgress;
   uniform float uExit;
   uniform float uPortrait;
   uniform float uScroll;
   uniform vec2 uPointer;
-  attribute float aRibbon;
+  attribute float aDrape;
   varying vec2 vUv;
-  varying float vRibbon;
   varying vec3 vWorld;
-  varying float vTension;
+  varying float vDrape;
+  varying float vFold;
 
   void main() {
     vUv = uv;
-    vRibbon = aRibbon;
-    vec3 shaped = position;
-    float phase = aRibbon * 1.73;
-    float travel = uTime * (0.035 + aRibbon * 0.004);
-    float longitudinal = uv.x;
+    vDrape = aDrape;
     float across = uv.y * 2.0 - 1.0;
-    float drift =
-      sin(longitudinal * (4.2 + aRibbon * 0.37) + phase + travel) * 0.035 +
-      sin(longitudinal * 2.15 - phase * 0.7 - travel * 0.52) * 0.022;
-    shaped.z += drift * (0.4 + abs(across) * 0.6);
-    shaped.y += sin(longitudinal * 3.1 + phase + travel * 0.6) * 0.018;
-    shaped.y += (aRibbon < 0.5 ? -1.0 : 1.0) * uScroll * 0.055 * longitudinal;
-    shaped.z += uScroll * (0.035 + aRibbon * 0.018) * sin(longitudinal * 3.14159);
-    shaped.x += uPointer.x * (0.018 + longitudinal * 0.026) * (1.0 - uPortrait * 0.8);
-    shaped.z += uPointer.y * 0.014 * (1.0 - uPortrait * 0.65);
-    float side = sign(position.x + 0.001);
-    shaped.x += side * uExit * (0.12 + longitudinal * 0.22);
+    float along = uv.x;
+    vec3 shaped = position;
+    float slow = uTime * (0.024 + aDrape * 0.004);
+    float fold =
+      sin(across * (4.2 + aDrape * 0.7) + along * 2.3 + slow + aDrape) * 0.045 +
+      sin(across * 2.1 - along * 4.4 - slow * 0.7) * 0.024;
+    shaped.z += fold * (0.48 + abs(across) * 0.42);
+    shaped.y += sin(along * 2.8 + aDrape * 1.4 + slow) * 0.015;
+    shaped.z += uScroll * sin(along * 3.14159) * (0.035 + aDrape * 0.012);
+    shaped.x += uPointer.x * along * 0.018 * (1.0 - uPortrait);
+    shaped.z += uPointer.y * 0.012 * (1.0 - uPortrait);
+    shaped.x += sign(position.x + 0.001) * uExit * along * 0.24;
     shaped.z -= uExit * 0.18;
-    vTension = drift;
+    vFold = fold;
     vec4 world = modelMatrix * vec4(shaped, 1.0);
     vWorld = world.xyz;
     gl_Position = projectionMatrix * viewMatrix * world;
   }
 `;
 
-const ribbonFragment = /* glsl */ `
-  uniform float uReveal;
+const drapeFragment = /* glsl */ `
+  uniform float uProgress;
   uniform float uExit;
   varying vec2 vUv;
-  varying float vRibbon;
   varying vec3 vWorld;
-  varying float vTension;
+  varying float vDrape;
+  varying float vFold;
 
   void main() {
-    vec3 dx = dFdx(vWorld);
-    vec3 dy = dFdy(vWorld);
-    vec3 normal = normalize(cross(dx, dy));
+    vec3 normal = normalize(cross(dFdx(vWorld), dFdy(vWorld)));
     if (!gl_FrontFacing) normal = -normal;
     vec3 viewDirection = normalize(cameraPosition - vWorld);
-    vec3 lightDirection = normalize(vec3(-0.22, 0.48, 0.84));
+    vec3 lightDirection = normalize(vec3(-0.18, 0.54, 0.82));
     vec3 halfDirection = normalize(viewDirection + lightDirection);
-    float sheen = pow(max(dot(normal, halfDirection), 0.0), 10.0);
-    float grazing = pow(1.0 - max(dot(normal, viewDirection), 0.0), 2.1);
+    float sheen = pow(max(dot(normal, halfDirection), 0.0), 12.0);
+    float grazing = pow(1.0 - max(dot(normal, viewDirection), 0.0), 2.4);
     float edge = pow(abs(vUv.y * 2.0 - 1.0), 7.0);
-    float longitudinalFade = smoothstep(0.0, 0.08, vUv.x) *
-      (1.0 - smoothstep(0.84, 1.0, vUv.x));
-    float reveal = smoothstep(0.22 + vRibbon * 0.045, 0.6 + vRibbon * 0.025, uReveal);
-    float depthVeil = vRibbon > 1.5 ? 0.34 : 1.0;
-    vec3 black = vec3(0.004);
-    vec3 cocoa = vec3(0.09, 0.043, 0.026);
-    vec3 gold = vec3(0.34, 0.2, 0.09);
-    vec3 color = mix(black, cocoa, 0.2 + sheen * 0.62);
-    color += gold * (grazing * 0.2 + edge * sheen * 0.38);
-    float alpha = longitudinalFade * reveal * depthVeil *
-      (0.055 + sheen * 0.13 + edge * 0.075);
-    alpha *= 1.0 - uExit * 0.82;
+    float endFade = smoothstep(0.01, 0.09, vUv.x) *
+      (1.0 - smoothstep(0.87, 1.0, vUv.x));
+    float reveal = smoothstep(0.08 + vDrape * 0.035, 0.5, uProgress);
+    float rear = vDrape > 1.5 ? 0.26 : 1.0;
+
+    vec3 black = vec3(0.0025);
+    vec3 cocoa = vec3(0.13, 0.059, 0.028);
+    vec3 gold = vec3(0.48, 0.29, 0.11);
+    vec3 color = mix(black, cocoa, 0.28 + sheen * 0.72);
+    color += gold * (grazing * sheen * 0.34 + edge * sheen * 0.34);
+    color *= 0.72 + smoothstep(0.012, 0.06, abs(vFold)) * 0.28;
+
+    float alpha = endFade * reveal * rear *
+      (0.09 + sheen * 0.24 + edge * 0.1);
+    alpha *= 1.0 - uExit * 0.74;
     if (alpha < 0.004) discard;
     gl_FragColor = vec4(color, alpha);
   }
 `;
 
-const lineVertex = /* glsl */ `
-  uniform float uTime;
-  uniform float uProgress;
-  uniform float uExit;
-  uniform float uScroll;
-  attribute float aKind;
-  attribute float aOrder;
-  varying float vAlpha;
-  varying float vKind;
-
-  void main() {
-    vKind = aKind;
-    float guideIn = smoothstep(aOrder - 0.09, aOrder + 0.035, uProgress);
-    float guideOut = 1.0 - smoothstep(0.52, 0.7, uProgress);
-    float embroidery = smoothstep(
-      0.54 + aOrder * 0.27,
-      0.62 + aOrder * 0.27,
-      uProgress
-    );
-    vAlpha = mix(guideIn * guideOut, embroidery, aKind) * (1.0 - uExit * 0.9);
-    vec3 stitched = position;
-    if (aKind > 0.5) {
-      float fold = sin(position.x * 4.8 + position.y * 1.6) * 0.018;
-      stitched.z += fold * (1.0 + uScroll * 0.22);
-      stitched.x += sin(uTime * 0.055 + position.y) * 0.0025;
-    }
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(stitched, 1.0);
-  }
-`;
-
-const lineFragment = /* glsl */ `
-  varying float vAlpha;
-  varying float vKind;
-  void main() {
-    vec3 guide = vec3(0.48, 0.31, 0.16);
-    vec3 zari = vec3(0.63, 0.41, 0.19);
-    vec3 color = mix(guide, zari, vKind);
-    float alpha = vAlpha * mix(0.42, 0.64, vKind);
-    if (alpha < 0.008) discard;
-    gl_FragColor = vec4(color, alpha);
-  }
-`;
-
-const petalVertex = /* glsl */ `
+const handworkVertex = /* glsl */ `
   uniform float uTime;
   uniform float uProgress;
   uniform float uExit;
@@ -389,38 +305,39 @@ const petalVertex = /* glsl */ `
 
   void main() {
     float reveal = smoothstep(
-      0.64 + aOrder * 0.22,
-      0.73 + aOrder * 0.22,
+      0.61 + aOrder * 0.2,
+      0.72 + aOrder * 0.2,
       uProgress
     );
     vAlpha = reveal * (1.0 - uExit * 0.58);
     vIntensity = aIntensity;
     vec3 stitched = position;
-    stitched.z += sin(position.x * 4.8 + position.y * 1.6) *
-      0.018 * (1.0 + uScroll * 0.22);
-    stitched.x += sin(uTime * 0.055 + position.y) * 0.0025;
+    stitched.z += sin(position.x * 4.7 + position.y * 1.8) *
+      0.022 * (1.0 + uScroll * 0.18);
+    stitched.x += sin(uTime * 0.045 + position.y * 1.3) * 0.002;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(stitched, 1.0);
   }
 `;
 
-const petalFragment = /* glsl */ `
+const handworkFragment = /* glsl */ `
   varying float vAlpha;
   varying float vIntensity;
   void main() {
-    vec3 mutedGold = vec3(0.35, 0.19, 0.075);
-    vec3 zariEdge = vec3(0.69, 0.46, 0.2);
-    vec3 color = mix(mutedGold, zariEdge, vIntensity);
-    float alpha = vAlpha * (0.18 + vIntensity * 0.26);
+    vec3 deepZari = vec3(0.38, 0.225, 0.085);
+    vec3 brightZari = vec3(0.76, 0.53, 0.245);
+    vec3 color = mix(deepZari, brightZari, vIntensity);
+    float alpha = vAlpha * (0.28 + vIntensity * 0.48);
     if (alpha < 0.008) discard;
     gl_FragColor = vec4(color, alpha);
   }
 `;
 
-const pointVertex = /* glsl */ `
+const particleVertex = /* glsl */ `
   uniform float uTime;
   uniform float uProgress;
   uniform float uExit;
   uniform float uDpr;
+  uniform float uScroll;
   attribute float aSize;
   attribute float aPhase;
   attribute float aStrength;
@@ -430,55 +347,56 @@ const pointVertex = /* glsl */ `
   varying float vKind;
 
   void main() {
+    float arrival = smoothstep(0.16 + aStrength * 0.12, 0.76, uProgress);
+    float beadArrival = smoothstep(0.65 + aStrength * 0.12, 0.88, uProgress);
+    float pulse = pow(
+      max(0.0, sin(uTime * (0.12 + aStrength * 0.08) + aPhase)),
+      20.0
+    );
     vKind = aKind;
-    float pulse = pow(max(0.0, sin(uTime * (0.16 + aStrength * 0.1) + aPhase)), 18.0);
-    float atmosphere = smoothstep(0.48, 0.82, uProgress);
-    float bead = smoothstep(0.7 + aStrength * 0.13, 0.9, uProgress);
-    float visibility = mix(atmosphere, bead, aKind);
-    vAlpha = visibility * (0.28 + pulse * 0.72) * (1.0 - uExit * 0.45);
-    vRare = step(0.965, aStrength);
+    vRare = step(0.972, aStrength);
+    vAlpha = mix(arrival, beadArrival, aKind) *
+      (0.25 + pulse * 0.75) * (1.0 - uExit * 0.42);
     vec3 point = position;
-    if (aKind < 0.5) {
-      point.y += sin(uTime * 0.025 + aPhase) * 0.014 * aStrength;
-    }
+    point.z += sin(uTime * 0.018 + aPhase) * 0.008 * aStrength;
+    point.x += uScroll * (position.z + 1.5) * 0.006;
     vec4 view = modelViewMatrix * vec4(point, 1.0);
-    gl_PointSize = (aSize + pulse * vRare * 3.1) * uDpr;
+    gl_PointSize = (aSize + pulse * vRare * 3.2) * uDpr;
     gl_Position = projectionMatrix * view;
   }
 `;
 
-const pointFragment = /* glsl */ `
+const particleFragment = /* glsl */ `
   varying float vAlpha;
   varying float vRare;
   varying float vKind;
+
   void main() {
     vec2 p = gl_PointCoord - 0.5;
-    float distanceToCenter = length(p);
-    float pin = 1.0 - smoothstep(0.05, 0.5, distanceToCenter);
-    float horizontal = exp(-abs(p.x) * 34.0) * exp(-abs(p.y) * 5.2);
-    float vertical = exp(-abs(p.y) * 34.0) * exp(-abs(p.x) * 5.2);
+    float radius = length(p);
+    float pin = 1.0 - smoothstep(0.04, 0.5, radius);
+    float horizontal = exp(-abs(p.x) * 36.0) * exp(-abs(p.y) * 5.0);
+    float vertical = exp(-abs(p.y) * 36.0) * exp(-abs(p.x) * 5.0);
     float flare = (horizontal + vertical) * vRare;
-    vec3 dust = vec3(0.72, 0.48, 0.23);
-    vec3 pearl = vec3(0.86, 0.75, 0.59);
+    vec3 dust = vec3(0.71, 0.43, 0.17);
+    vec3 pearl = vec3(0.9, 0.78, 0.58);
     vec3 color = mix(dust, pearl, vKind);
-    float alpha = (pin + flare * 0.42) * vAlpha * mix(0.68, 0.82, vKind);
+    float alpha = (pin + flare * 0.44) * vAlpha * mix(0.66, 0.86, vKind);
     if (alpha < 0.012) discard;
     gl_FragColor = vec4(color, alpha);
   }
 `;
 
-class ProceduralCoutureRenderer implements HeroRenderer {
-  #options: ProceduralCoutureOptions;
+class AtelierGravityRenderer implements HeroRenderer {
+  #options: CoutureSceneOptions;
   #quality: SceneQuality;
   #renderer?: THREE.WebGLRenderer;
   #scene?: THREE.Scene;
   #camera?: THREE.PerspectiveCamera;
   #garment?: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>;
-  #ribbons?: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>;
-  #lines?: THREE.LineSegments<THREE.BufferGeometry, THREE.ShaderMaterial>;
-  #petals?: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>;
-  #points?: THREE.Points<THREE.BufferGeometry, THREE.ShaderMaterial>;
-  #petalSpecs: PetalSpec[] = [];
+  #drapes?: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>;
+  #handwork?: THREE.LineSegments<THREE.BufferGeometry, THREE.ShaderMaterial>;
+  #particles?: THREE.Points<THREE.BufferGeometry, THREE.ShaderMaterial>;
   #events = new AbortController();
   #resizeObserver?: ResizeObserver;
   #frame = 0;
@@ -489,12 +407,12 @@ class ProceduralCoutureRenderer implements HeroRenderer {
   #pointerTarget = new THREE.Vector2();
   #pointerCurrent = new THREE.Vector2();
   #state: HeroState;
-  #paused = false;
+  #paused = true;
   #disposed = false;
   #ready = false;
   #stableFrames = 0;
 
-  constructor(options: ProceduralCoutureOptions) {
+  constructor(options: CoutureSceneOptions) {
     this.#options = options;
     this.#quality = QUALITY[options.tier];
     this.#state = options.portrait ? "THREAD_READY" : "FALLBACK_READY";
@@ -513,12 +431,12 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     try {
       this.#scene = new THREE.Scene();
       this.#camera = new THREE.PerspectiveCamera(
-        this.#options.portrait ? 32 : 34,
+        this.#options.portrait ? 31 : 33,
         1,
         0.1,
         30,
       );
-      this.#camera.position.set(0, this.#options.portrait ? 0.08 : 0.05, 9.1);
+      this.#camera.position.set(0, this.#options.portrait ? 0.02 : 0.06, 9.15);
       this.#renderer = new THREE.WebGLRenderer({
         alpha: true,
         antialias: true,
@@ -533,12 +451,12 @@ class ProceduralCoutureRenderer implements HeroRenderer {
       this.#options.mount.replaceChildren(this.#renderer.domElement);
       this.#createScene();
       this.#bindEvents();
-      this.#measure();
-      this.#renderer.compile(this.#scene, this.#camera);
-      this.#startTime = performance.now() - 2100;
-      this.#onScroll();
+      this.#startTime = performance.now();
+      this.#readScroll(false);
       this.#scrollCurrent = this.#scrollTarget;
       this.#primeStateMachine();
+      this.#measure();
+      this.#renderer.compile(this.#scene, this.#camera);
       this.resume();
     } catch {
       this.#options.onFailure();
@@ -566,10 +484,9 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     this.#options.onPointerOwnershipChange?.(false);
     for (const object of [
       this.#garment,
-      this.#ribbons,
-      this.#lines,
-      this.#petals,
-      this.#points,
+      this.#drapes,
+      this.#handwork,
+      this.#particles,
     ]) {
       object?.geometry.dispose();
       object?.material.dispose();
@@ -582,24 +499,35 @@ class ProceduralCoutureRenderer implements HeroRenderer {
 
   #createScene() {
     if (!this.#scene) return;
-    const shared = {
+    const uniforms = {
       uTime: { value: 0 },
       uProgress: { value: 0 },
-      uCoverage: { value: 0 },
-      uReveal: { value: 0 },
       uExit: { value: 0 },
-      uScroll: { value: 0 },
       uPortrait: { value: this.#options.portrait ? 1 : 0 },
+      uScroll: { value: 0 },
       uPointer: { value: this.#pointerCurrent },
       uDpr: { value: 1 },
     };
+
+    this.#drapes = new THREE.Mesh(
+      this.#buildDrapeGeometry(),
+      new THREE.ShaderMaterial({
+        vertexShader: drapeVertex,
+        fragmentShader: drapeFragment,
+        uniforms,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      }),
+    );
+    this.#drapes.renderOrder = 1;
 
     this.#garment = new THREE.Mesh(
       this.#buildGarmentGeometry(),
       new THREE.ShaderMaterial({
         vertexShader: garmentVertex,
         fragmentShader: garmentFragment,
-        uniforms: shared,
+        uniforms,
         transparent: true,
         depthWrite: false,
         side: THREE.DoubleSide,
@@ -607,84 +535,55 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     );
     this.#garment.renderOrder = 2;
 
-    this.#ribbons = new THREE.Mesh(
-      this.#buildRibbonGeometry(),
+    this.#handwork = new THREE.LineSegments(
+      this.#buildHandworkGeometry(),
       new THREE.ShaderMaterial({
-        vertexShader: ribbonVertex,
-        fragmentShader: ribbonFragment,
-        uniforms: shared,
-        transparent: true,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-      }),
-    );
-    this.#ribbons.renderOrder = 1;
-
-    this.#lines = new THREE.LineSegments(
-      this.#buildLineGeometry(),
-      new THREE.ShaderMaterial({
-        vertexShader: lineVertex,
-        fragmentShader: lineFragment,
-        uniforms: shared,
+        vertexShader: handworkVertex,
+        fragmentShader: handworkFragment,
+        uniforms,
         transparent: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
       }),
     );
-    this.#lines.renderOrder = 3;
+    this.#handwork.renderOrder = 3;
 
-    this.#petals = new THREE.Mesh(
-      this.#buildPetalGeometry(),
+    this.#particles = new THREE.Points(
+      this.#buildParticleGeometry(),
       new THREE.ShaderMaterial({
-        vertexShader: petalVertex,
-        fragmentShader: petalFragment,
-        uniforms: shared,
-        transparent: true,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-        blending: THREE.AdditiveBlending,
-      }),
-    );
-    this.#petals.renderOrder = 3;
-
-    this.#points = new THREE.Points(
-      this.#buildPointGeometry(),
-      new THREE.ShaderMaterial({
-        vertexShader: pointVertex,
-        fragmentShader: pointFragment,
-        uniforms: shared,
+        vertexShader: particleVertex,
+        fragmentShader: particleFragment,
+        uniforms,
         transparent: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
       }),
     );
-    this.#points.renderOrder = 4;
+    this.#particles.renderOrder = 4;
+
     this.#scene.add(
-      this.#ribbons,
+      this.#drapes,
       this.#garment,
-      this.#lines,
-      this.#petals,
-      this.#points,
+      this.#handwork,
+      this.#particles,
     );
   }
 
   #buildGarmentGeometry() {
     const positions: number[] = [];
     const uvs: number[] = [];
-    const panels: number[] = [];
+    const layers: number[] = [];
     const indices: number[] = [];
     const sx = this.#quality.garmentX;
     const sy = this.#quality.garmentY;
-    const panelOrder =
-      this.#quality.panelCount === 5 ? [0, 1, 2, 3, 5] : [0, 1, 3, 4, 2, 5];
 
-    for (const panel of panelOrder) {
+    for (let layer = 0; layer < this.#quality.garmentLayers; layer += 1) {
       const offset = positions.length / 3;
       for (let y = 0; y <= sy; y += 1) {
         for (let x = 0; x <= sx; x += 1) {
           positions.push((x / sx) * 2 - 1, (y / sy) * 2 - 1, 0);
           uvs.push(x / sx, y / sy);
-          panels.push(panel);
+          layers.push(layer);
         }
       }
       for (let y = 0; y < sy; y += 1) {
@@ -701,296 +600,190 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-    geometry.setAttribute("aPanel", new THREE.Float32BufferAttribute(panels, 1));
+    geometry.setAttribute("aLayer", new THREE.Float32BufferAttribute(layers, 1));
     geometry.setIndex(indices);
     geometry.computeBoundingSphere();
     return geometry;
   }
 
-  #buildRibbonGeometry() {
-    const paths = this.#options.portrait
+  #buildDrapeGeometry() {
+    const portrait = this.#options.portrait;
+    const paths = portrait
       ? [
           [
-            [-0.35, -0.65, -0.38],
-            [-1.15, -0.25, -0.42],
-            [-1.65, 0.55, -0.62],
-            [-2.35, 0.15, -0.75],
+            [-0.35, -0.72, -0.42],
+            [-1.02, -0.42, -0.36],
+            [-1.58, 0.38, -0.58],
+            [-2.3, 0.1, -0.9],
           ],
           [
-            [0.42, -0.48, -0.46],
-            [1.05, 0.05, -0.34],
-            [1.6, -0.35, -0.54],
-            [2.25, 0.32, -0.72],
+            [0.44, -0.58, -0.34],
+            [1.08, -0.08, -0.28],
+            [1.56, -0.48, -0.52],
+            [2.26, 0.24, -0.86],
           ],
         ]
       : [
           [
-            [-0.46, -0.68, -0.2],
-            [-1.62, -1.03, 0.04],
-            [-3.2, -0.18, -0.08],
-            [-5.95, -0.82, -0.5],
+            [-0.52, -0.72, -0.22],
+            [-1.8, -1.02, 0.08],
+            [-3.42, -0.12, -0.12],
+            [-6.25, -0.78, -0.62],
           ],
           [
-            [0.48, -0.58, -0.14],
-            [1.88, -0.82, 0.12],
-            [3.52, 0.06, -0.18],
-            [6.1, -0.56, -0.56],
+            [0.5, -0.62, -0.16],
+            [1.92, -0.88, 0.12],
+            [3.62, 0.08, -0.16],
+            [6.35, -0.48, -0.58],
           ],
           [
-            [-0.12, 0.26, -1.08],
-            [-1.38, 1.05, -1.22],
-            [1.74, 0.82, -1.35],
-            [5.45, 1.18, -1.48],
+            [-0.08, 0.32, -1.12],
+            [-1.45, 1.08, -1.24],
+            [1.72, 0.78, -1.38],
+            [5.65, 1.14, -1.5],
           ],
         ];
 
     const positions: number[] = [];
     const uvs: number[] = [];
-    const ribbons: number[] = [];
+    const drapes: number[] = [];
     const indices: number[] = [];
-    const segments = this.#quality.ribbonSegments;
+    const segments = this.#quality.drapeSegments;
+    const bands = this.#quality.drapeBands;
 
-    paths.forEach((controlPoints, ribbonIndex) => {
-      const points = controlPoints.map(
-        ([x, y, z]) => new THREE.Vector3(x, y, z),
+    paths.forEach((controls, drapeIndex) => {
+      const curve = new THREE.CatmullRomCurve3(
+        controls.map(([x, y, z]) => new THREE.Vector3(x, y, z)),
+        false,
+        "centripetal",
       );
-      const curve = new THREE.CatmullRomCurve3(points, false, "centripetal");
       const offset = positions.length / 3;
       for (let segment = 0; segment <= segments; segment += 1) {
         const t = segment / segments;
         const point = curve.getPoint(t);
         const tangent = curve.getTangent(t).normalize();
         const cross = new THREE.Vector3(-tangent.y, tangent.x, 0).normalize();
-        const baseWidth = this.#options.portrait ? 0.34 : 0.48;
+        const baseWidth = portrait ? 0.38 : 0.58;
         const width =
           baseWidth *
-          (0.62 + Math.sin(Math.PI * t) * 0.75) *
-          (1 + ribbonIndex * 0.055);
-        for (const side of [-1, 1]) {
-          const vertex = point.clone().addScaledVector(cross, width * side);
+          (0.54 + Math.sin(Math.PI * t) * 0.9) *
+          (drapeIndex === 2 ? 1.22 : 1);
+        for (let band = 0; band <= bands; band += 1) {
+          const across = band / bands;
+          const signed = across * 2 - 1;
+          const vertex = point.clone().addScaledVector(cross, width * signed);
+          vertex.z += Math.cos(signed * Math.PI) * 0.035;
           positions.push(vertex.x, vertex.y, vertex.z);
-          uvs.push(t, side < 0 ? 0 : 1);
-          ribbons.push(ribbonIndex);
+          uvs.push(t, across);
+          drapes.push(drapeIndex);
         }
       }
       for (let segment = 0; segment < segments; segment += 1) {
-        const a = offset + segment * 2;
-        indices.push(a, a + 2, a + 1, a + 1, a + 2, a + 3);
+        for (let band = 0; band < bands; band += 1) {
+          const a = offset + segment * (bands + 1) + band;
+          const b = a + 1;
+          const c = a + bands + 1;
+          const d = c + 1;
+          indices.push(a, c, b, b, c, d);
+        }
       }
     });
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-    geometry.setAttribute("aRibbon", new THREE.Float32BufferAttribute(ribbons, 1));
+    geometry.setAttribute("aDrape", new THREE.Float32BufferAttribute(drapes, 1));
     geometry.setIndex(indices);
     geometry.computeBoundingSphere();
     return geometry;
   }
 
-  #buildLineGeometry() {
+  #buildHandworkGeometry() {
     const positions: number[] = [];
-    const kinds: number[] = [];
     const orders: number[] = [];
-    const addSegment = (
+    const intensities: number[] = [];
+    const scaleX = this.#options.portrait ? 0.7 : 1;
+    const addDash = (
       a: THREE.Vector3,
       b: THREE.Vector3,
-      kind: number,
       order: number,
+      intensity: number,
     ) => {
       positions.push(a.x, a.y, a.z, b.x, b.y, b.z);
-      kinds.push(kind, kind);
       orders.push(order, order);
-    };
-    const addPath = (path: THREE.Vector3[], kind: number, order: number) => {
-      for (let index = 1; index < path.length; index += 1) {
-        const drawOrder =
-          kind === 1
-            ? order + (index / Math.max(1, path.length - 1)) * 0.075
-            : order;
-        addSegment(path[index - 1]!, path[index]!, kind, drawOrder);
-      }
-    };
-    const sampleSpline = (
-      controls: THREE.Vector3[],
-      divisions = 18,
-      closed = false,
-    ) =>
-      new THREE.CatmullRomCurve3(
-        controls,
-        closed,
-        "centripetal",
-      ).getPoints(divisions);
-
-    const scaleX = this.#options.portrait ? 0.68 : 1;
-    const silhouette = (side: -1 | 1) =>
-      Array.from({ length: 34 }, (_, index) => {
-        const y = 0.12 + (index / 33) * 0.83;
-        return new THREE.Vector3(
-          side * this.#garmentWidth(y) * 1.75 * scaleX,
-          (y - 0.5) * (this.#options.portrait ? 5.12 : 4.92) - 0.1,
-          0.31,
-        );
-      });
-    addPath(silhouette(-1), 0, 0.13);
-    addPath(silhouette(1), 0, 0.13);
-    addPath(
-      [
-        new THREE.Vector3(-0.22 * scaleX, 1.72, 0.32),
-        new THREE.Vector3(0, 1.42, 0.34),
-        new THREE.Vector3(0.24 * scaleX, 1.72, 0.32),
-      ],
-      0,
-      0.02,
-    );
-    addPath(
-      [
-        new THREE.Vector3(-0.56 * scaleX, 0.45, 0.32),
-        new THREE.Vector3(0, 0.24, 0.34),
-        new THREE.Vector3(0.58 * scaleX, 0.45, 0.32),
-      ],
-      0,
-      0.21,
-    );
-    addPath(
-      [
-        new THREE.Vector3(-0.52 * scaleX, 1.05, 0.33),
-        new THREE.Vector3(0.48 * scaleX, -1.45, 0.35),
-      ],
-      0,
-      0.3,
-    );
-    addPath(
-      [
-        new THREE.Vector3(0.52 * scaleX, 1.05, 0.33),
-        new THREE.Vector3(-0.44 * scaleX, -1.55, 0.35),
-      ],
-      0,
-      0.34,
-    );
-
-    const motifCount = this.#quality.embroideryMotifs;
-    const clothPoint = (x: number, y: number, lift = 0) =>
-      new THREE.Vector3(
-        x,
-        y,
-        0.375 + Math.sin(x * 2.8 + y * 1.7) * 0.022 + lift,
-      );
-    const addLeaf = (
-      anchor: THREE.Vector3,
-      angle: number,
-      length: number,
-      width: number,
-      order: number,
-    ) => {
-      const axis = new THREE.Vector2(Math.cos(angle), Math.sin(angle));
-      const normal = new THREE.Vector2(-axis.y, axis.x);
-      const leaf = Array.from({ length: 17 }, (_, index) => {
-        const theta = (index / 16) * Math.PI * 2;
-        const along = length * (0.5 - 0.5 * Math.cos(theta));
-        const across = width * Math.sin(theta) * Math.sin(theta * 0.5);
-        return clothPoint(
-          anchor.x + axis.x * along + normal.x * across,
-          anchor.y + axis.y * along + normal.y * across,
-          0.004,
-        );
-      });
-      addPath(leaf, 1, order);
-    };
-    const addFlower = (
-      center: THREE.Vector3,
-      petalCount: number,
-      radius: number,
-      rotation: number,
-      order: number,
-    ) => {
-      for (let petal = 0; petal < petalCount; petal += 1) {
-        const angle = rotation + (petal / petalCount) * Math.PI * 2;
-        this.#petalSpecs.push({
-          center: center.clone(),
-          angle:
-            angle +
-            (this.#seed(petal * 47 + Math.round(center.y * 31)) - 0.5) * 0.12,
-          length:
-            radius *
-            (0.88 + this.#seed(petal * 53 + Math.round(center.x * 37)) * 0.24),
-          width:
-            radius *
-            (0.26 + this.#seed(petal * 59 + Math.round(center.y * 41)) * 0.12),
-          order: order + petal * 0.008,
-          intensity:
-            0.34 +
-            this.#seed(petal * 61 + Math.round((center.x + center.y) * 43)) *
-              0.52,
-        });
-      }
+      intensities.push(intensity, intensity);
     };
 
-    for (let motif = 0; motif < motifCount; motif += 1) {
-      const seed = this.#seed(motif + 17);
-      const density = motif / Math.max(1, motifCount - 1);
-      const lowerBias = Math.pow(seed, 1.55);
-      const baseY = -2.08 + lowerBias * 2.45;
-      const availableWidth = 1.16 - (baseY + 2.08) * 0.29;
-      const side = motif % 2 === 0 ? -1 : 1;
-      const baseX =
+    for (let cluster = 0; cluster < this.#quality.handworkClusters; cluster += 1) {
+      const seed = this.#seed(cluster * 17 + 5);
+      const side = cluster % 2 === 0 ? -1 : 1;
+      const y = -2.12 + Math.pow(seed, 1.7) * 1.95;
+      const widthAtY = 1.18 - (y + 2.12) * 0.34;
+      const x =
         side *
-        (0.12 + this.#seed(motif * 7 + 3) * Math.max(0.2, availableWidth)) *
+        (0.18 + this.#seed(cluster * 23 + 9) * Math.max(0.18, widthAtY)) *
         scaleX;
-      const height =
-        (0.34 + this.#seed(motif * 11 + 5) * 0.3) *
-        (this.#options.portrait ? 1.16 : 1);
-      const lean = (this.#seed(motif * 13 + 7) - 0.5) * 0.24 * scaleX;
-      const order = density * 0.68;
-      const stemControls = [
-        clothPoint(baseX, baseY),
-        clothPoint(baseX - lean * 0.34, baseY + height * 0.28),
-        clothPoint(baseX + lean * 0.5, baseY + height * 0.66),
-        clothPoint(baseX + lean, baseY + height),
-      ];
-      const stem = sampleSpline(stemControls, 22);
-      addPath(stem, 1, order);
-
-      const motifType = motif % 4;
-      const leafFractions =
-        motifType === 2 ? [0.3, 0.56, 0.77] : [0.24, 0.48, 0.7];
-      leafFractions.forEach((fraction, leafIndex) => {
-        const anchor = stem[Math.round(fraction * (stem.length - 1))]!;
-        const direction = (leafIndex + motif) % 2 === 0 ? -1 : 1;
-        const angle =
-          Math.PI * 0.5 +
-          direction * (0.58 + this.#seed(motif * 31 + leafIndex) * 0.32);
-        addLeaf(
-          anchor,
-          angle,
-          (0.105 + this.#seed(motif * 19 + leafIndex) * 0.055) * scaleX,
-          0.034 * scaleX,
-          order + 0.09 + leafIndex * 0.016,
-        );
-      });
-
-      const flowerCenter = stem[stem.length - 1]!;
-      if (motifType !== 2) {
-        addFlower(
-          flowerCenter,
-          motifType === 1 ? 4 : 5,
-          (0.075 + this.#seed(motif * 37) * 0.025) * scaleX,
-          this.#seed(motif * 41) * Math.PI,
-          order + 0.16,
-        );
-      } else {
-        for (let bud = 0; bud < 3; bud += 1) {
-          const budAnchor = clothPoint(
-            flowerCenter.x + (bud - 1) * 0.065 * scaleX,
-            flowerCenter.y + Math.abs(bud - 1) * 0.035,
-            0.006,
+      const height = 0.24 + this.#seed(cluster * 29 + 3) * 0.38;
+      const lean = (this.#seed(cluster * 31 + 7) - 0.5) * 0.22 * scaleX;
+      const curve = new THREE.CatmullRomCurve3(
+        [
+          new THREE.Vector3(x, y, 0.42),
+          new THREE.Vector3(x - lean * 0.35, y + height * 0.3, 0.43),
+          new THREE.Vector3(x + lean * 0.55, y + height * 0.68, 0.425),
+          new THREE.Vector3(x + lean, y + height, 0.43),
+        ],
+        false,
+        "centripetal",
+      );
+      const stitches = 8 + Math.floor(this.#seed(cluster * 37) * 7);
+      const order = cluster / Math.max(1, this.#quality.handworkClusters - 1);
+      for (let stitch = 0; stitch < stitches; stitch += 1) {
+        const t = (stitch + 0.35) / stitches;
+        const point = curve.getPoint(t);
+        const tangent = curve.getTangent(t).normalize();
+        const length =
+          (0.018 + this.#seed(cluster * 101 + stitch) * 0.022) * scaleX;
+        const lateral = new THREE.Vector3(-tangent.y, tangent.x, 0)
+          .normalize()
+          .multiplyScalar(
+            (this.#seed(cluster * 109 + stitch) - 0.5) * 0.012 * scaleX,
           );
-          addLeaf(
-            budAnchor,
-            Math.PI * 0.5 + (bud - 1) * 0.34,
-            0.075 * scaleX,
-            0.024 * scaleX,
-            order + 0.15 + bud * 0.012,
+        addDash(
+          point.clone().add(lateral).addScaledVector(tangent, -length * 0.5),
+          point.clone().add(lateral).addScaledVector(tangent, length * 0.5),
+          order + t * 0.08,
+          0.24 + this.#seed(cluster * 107 + stitch) * 0.72,
+        );
+      }
+
+      const branchCount = cluster % 3 === 0 ? 3 : 2;
+      for (let branch = 0; branch < branchCount; branch += 1) {
+        const t = 0.28 + branch * 0.22;
+        const anchor = curve.getPoint(t);
+        const tangent = curve.getTangent(t).normalize();
+        const direction = (branch + cluster) % 2 === 0 ? -1 : 1;
+        const normal = new THREE.Vector3(-tangent.y, tangent.x, 0)
+          .normalize()
+          .multiplyScalar(direction);
+        const tip = anchor
+          .clone()
+          .addScaledVector(normal, (0.07 + branch * 0.012) * scaleX)
+          .addScaledVector(tangent, 0.035);
+        const branchCurve = new THREE.QuadraticBezierCurve3(
+          anchor,
+          anchor
+            .clone()
+            .lerp(tip, 0.5)
+            .addScaledVector(normal, 0.025 * scaleX),
+          tip,
+        );
+        const branchPoints = branchCurve.getPoints(4);
+        for (let index = 1; index < branchPoints.length; index += 1) {
+          addDash(
+            branchPoints[index - 1]!,
+            branchPoints[index]!,
+            order + 0.1 + branch * 0.02,
+            0.3 + this.#seed(cluster * 113 + branch) * 0.5,
           );
         }
       }
@@ -998,70 +791,16 @@ class ProceduralCoutureRenderer implements HeroRenderer {
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-    geometry.setAttribute("aKind", new THREE.Float32BufferAttribute(kinds, 1));
     geometry.setAttribute("aOrder", new THREE.Float32BufferAttribute(orders, 1));
-    geometry.computeBoundingSphere();
-    return geometry;
-  }
-
-  #buildPetalGeometry() {
-    const positions: number[] = [];
-    const orders: number[] = [];
-    const intensities: number[] = [];
-    const indices: number[] = [];
-    const boundarySegments = 16;
-
-    for (const spec of this.#petalSpecs) {
-      const offset = positions.length / 3;
-      const axis = new THREE.Vector2(
-        Math.cos(spec.angle),
-        Math.sin(spec.angle),
-      );
-      const normal = new THREE.Vector2(-axis.y, axis.x);
-      const centerX = spec.center.x + axis.x * spec.length * 0.43;
-      const centerY = spec.center.y + axis.y * spec.length * 0.43;
-      positions.push(centerX, centerY, spec.center.z + 0.011);
-      orders.push(spec.order);
-      intensities.push(spec.intensity);
-
-      for (let segment = 0; segment <= boundarySegments; segment += 1) {
-        const theta = (segment / boundarySegments) * Math.PI * 2;
-        const along = spec.length * (0.5 - 0.5 * Math.cos(theta));
-        const taper = Math.pow(Math.max(0, Math.sin(theta * 0.5)), 0.72);
-        const across = spec.width * Math.sin(theta) * taper;
-        positions.push(
-          spec.center.x + axis.x * along + normal.x * across,
-          spec.center.y + axis.y * along + normal.y * across,
-          spec.center.z + 0.012,
-        );
-        orders.push(spec.order);
-        intensities.push(spec.intensity);
-      }
-
-      for (let segment = 0; segment < boundarySegments; segment += 1) {
-        indices.push(offset, offset + segment + 1, offset + segment + 2);
-      }
-    }
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(positions, 3),
-    );
-    geometry.setAttribute(
-      "aOrder",
-      new THREE.Float32BufferAttribute(orders, 1),
-    );
     geometry.setAttribute(
       "aIntensity",
       new THREE.Float32BufferAttribute(intensities, 1),
     );
-    geometry.setIndex(indices);
     geometry.computeBoundingSphere();
     return geometry;
   }
 
-  #buildPointGeometry() {
+  #buildParticleGeometry() {
     const positions: number[] = [];
     const sizes: number[] = [];
     const phases: number[] = [];
@@ -1069,45 +808,39 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     const kinds: number[] = [];
     const portrait = this.#options.portrait;
 
-    for (let index = 0; index < this.#quality.particleCount; index += 1) {
-      const xSeed = this.#seed(index * 5 + 1);
-      const ySeed = this.#seed(index * 7 + 2);
+    for (let index = 0; index < this.#quality.particles; index += 1) {
+      const xSeed = this.#seed(index * 7 + 1);
+      const ySeed = this.#seed(index * 11 + 2);
       const side = index % 2 === 0 ? -1 : 1;
-      const clustered = index % 5 !== 0;
-      const xRange = portrait ? 2.15 : 5.75;
-      const radial = clustered
-        ? (portrait ? 0.64 : 1.15) + xSeed * (portrait ? 1.15 : 2.55)
-        : (portrait ? 0.3 : 0.8) + xSeed * xRange;
-      const x = side * radial + Math.sin(index * 1.73) * 0.12;
-      const y = -2.15 + ySeed * 4.35;
-      const quiet = Math.abs(x) < (portrait ? 0.7 : 1.25) && y > -0.7 && y < 1.2;
-      positions.push(x, y, -0.18 - (index % 5) * 0.09);
-      sizes.push((quiet ? 0.6 : 1) * (0.72 + this.#seed(index * 13) * 1.35));
+      const xRange = portrait ? 2.2 : 6.0;
+      const clustered = index % 6 !== 0;
+      const radius = clustered
+        ? (portrait ? 0.62 : 1.2) + xSeed * (portrait ? 1.25 : 2.7)
+        : 0.25 + xSeed * xRange;
+      const x = side * radius + Math.sin(index * 1.71) * 0.1;
+      const y = -2.2 + ySeed * 4.45;
+      const quiet = Math.abs(x) < (portrait ? 0.68 : 1.35) && y > -0.7 && y < 1.15;
+      positions.push(x, y, -0.22 - (index % 7) * 0.08);
+      sizes.push((quiet ? 0.45 : 1) * (0.66 + this.#seed(index * 13) * 1.35));
       phases.push(this.#seed(index * 17) * Math.PI * 2);
-      strengths.push(this.#seed(index * 23));
+      strengths.push(this.#seed(index * 19));
       kinds.push(0);
     }
 
-    const beadCount = portrait ? 76 : 148;
-    const scaleX = portrait ? 0.68 : 1;
-    for (let index = 0; index < beadCount; index += 1) {
-      const seed = this.#seed(index * 29 + 9);
-      const y = 0.08 + seed * 0.44;
-      const side = index % 3 === 0 ? -1 : index % 3 === 1 ? 1 : 0.18;
+    const scaleX = portrait ? 0.7 : 1;
+    for (let index = 0; index < this.#quality.beads; index += 1) {
+      const ySeed = this.#seed(index * 31 + 4);
+      const y = -2.05 + Math.pow(ySeed, 1.6) * 2.15;
+      const available = Math.max(0.2, 1.22 - (y + 2.05) * 0.35);
+      const side = index % 2 === 0 ? -1 : 1;
       const x =
         side *
-        this.#garmentWidth(y) *
-        (0.18 + this.#seed(index * 31) * 0.62) *
-        1.55 *
+        (0.12 + this.#seed(index * 37 + 2) * available) *
         scaleX;
-      positions.push(
-        x + Math.sin(index * 2.1) * 0.045,
-        (y - 0.5) * (portrait ? 5.12 : 4.92) - 0.1,
-        0.41,
-      );
-      sizes.push(1.05 + this.#seed(index * 37) * 1.1);
-      phases.push(this.#seed(index * 41) * Math.PI * 2);
-      strengths.push(this.#seed(index * 43));
+      positions.push(x, y, 0.46);
+      sizes.push(0.95 + this.#seed(index * 41) * 1.2);
+      phases.push(this.#seed(index * 43) * Math.PI * 2);
+      strengths.push(this.#seed(index * 47));
       kinds.push(1);
     }
 
@@ -1115,21 +848,13 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute("aSize", new THREE.Float32BufferAttribute(sizes, 1));
     geometry.setAttribute("aPhase", new THREE.Float32BufferAttribute(phases, 1));
-    geometry.setAttribute("aStrength", new THREE.Float32BufferAttribute(strengths, 1));
+    geometry.setAttribute(
+      "aStrength",
+      new THREE.Float32BufferAttribute(strengths, 1),
+    );
     geometry.setAttribute("aKind", new THREE.Float32BufferAttribute(kinds, 1));
     geometry.computeBoundingSphere();
     return geometry;
-  }
-
-  #garmentWidth(y: number) {
-    const smooth = (start: number, end: number, value: number) => {
-      const n = Math.max(0, Math.min(1, (value - start) / (end - start)));
-      return n * n * (3 - 2 * n);
-    };
-    if (y < 0.47) return THREE.MathUtils.lerp(1.42, 0.59, smooth(0.02, 0.47, y));
-    if (y < 0.61) return THREE.MathUtils.lerp(0.59, 0.335, smooth(0.47, 0.61, y));
-    if (y < 0.83) return THREE.MathUtils.lerp(0.335, 0.53, smooth(0.61, 0.83, y));
-    return THREE.MathUtils.lerp(0.53, 0.365, smooth(0.83, 1, y));
   }
 
   #seed(value: number) {
@@ -1139,7 +864,10 @@ class ProceduralCoutureRenderer implements HeroRenderer {
 
   #bindEvents() {
     const signal = this.#events.signal;
-    window.addEventListener("scroll", this.#onScroll, { passive: true, signal });
+    window.addEventListener("scroll", this.#onScroll, {
+      passive: true,
+      signal,
+    });
     window.addEventListener(
       "pointermove",
       (event) => {
@@ -1153,10 +881,14 @@ class ProceduralCoutureRenderer implements HeroRenderer {
       },
       { passive: true, signal },
     );
-    window.addEventListener("pointerleave", () => {
-      this.#pointerTarget.set(0, 0);
-      this.#options.onPointerOwnershipChange?.(false);
-    }, { signal });
+    window.addEventListener(
+      "pointerleave",
+      () => {
+        this.#pointerTarget.set(0, 0);
+        this.#options.onPointerOwnershipChange?.(false);
+      },
+      { signal },
+    );
     window.addEventListener("orientationchange", this.#onOrientation, { signal });
     this.#renderer?.domElement.addEventListener(
       "webglcontextlost",
@@ -1179,24 +911,24 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     }
   };
 
+  #readScroll(schedule = true) {
+    const rect = this.#options.root.getBoundingClientRect();
+    const travel = Math.max(1, this.#options.root.offsetHeight - innerHeight);
+    this.#scrollTarget = THREE.MathUtils.clamp(-rect.top / travel, 0, 1);
+    if (schedule) this.#schedule();
+  }
+
+  #onScroll = () => this.#readScroll();
+
   #primeStateMachine() {
     this.#options.onStateChange("THREADS_ENTER");
     this.#state = "THREADS_ENTER";
-    const initialProgress = this.#options.portrait
-      ? this.#scrollCurrent
-      : 0.18 + this.#scrollCurrent * 0.82;
-    if (initialProgress >= 0.12) {
+    const initial = 0.14 + this.#scrollCurrent * 0.86;
+    if (initial >= 0.2) {
       this.#options.onStateChange("WEAVE_FORM");
       this.#state = "WEAVE_FORM";
     }
   }
-
-  #onScroll = () => {
-    const rect = this.#options.root.getBoundingClientRect();
-    const travel = Math.max(1, this.#options.root.offsetHeight - innerHeight);
-    this.#scrollTarget = THREE.MathUtils.clamp(-rect.top / travel, 0, 1);
-    this.#schedule();
-  };
 
   #measure() {
     if (!this.#renderer || !this.#camera) return;
@@ -1207,7 +939,7 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     this.#renderer.setSize(width, height, false);
     this.#camera.aspect = width / height;
     this.#camera.updateProjectionMatrix();
-    if (this.#points) this.#points.material.uniforms.uDpr.value = dpr;
+    if (this.#particles) this.#particles.material.uniforms.uDpr!.value = dpr;
     this.#schedule();
   }
 
@@ -1225,40 +957,32 @@ class ProceduralCoutureRenderer implements HeroRenderer {
       !this.#scene ||
       !this.#camera ||
       !this.#garment ||
-      !this.#ribbons ||
-      !this.#lines ||
-      !this.#petals ||
-      !this.#points
+      !this.#drapes ||
+      !this.#handwork ||
+      !this.#particles
     ) {
       return;
     }
 
-    const elapsed = (now - this.#startTime) / 1000;
-    const intro = THREE.MathUtils.clamp(elapsed / 2.1, 0, 1);
     const deltaSeconds =
       this.#lastFrame === 0
         ? 1 / 60
         : Math.min(0.05, Math.max(0.001, (now - this.#lastFrame) / 1000));
     this.#lastFrame = now;
-    const scrollResponse = 1 - Math.exp(-deltaSeconds * 22);
+    const response = 1 - Math.exp(-deltaSeconds * 22);
     this.#scrollCurrent +=
-      (this.#scrollTarget - this.#scrollCurrent) * scrollResponse;
-    this.#pointerCurrent.lerp(this.#pointerTarget, 0.045);
-    const progress = this.#options.portrait
-      ? this.#scrollCurrent
-      : THREE.MathUtils.clamp(intro * 0.18 + this.#scrollCurrent * 0.82, 0, 1);
-    const exit = this.#smoothRange(0.94, 0.995, this.#scrollCurrent);
-    const coverage = this.#smoothRange(
-      this.#options.portrait ? 0.035 : 0.08,
-      this.#options.portrait ? 0.58 : 0.54,
-      progress,
-    );
+      (this.#scrollTarget - this.#scrollCurrent) * response;
+    this.#pointerCurrent.lerp(this.#pointerTarget, 0.05);
 
+    const progress = THREE.MathUtils.clamp(
+      0.22 + this.#scrollCurrent * 0.78,
+      0,
+      1,
+    );
+    const exit = this.#smoothRange(0.95, 0.998, this.#scrollCurrent);
     const uniforms = this.#garment.material.uniforms;
-    uniforms.uTime!.value = elapsed;
+    uniforms.uTime!.value = (now - this.#startTime) / 1000;
     uniforms.uProgress!.value = progress;
-    uniforms.uCoverage!.value = coverage;
-    uniforms.uReveal!.value = progress;
     uniforms.uExit!.value = exit;
     uniforms.uScroll!.value = this.#scrollCurrent;
 
@@ -1272,22 +996,22 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     }
 
     this.#updateState(progress, exit);
-    const smoothing =
-      Math.abs(this.#scrollTarget - this.#scrollCurrent) > 0.001 ||
+    const moving =
+      Math.abs(this.#scrollTarget - this.#scrollCurrent) > 0.0008 ||
       this.#pointerCurrent.distanceToSquared(this.#pointerTarget) > 0.00001;
-    if (!this.#ready || intro < 1 || smoothing || (progress > 0.48 && exit < 1)) {
+    if (!this.#ready || moving || (progress > 0.18 && exit < 1)) {
       this.#schedule();
     }
   };
 
   #updateState(progress: number, exit: number) {
     let next: HeroState;
-    if (exit > 0.64) next = "SECTION_HANDOFF";
+    if (exit > 0.66) next = "SECTION_HANDOFF";
     else if (exit > 0.02) next = "UNRAVEL";
-    else if (progress >= 0.88) next = "IDLE_BREATH";
-    else if (progress >= 0.72) next = "MOTIF_EMERGE";
+    else if (progress >= 0.86) next = "IDLE_BREATH";
+    else if (progress >= 0.68) next = "MOTIF_EMERGE";
     else if (progress >= 0.42) next = "COUTURE_FORM";
-    else if (progress >= 0.12) next = "WEAVE_FORM";
+    else if (progress >= 0.2) next = "WEAVE_FORM";
     else next = "THREADS_ENTER";
     if (next === this.#state) return;
     this.#state = next;
@@ -1295,17 +1019,17 @@ class ProceduralCoutureRenderer implements HeroRenderer {
   }
 
   #smoothRange(start: number, end: number, value: number) {
-    const n = THREE.MathUtils.clamp(
+    const normalized = THREE.MathUtils.clamp(
       (value - start) / Math.max(0.0001, end - start),
       0,
       1,
     );
-    return n * n * (3 - 2 * n);
+    return normalized * normalized * (3 - 2 * normalized);
   }
 }
 
 export function createProceduralCouture(
-  options: ProceduralCoutureOptions,
+  options: CoutureSceneOptions,
 ): HeroRenderer {
-  return new ProceduralCoutureRenderer(options);
+  return new AtelierGravityRenderer(options);
 }
