@@ -1,74 +1,118 @@
-<div class="loom-visual" data-hero-fallback aria-hidden="true">
-  <picture class="loom-visual__master loom-visual__master--base">
-    <source
-      media="(max-width: 700px), (orientation: portrait)"
-      type="image/avif"
-      srcset="/images/hero/living-loom-mobile-master.avif"
-    />
-    <source
-      media="(max-width: 700px), (orientation: portrait)"
-      type="image/webp"
-      srcset="/images/hero/living-loom-mobile-master.webp"
-    />
-    <source type="image/avif" srcset="/images/hero/living-loom-desktop-master.avif" />
-    <img
-      src="/images/hero/living-loom-desktop-master.webp"
-      width="1672"
-      height="941"
-      alt=""
-      fetchpriority="high"
-      decoding="async"
-    />
-  </picture>
-
-  <picture class="loom-visual__master loom-visual__master--light">
-    <source
-      media="(max-width: 700px), (orientation: portrait)"
-      type="image/avif"
-      srcset="/images/hero/living-loom-mobile-master.avif"
-    />
-    <source
-      media="(max-width: 700px), (orientation: portrait)"
-      type="image/webp"
-      srcset="/images/hero/living-loom-mobile-master.webp"
-    />
-    <source type="image/avif" srcset="/images/hero/living-loom-desktop-master.avif" />
-    <img
-      src="/images/hero/living-loom-desktop-master.webp"
-      width="1672"
-      height="941"
-      alt=""
-      decoding="async"
-    />
-  </picture>
-
+<div class="loom-fallback" data-hero-fallback aria-hidden="true">
   <svg
-    class="loom-visual__construction"
-    viewBox="0 0 430 932"
+    class="loom-fallback__scene"
+    viewBox="0 0 1600 1000"
     preserveAspectRatio="xMidYMid slice"
     focusable="false"
   >
-    <path class="loom-visual__stitch" d="M216 236 C192 276 243 303 211 354" />
-    <g class="loom-visual__structure">
-      <path d="M216 224 C177 244 175 322 160 388 C143 470 116 610 88 828" />
-      <path d="M216 224 C255 244 255 322 270 388 C287 470 314 610 342 828" />
-      <path d="M171 335 C194 355 237 355 259 335" />
-      <path d="M160 388 C196 407 236 407 270 388" />
+    <defs>
+      <radialGradient id="fallback-ambient" cx="50%" cy="42%" r="54%">
+        <stop stop-color="#25140c" stop-opacity=".48" />
+        <stop offset=".48" stop-color="#0b0604" stop-opacity=".35" />
+        <stop offset="1" stop-color="#000" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="fallback-silk" x1=".08" y1=".1" x2=".86" y2=".92">
+        <stop stop-color="#020202" />
+        <stop offset=".22" stop-color="#160b07" />
+        <stop offset=".34" stop-color="#050303" />
+        <stop offset=".51" stop-color="#382015" />
+        <stop offset=".59" stop-color="#080504" />
+        <stop offset=".78" stop-color="#1c0e09" />
+        <stop offset="1" stop-color="#010101" />
+      </linearGradient>
+      <linearGradient id="fallback-veil" x1="0" y1=".2" x2="1" y2=".75">
+        <stop stop-color="#020202" stop-opacity="0" />
+        <stop offset=".43" stop-color="#3a2116" stop-opacity=".28" />
+        <stop offset=".52" stop-color="#b0783d" stop-opacity=".34" />
+        <stop offset=".61" stop-color="#160b07" stop-opacity=".18" />
+        <stop offset="1" stop-color="#000" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="fallback-zari" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="#6f4824" />
+        <stop offset=".48" stop-color="#c69755" />
+        <stop offset="1" stop-color="#4d2d17" />
+      </linearGradient>
+      <filter id="fallback-glow" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <clipPath id="fallback-gown">
+        <path d="M800 118 C755 118 726 153 720 205 C714 258 738 295 706 354 C682 399 632 438 592 514 C542 608 500 729 430 903 C559 947 675 965 800 966 C927 965 1046 946 1178 900 C1107 728 1065 605 1013 512 C971 436 920 397 895 353 C863 295 888 257 881 205 C875 153 847 118 800 118Z" />
+      </clipPath>
+    </defs>
+
+    <rect width="1600" height="1000" fill="#000" />
+    <rect width="1600" height="1000" fill="url(#fallback-ambient)" />
+
+    <g class="loom-fallback__ribbons">
+      <path d="M-90 550 C180 408 275 608 506 568 C661 541 697 420 782 362 C643 526 537 682 286 700 C126 711 35 657-90 739Z" />
+      <path d="M-70 805 C189 674 356 804 590 671 C680 620 735 526 790 443 C718 659 579 829 313 880 C152 911 49 879-70 918Z" opacity=".68" />
+      <path d="M1690 486 C1418 369 1304 604 1082 557 C946 528 906 423 824 358 C966 528 1083 691 1325 680 C1487 673 1577 590 1690 639Z" opacity=".88" />
+      <path d="M1670 828 C1430 680 1265 818 1036 674 C944 616 893 529 831 448 C908 669 1046 837 1310 889 C1473 921 1567 890 1670 940Z" opacity=".58" />
     </g>
-    <g class="loom-visual__connections">
-      <path d="M180 268 C208 312 230 330 256 375" />
-      <path d="M251 267 C223 314 203 333 174 380" />
-      <path d="M163 388 C204 450 238 505 302 670" />
-      <path d="M268 388 C228 456 197 518 124 694" />
+
+    <g clip-path="url(#fallback-gown)">
+      <rect x="400" y="104" width="800" height="880" fill="url(#fallback-silk)" />
+      <g class="loom-fallback__folds">
+        <path d="M556 930 C636 707 666 467 756 148" />
+        <path d="M685 963 C721 706 748 481 783 123" />
+        <path d="M813 973 C813 705 816 474 812 121" />
+        <path d="M939 958 C887 708 862 477 841 143" />
+        <path d="M1070 917 C978 707 943 476 870 181" />
+      </g>
+    </g>
+
+    <path
+      class="loom-fallback__rim"
+      d="M800 118 C755 118 726 153 720 205 C714 258 738 295 706 354 C682 399 632 438 592 514 C542 608 500 729 430 903 M800 118 C847 118 875 153 881 205 C888 257 863 295 895 353 C920 397 971 436 1013 512 C1065 605 1107 728 1178 900"
+    />
+
+    <g class="loom-fallback__embroidery">
+      <path d="M702 846 C758 799 715 740 768 697 C811 661 777 604 824 565" />
+      <path d="M758 790 C727 779 711 761 708 739 M755 774 C783 759 799 740 801 719" />
+      <path d="M775 689 C745 675 734 655 733 636 M799 652 C826 640 841 620 842 598" />
+      <path d="M843 852 C891 810 860 758 902 717 M884 780 C913 768 929 748 930 727" />
+      <path d="M655 890 C623 859 628 824 657 806 M644 836 C614 825 599 806 599 787" />
+      <g class="loom-fallback__flowers">
+        <circle cx="758" cy="790" r="5" />
+        <circle cx="775" cy="689" r="4" />
+        <circle cx="843" cy="852" r="5" />
+        <circle cx="655" cy="890" r="4" />
+      </g>
+    </g>
+
+    <g class="loom-fallback__dust">
+      {
+        Array.from({ length: 110 }, (_, index) => {
+          const x = 70 + ((index * 137) % 1460);
+          const y = 128 + ((index * 83) % 760);
+          const nearCenter = Math.abs(x - 800) < 260 && y > 360 && y < 690;
+          const radius = index % 31 === 0 ? 2.1 : .45 + (index % 4) * .18;
+          return (
+            <circle
+              cx={x}
+              cy={y}
+              r={radius}
+              opacity={nearCenter ? .16 : .24 + (index % 5) * .08}
+            />
+          );
+        })
+      }
+    </g>
+    <g class="loom-fallback__flares" filter="url(#fallback-glow)">
+      <path d="M292 482 H318 M305 469 V495" />
+      <path d="M1267 395 H1295 M1281 381 V409" />
+      <path d="M1080 726 H1100 M1090 716 V736" />
     </g>
   </svg>
-
-  <div class="loom-visual__warmth"></div>
-  <div class="loom-visual__vignette"></div>
+  <div class="loom-fallback__vignette"></div>
 </div>
 
 <style>
-  .loom-visual {
+  .loom-fallback {
     position: absolute;
     inset: 0;
     overflow: hidden;
@@ -77,137 +121,87 @@
     user-select: none;
   }
 
-  .loom-visual__master,
-  .loom-visual__warmth,
-  .loom-visual__vignette,
-  .loom-visual__construction {
+  .loom-fallback__scene,
+  .loom-fallback__vignette {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
   }
 
-  .loom-visual__master {
-    display: block;
-    opacity: var(--hero-master-opacity, .08);
-    transform:
-      translate3d(var(--hero-master-x, 0px), var(--hero-master-y, 0px), 0)
-      scale(var(--hero-master-scale, 1.035));
-    transform-origin: 50% 52%;
-    transition: opacity 180ms linear;
-    will-change: opacity, transform, filter;
+  .loom-fallback__ribbons {
+    fill: url("#fallback-veil");
+    stroke: rgba(174, 113, 57, .15);
+    stroke-width: 1.2;
   }
 
-  .loom-visual__master img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 50%;
-    filter: brightness(var(--hero-master-brightness, .28)) saturate(.93);
-    transform: translateY(4.2%);
-  }
-
-  .loom-visual__master--light {
-    opacity: var(--hero-light-opacity, .02);
-    mix-blend-mode: screen;
-    mask-image: linear-gradient(
-      112deg,
-      transparent 20%,
-      rgba(0, 0, 0, .2) 42%,
-      #000 50%,
-      rgba(0, 0, 0, .14) 58%,
-      transparent 78%
-    );
-    transform:
-      translate3d(calc(var(--hero-master-x, 0px) * -.45), var(--hero-master-y, 0px), 0)
-      scale(calc(var(--hero-master-scale, 1.035) * 1.008));
-  }
-
-  .loom-visual__construction {
-    display: none;
+  .loom-fallback__folds {
     fill: none;
-    stroke: rgba(219, 165, 91, .74);
-    stroke-width: .7;
-    opacity: max(
-      var(--hero-construction-opacity, 0),
-      var(--hero-stitch-opacity, 0)
-    );
-    filter: drop-shadow(0 0 5px rgba(203, 146, 72, .24));
+    stroke: rgba(217, 160, 94, .115);
+    stroke-linecap: round;
+    stroke-width: 72;
   }
 
-  .loom-visual__construction path {
-    vector-effect: non-scaling-stroke;
+  .loom-fallback__rim {
+    fill: none;
+    stroke: url("#fallback-zari");
+    stroke-linecap: round;
+    stroke-width: 1.5;
+    opacity: .52;
   }
 
-  .loom-visual__stitch {
-    opacity: var(--hero-stitch-opacity, 0);
-    stroke-width: 1.1;
+  .loom-fallback__embroidery {
+    fill: none;
+    stroke: url("#fallback-zari");
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+    opacity: .64;
   }
 
-  .loom-visual__structure {
-    opacity: calc(var(--hero-construction-opacity, 0) * .72);
+  .loom-fallback__flowers {
+    fill: #b78549;
+    stroke: #e0b06a;
+    stroke-width: 1;
   }
 
-  .loom-visual__connections {
-    opacity: calc(var(--hero-construction-opacity, 0) * .48);
+  .loom-fallback__dust {
+    fill: #d9a257;
   }
 
-  .loom-visual__warmth {
+  .loom-fallback__flares {
+    fill: none;
+    stroke: #e3b66f;
+    stroke-width: 1;
+    opacity: .72;
+  }
+
+  .loom-fallback__vignette {
     background:
-      radial-gradient(ellipse at 50% 36%, rgba(167, 101, 43, .13), transparent 34%),
-      radial-gradient(ellipse at 50% 88%, rgba(99, 52, 25, .1), transparent 48%);
-    opacity: var(--hero-light-opacity, .02);
-    mix-blend-mode: screen;
-  }
-
-  .loom-visual__vignette {
-    background:
-      linear-gradient(90deg, rgba(0, 0, 0, .68), transparent 17%, transparent 83%, rgba(0, 0, 0, .64)),
-      linear-gradient(0deg, #000 0%, transparent 19%, transparent 78%, rgba(0, 0, 0, .24) 100%);
-  }
-
-  :global([data-hero-mode="static"]) .loom-visual {
-    --hero-master-opacity: 1;
-    --hero-master-brightness: .92;
-    --hero-light-opacity: .13;
+      linear-gradient(90deg, #000 0%, transparent 16%, transparent 84%, #000 100%),
+      linear-gradient(0deg, #000 0%, transparent 24%, transparent 80%, rgba(0, 0, 0, .35) 100%);
   }
 
   @media (max-width: 700px), (orientation: portrait) {
-    .loom-visual__master img {
-      object-position: 50% 50%;
-      transform: none;
+    .loom-fallback__scene {
+      width: 180%;
+      left: -40%;
     }
 
-    .loom-visual__construction {
-      display: block;
+    .loom-fallback__ribbons {
+      opacity: .42;
     }
 
-    .loom-visual__vignette {
-      background:
-        linear-gradient(90deg, rgba(0, 0, 0, .42), transparent 20%, transparent 80%, rgba(0, 0, 0, .4)),
-        linear-gradient(0deg, #000 0%, transparent 20%, transparent 68%, rgba(0, 0, 0, .34) 100%);
+    .loom-fallback__dust {
+      opacity: .55;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .loom-visual__master {
-      transform: none;
-      transition: none;
-    }
-
-    .loom-visual__construction {
-      display: none;
+    .loom-fallback,
+    .loom-fallback * {
+      animation: none !important;
+      transition: none !important;
     }
   }
 </style>
-
-<noscript>
-  <style>
-    .loom-visual {
-      --hero-master-opacity: 1;
-      --hero-master-brightness: .92;
-      --hero-master-scale: 1;
-      --hero-light-opacity: .13;
-    }
-  </style>
-</noscript>

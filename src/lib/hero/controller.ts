@@ -90,18 +90,24 @@ class HeroController {
     ) {
       return;
     }
-    const { createCinematicHero } = await import("./cinematicHero");
-    return createCinematicHero({
+    const { createProceduralCouture } = await import("./cinematicHero");
+    return createProceduralCouture({
       ...this.#rendererOptions(),
       portrait: false,
+      tier: this.capabilities.tier,
+      onPointerOwnershipChange: (owned) => {
+        if (owned) this.claimPointerOwnership();
+        else this.releasePointerOwnership();
+      },
     });
   }
 
   async #createMobileRenderer() {
-    const { createCinematicHero } = await import("./cinematicHero");
-    return createCinematicHero({
+    const { createProceduralCouture } = await import("./cinematicHero");
+    return createProceduralCouture({
       ...this.#rendererOptions(),
       portrait: true,
+      tier: "C",
     });
   }
 

@@ -7,7 +7,7 @@ import Label from "../../components/primitives/Label.astro";
 <header
   class="living-hero"
   data-hero-root
-  data-hero-mode="pending"
+  data-hero-mode="static"
   data-hero-state="BOOT"
   aria-labelledby="hero-heading"
 >
@@ -81,8 +81,19 @@ import Label from "../../components/primitives/Label.astro";
     transition: opacity 760ms var(--ease-luxury);
   }
 
+  :global([data-hero-fallback]) {
+    opacity: 1;
+    transition: opacity 920ms var(--ease-luxury);
+  }
+
   .living-hero[data-hero-enhanced-ready="true"] .living-hero__enhancement {
     opacity: 1;
+  }
+
+  .living-hero[data-hero-enhanced-ready="true"] :global(
+      [data-hero-fallback]
+    ) {
+    opacity: 0;
   }
 
   .living-hero__content {
