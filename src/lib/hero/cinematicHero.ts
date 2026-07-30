@@ -32,7 +32,7 @@ const QUALITY: Record<PremiumTier, SceneQuality> = {
     garmentY: 80,
     ribbonSegments: 64,
     particleCount: 1120,
-    embroideryMotifs: 18,
+    embroideryMotifs: 12,
     dpr: 1.5,
     panelCount: 6,
   },
@@ -41,7 +41,7 @@ const QUALITY: Record<PremiumTier, SceneQuality> = {
     garmentY: 62,
     ribbonSegments: 46,
     particleCount: 640,
-    embroideryMotifs: 14,
+    embroideryMotifs: 10,
     dpr: 1.25,
     panelCount: 6,
   },
@@ -50,7 +50,7 @@ const QUALITY: Record<PremiumTier, SceneQuality> = {
     garmentY: 48,
     ribbonSegments: 34,
     particleCount: 360,
-    embroideryMotifs: 11,
+    embroideryMotifs: 4,
     dpr: 1.2,
     panelCount: 5,
   },
@@ -60,6 +60,7 @@ const garmentVertex = /* glsl */ `
   uniform float uTime;
   uniform float uCoverage;
   uniform float uExit;
+  uniform float uScroll;
   uniform float uPortrait;
   uniform vec2 uPointer;
   attribute float aPanel;
@@ -121,6 +122,7 @@ const garmentVertex = /* glsl */ `
     shaped.x += sin(y * 3.2 + panel * 1.6) * 0.035 * lower;
     shaped.x += uPointer.x * (0.016 + lower * 0.026) * (panel + 1.0) / 6.0;
     shaped.z += uPointer.y * 0.018 * lower;
+    shaped.z += uScroll * broadFold * 0.12 * lower;
 
     float unravel = smoothstep(0.05, 1.0, uExit) * lower;
     shaped.x += sign(nx + 0.001) * unravel * (0.08 + panel * 0.012);
@@ -138,6 +140,7 @@ const garmentFragment = /* glsl */ `
   uniform float uTime;
   uniform float uCoverage;
   uniform float uExit;
+  uniform float uScroll;
   uniform vec2 uPointer;
   varying vec2 vUv;
   varying float vPanel;
@@ -192,7 +195,11 @@ const garmentFragment = /* glsl */ `
     vec3 normal = normalize(cross(dx, dy));
     if (!gl_FrontFacing) normal = -normal;
     vec3 viewDirection = normalize(cameraPosition - vWorld);
-    vec3 keyLight = normalize(vec3(-0.32 + uPointer.x * 0.16, 0.58, 0.78));
+    vec3 keyLight = normalize(vec3(
+      -0.32 + uPointer.x * 0.16 + uScroll * 0.08,
+      0.58 - uScroll * 0.06,
+      0.78
+    ));
     vec3 rimLight = normalize(vec3(0.72, 0.2, 0.54));
     vec3 halfDirection = normalize(keyLight + viewDirection);
 
@@ -247,6 +254,7 @@ const ribbonVertex = /* glsl */ `
   uniform float uReveal;
   uniform float uExit;
   uniform float uPortrait;
+  uniform float uScroll;
   uniform vec2 uPointer;
   attribute float aRibbon;
   varying vec2 vUv;
@@ -267,6 +275,8 @@ const ribbonVertex = /* glsl */ `
       sin(longitudinal * 2.15 - phase * 0.7 - travel * 0.52) * 0.022;
     shaped.z += drift * (0.4 + abs(across) * 0.6);
     shaped.y += sin(longitudinal * 3.1 + phase + travel * 0.6) * 0.018;
+    shaped.y += (aRibbon < 0.5 ? -1.0 : 1.0) * uScroll * 0.055 * longitudinal;
+    shaped.z += uScroll * (0.035 + aRibbon * 0.018) * sin(longitudinal * 3.14159);
     shaped.x += uPointer.x * (0.018 + longitudinal * 0.026) * (1.0 - uPortrait * 0.8);
     shaped.z += uPointer.y * 0.014 * (1.0 - uPortrait * 0.65);
     float side = sign(position.x + 0.001);
@@ -300,13 +310,15 @@ const ribbonFragment = /* glsl */ `
     float edge = pow(abs(vUv.y * 2.0 - 1.0), 7.0);
     float longitudinalFade = smoothstep(0.0, 0.08, vUv.x) *
       (1.0 - smoothstep(0.84, 1.0, vUv.x));
-    float reveal = smoothstep(0.38 + vRibbon * 0.035, 0.68 + vRibbon * 0.025, uReveal);
+    float reveal = smoothstep(0.22 + vRibbon * 0.045, 0.6 + vRibbon * 0.025, uReveal);
+    float depthVeil = vRibbon > 1.5 ? 0.34 : 1.0;
     vec3 black = vec3(0.004);
     vec3 cocoa = vec3(0.09, 0.043, 0.026);
     vec3 gold = vec3(0.34, 0.2, 0.09);
     vec3 color = mix(black, cocoa, 0.2 + sheen * 0.62);
     color += gold * (grazing * 0.2 + edge * sheen * 0.38);
-    float alpha = longitudinalFade * reveal * (0.055 + sheen * 0.13 + edge * 0.075);
+    float alpha = longitudinalFade * reveal * depthVeil *
+      (0.055 + sheen * 0.13 + edge * 0.075);
     alpha *= 1.0 - uExit * 0.82;
     if (alpha < 0.004) discard;
     gl_FragColor = vec4(color, alpha);
@@ -325,7 +337,11 @@ const lineVertex = /* glsl */ `
     vKind = aKind;
     float guideIn = smoothstep(aOrder - 0.09, aOrder + 0.035, uProgress);
     float guideOut = 1.0 - smoothstep(0.72, 0.9, uProgress);
-    float embroidery = smoothstep(0.68 + aOrder * 0.22, 0.76 + aOrder * 0.22, uProgress);
+    float embroidery = smoothstep(
+      0.54 + aOrder * 0.27,
+      0.62 + aOrder * 0.27,
+      uProgress
+    );
     vAlpha = mix(guideIn * guideOut, embroidery, aKind) * (1.0 - uExit * 0.9);
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
@@ -336,9 +352,9 @@ const lineFragment = /* glsl */ `
   varying float vKind;
   void main() {
     vec3 guide = vec3(0.48, 0.31, 0.16);
-    vec3 zari = vec3(0.72, 0.49, 0.24);
+    vec3 zari = vec3(0.63, 0.41, 0.19);
     vec3 color = mix(guide, zari, vKind);
-    float alpha = vAlpha * mix(0.42, 0.78, vKind);
+    float alpha = vAlpha * mix(0.42, 0.64, vKind);
     if (alpha < 0.008) discard;
     gl_FragColor = vec4(color, alpha);
   }
@@ -505,6 +521,7 @@ class ProceduralCoutureRenderer implements HeroRenderer {
       uCoverage: { value: 0 },
       uReveal: { value: 0 },
       uExit: { value: 0 },
+      uScroll: { value: 0 },
       uPortrait: { value: this.#options.portrait ? 1 : 0 },
       uPointer: { value: this.#pointerCurrent },
       uDpr: { value: 1 },
@@ -621,28 +638,22 @@ class ProceduralCoutureRenderer implements HeroRenderer {
         ]
       : [
           [
-            [-0.48, -0.55, -0.34],
-            [-1.75, -1.05, -0.08],
-            [-3.25, -0.3, 0.05],
-            [-5.7, -1.02, -0.42],
+            [-0.46, -0.68, -0.2],
+            [-1.62, -1.03, 0.04],
+            [-3.2, -0.18, -0.08],
+            [-5.95, -0.82, -0.5],
           ],
           [
-            [-0.35, -0.05, -0.58],
-            [-1.75, 0.82, -0.72],
-            [-3.75, 0.12, -0.35],
-            [-6.15, 0.84, -0.76],
+            [0.48, -0.58, -0.14],
+            [1.88, -0.82, 0.12],
+            [3.52, 0.06, -0.18],
+            [6.1, -0.56, -0.56],
           ],
           [
-            [0.46, -0.62, -0.28],
-            [1.72, -0.9, 0.08],
-            [3.35, -0.15, -0.12],
-            [5.8, -0.78, -0.5],
-          ],
-          [
-            [0.34, -0.06, -0.64],
-            [1.68, 0.68, -0.46],
-            [3.6, 0.02, -0.24],
-            [6.18, 0.66, -0.82],
+            [-0.12, 0.26, -1.08],
+            [-1.38, 1.05, -1.22],
+            [1.74, 0.82, -1.35],
+            [5.45, 1.18, -1.48],
           ],
         ];
 
@@ -706,9 +717,23 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     };
     const addPath = (path: THREE.Vector3[], kind: number, order: number) => {
       for (let index = 1; index < path.length; index += 1) {
-        addSegment(path[index - 1]!, path[index]!, kind, order);
+        const drawOrder =
+          kind === 1
+            ? order + (index / Math.max(1, path.length - 1)) * 0.075
+            : order;
+        addSegment(path[index - 1]!, path[index]!, kind, drawOrder);
       }
     };
+    const sampleSpline = (
+      controls: THREE.Vector3[],
+      divisions = 18,
+      closed = false,
+    ) =>
+      new THREE.CatmullRomCurve3(
+        controls,
+        closed,
+        "centripetal",
+      ).getPoints(divisions);
 
     const scaleX = this.#options.portrait ? 0.68 : 1;
     const silhouette = (side: -1 | 1) =>
@@ -758,72 +783,126 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     );
 
     const motifCount = this.#quality.embroideryMotifs;
+    const clothPoint = (x: number, y: number, lift = 0) =>
+      new THREE.Vector3(
+        x,
+        y,
+        0.375 + Math.sin(x * 2.8 + y * 1.7) * 0.022 + lift,
+      );
+    const addLeaf = (
+      anchor: THREE.Vector3,
+      angle: number,
+      length: number,
+      width: number,
+      order: number,
+    ) => {
+      const axis = new THREE.Vector2(Math.cos(angle), Math.sin(angle));
+      const normal = new THREE.Vector2(-axis.y, axis.x);
+      const leaf = Array.from({ length: 17 }, (_, index) => {
+        const theta = (index / 16) * Math.PI * 2;
+        const along = length * (0.5 - 0.5 * Math.cos(theta));
+        const across = width * Math.sin(theta) * Math.sin(theta * 0.5);
+        return clothPoint(
+          anchor.x + axis.x * along + normal.x * across,
+          anchor.y + axis.y * along + normal.y * across,
+          0.004,
+        );
+      });
+      addPath(leaf, 1, order);
+    };
+    const addFlower = (
+      center: THREE.Vector3,
+      petalCount: number,
+      radius: number,
+      rotation: number,
+      order: number,
+    ) => {
+      for (let petal = 0; petal < petalCount; petal += 1) {
+        const angle = rotation + (petal / petalCount) * Math.PI * 2;
+        const axis = new THREE.Vector2(Math.cos(angle), Math.sin(angle));
+        const normal = new THREE.Vector2(-axis.y, axis.x);
+        const petalPath = Array.from({ length: 15 }, (_, index) => {
+          const theta = (index / 14) * Math.PI * 2;
+          const along = radius * (0.5 - 0.5 * Math.cos(theta));
+          const across =
+            radius * 0.34 * Math.sin(theta) * Math.sin(theta * 0.5);
+          return clothPoint(
+            center.x + axis.x * along + normal.x * across,
+            center.y + axis.y * along + normal.y * across,
+            0.008,
+          );
+        });
+        addPath(petalPath, 1, order + petal * 0.006);
+      }
+    };
+
     for (let motif = 0; motif < motifCount; motif += 1) {
       const seed = this.#seed(motif + 17);
-      const side = motif % 3 === 0 ? -1 : motif % 3 === 1 ? 1 : seed - 0.5;
-      const baseY = -2.05 + seed * 2.25;
+      const density = motif / Math.max(1, motifCount - 1);
+      const lowerBias = Math.pow(seed, 1.55);
+      const baseY = -2.08 + lowerBias * 2.45;
+      const availableWidth = 1.16 - (baseY + 2.08) * 0.29;
+      const side = motif % 2 === 0 ? -1 : 1;
       const baseX =
         side *
-        (0.16 + this.#seed(motif * 7 + 3) * (1.1 - (baseY + 2.05) * 0.22)) *
+        (0.12 + this.#seed(motif * 7 + 3) * Math.max(0.2, availableWidth)) *
         scaleX;
-      const height = 0.28 + this.#seed(motif * 11 + 5) * 0.32;
-      const vine: THREE.Vector3[] = [];
-      for (let step = 0; step <= 12; step += 1) {
-        const t = step / 12;
-        vine.push(
-          new THREE.Vector3(
-            baseX + Math.sin(t * Math.PI * 1.6 + motif) * 0.07 * scaleX,
-            baseY + t * height,
-            0.37,
-          ),
+      const height =
+        (0.34 + this.#seed(motif * 11 + 5) * 0.3) *
+        (this.#options.portrait ? 1.16 : 1);
+      const lean = (this.#seed(motif * 13 + 7) - 0.5) * 0.24 * scaleX;
+      const order = density * 0.68;
+      const stemControls = [
+        clothPoint(baseX, baseY),
+        clothPoint(baseX - lean * 0.34, baseY + height * 0.28),
+        clothPoint(baseX + lean * 0.5, baseY + height * 0.66),
+        clothPoint(baseX + lean, baseY + height),
+      ];
+      const stem = sampleSpline(stemControls, 22);
+      addPath(stem, 1, order);
+
+      const motifType = motif % 4;
+      const leafFractions =
+        motifType === 2 ? [0.3, 0.56, 0.77] : [0.24, 0.48, 0.7];
+      leafFractions.forEach((fraction, leafIndex) => {
+        const anchor = stem[Math.round(fraction * (stem.length - 1))]!;
+        const direction = (leafIndex + motif) % 2 === 0 ? -1 : 1;
+        const angle =
+          Math.PI * 0.5 +
+          direction * (0.58 + this.#seed(motif * 31 + leafIndex) * 0.32);
+        addLeaf(
+          anchor,
+          angle,
+          (0.105 + this.#seed(motif * 19 + leafIndex) * 0.055) * scaleX,
+          0.034 * scaleX,
+          order + 0.09 + leafIndex * 0.016,
         );
-      }
-      const order = motif / Math.max(1, motifCount - 1);
-      addPath(vine, 1, order);
-      for (let leaf = 3; leaf <= 10; leaf += 3) {
-        const anchor = vine[leaf]!;
-        const direction = (leaf + motif) % 2 === 0 ? -1 : 1;
-        const length = 0.1 + this.#seed(motif * 19 + leaf) * 0.07;
-        addPath(
-          [
-            anchor,
-            new THREE.Vector3(
-              anchor.x + direction * length * scaleX,
-              anchor.y + 0.055,
-              0.375,
-            ),
-            new THREE.Vector3(
-              anchor.x + direction * length * 0.45 * scaleX,
-              anchor.y + 0.105,
-              0.372,
-            ),
-            anchor,
-          ],
-          1,
-          order,
+      });
+
+      const flowerCenter = stem[stem.length - 1]!;
+      if (motifType !== 2) {
+        addFlower(
+          flowerCenter,
+          motifType === 1 ? 4 : 5,
+          (0.075 + this.#seed(motif * 37) * 0.025) * scaleX,
+          this.#seed(motif * 41) * Math.PI,
+          order + 0.16,
         );
-      }
-      const top = vine[vine.length - 1]!;
-      for (let petal = 0; petal < 5; petal += 1) {
-        const angle = (petal / 5) * Math.PI * 2;
-        addPath(
-          [
-            top,
-            new THREE.Vector3(
-              top.x + Math.cos(angle) * 0.07 * scaleX,
-              top.y + Math.sin(angle) * 0.07,
-              0.38,
-            ),
-            new THREE.Vector3(
-              top.x + Math.cos(angle + 0.42) * 0.035 * scaleX,
-              top.y + Math.sin(angle + 0.42) * 0.035,
-              0.38,
-            ),
-            top,
-          ],
-          1,
-          order,
-        );
+      } else {
+        for (let bud = 0; bud < 3; bud += 1) {
+          const budAnchor = clothPoint(
+            flowerCenter.x + (bud - 1) * 0.065 * scaleX,
+            flowerCenter.y + Math.abs(bud - 1) * 0.035,
+            0.006,
+          );
+          addLeaf(
+            budAnchor,
+            Math.PI * 0.5 + (bud - 1) * 0.34,
+            0.075 * scaleX,
+            0.024 * scaleX,
+            order + 0.15 + bud * 0.012,
+          );
+        }
       }
     }
 
@@ -996,13 +1075,17 @@ class ProceduralCoutureRenderer implements HeroRenderer {
 
     const elapsed = (now - this.#startTime) / 1000;
     const intro = THREE.MathUtils.clamp(elapsed / 2.1, 0, 1);
-    this.#scrollCurrent += (this.#scrollTarget - this.#scrollCurrent) * 0.085;
+    this.#scrollCurrent += (this.#scrollTarget - this.#scrollCurrent) * 0.26;
     this.#pointerCurrent.lerp(this.#pointerTarget, 0.045);
     const progress = this.#options.portrait
       ? this.#scrollCurrent
-      : Math.max(intro * 0.9, this.#scrollCurrent);
-    const exit = this.#smoothRange(0.94, 0.995, this.#scrollCurrent);
-    const coverage = this.#smoothRange(0.26, 0.68, progress);
+      : THREE.MathUtils.clamp(intro * 0.66 + this.#scrollCurrent * 0.34, 0, 1);
+    const exit = this.#smoothRange(0.82, 0.99, this.#scrollCurrent);
+    const coverage = this.#smoothRange(
+      this.#options.portrait ? 0.035 : 0.08,
+      this.#options.portrait ? 0.58 : 0.54,
+      progress,
+    );
 
     for (const object of [this.#garment, this.#ribbons, this.#lines, this.#points]) {
       const uniforms = object.material.uniforms;
@@ -1011,6 +1094,7 @@ class ProceduralCoutureRenderer implements HeroRenderer {
       if (uniforms.uCoverage) uniforms.uCoverage.value = coverage;
       if (uniforms.uReveal) uniforms.uReveal.value = progress;
       if (uniforms.uExit) uniforms.uExit.value = exit;
+      if (uniforms.uScroll) uniforms.uScroll.value = this.#scrollCurrent;
     }
 
     if (now - this.#lastRender >= 32 || !this.#ready) {
