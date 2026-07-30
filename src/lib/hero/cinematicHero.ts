@@ -26,6 +26,15 @@ interface SceneQuality {
   panelCount: number;
 }
 
+interface PetalSpec {
+  center: THREE.Vector3;
+  angle: number;
+  length: number;
+  width: number;
+  order: number;
+  intensity: number;
+}
+
 const QUALITY: Record<PremiumTier, SceneQuality> = {
   A: {
     garmentX: 64,
@@ -326,8 +335,10 @@ const ribbonFragment = /* glsl */ `
 `;
 
 const lineVertex = /* glsl */ `
+  uniform float uTime;
   uniform float uProgress;
   uniform float uExit;
+  uniform float uScroll;
   attribute float aKind;
   attribute float aOrder;
   varying float vAlpha;
@@ -336,14 +347,20 @@ const lineVertex = /* glsl */ `
   void main() {
     vKind = aKind;
     float guideIn = smoothstep(aOrder - 0.09, aOrder + 0.035, uProgress);
-    float guideOut = 1.0 - smoothstep(0.72, 0.9, uProgress);
+    float guideOut = 1.0 - smoothstep(0.52, 0.7, uProgress);
     float embroidery = smoothstep(
       0.54 + aOrder * 0.27,
       0.62 + aOrder * 0.27,
       uProgress
     );
     vAlpha = mix(guideIn * guideOut, embroidery, aKind) * (1.0 - uExit * 0.9);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vec3 stitched = position;
+    if (aKind > 0.5) {
+      float fold = sin(position.x * 4.8 + position.y * 1.6) * 0.018;
+      stitched.z += fold * (1.0 + uScroll * 0.22);
+      stitched.x += sin(uTime * 0.055 + position.y) * 0.0025;
+    }
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(stitched, 1.0);
   }
 `;
 
@@ -355,6 +372,45 @@ const lineFragment = /* glsl */ `
     vec3 zari = vec3(0.63, 0.41, 0.19);
     vec3 color = mix(guide, zari, vKind);
     float alpha = vAlpha * mix(0.42, 0.64, vKind);
+    if (alpha < 0.008) discard;
+    gl_FragColor = vec4(color, alpha);
+  }
+`;
+
+const petalVertex = /* glsl */ `
+  uniform float uTime;
+  uniform float uProgress;
+  uniform float uExit;
+  uniform float uScroll;
+  attribute float aOrder;
+  attribute float aIntensity;
+  varying float vAlpha;
+  varying float vIntensity;
+
+  void main() {
+    float reveal = smoothstep(
+      0.64 + aOrder * 0.22,
+      0.73 + aOrder * 0.22,
+      uProgress
+    );
+    vAlpha = reveal * (1.0 - uExit * 0.58);
+    vIntensity = aIntensity;
+    vec3 stitched = position;
+    stitched.z += sin(position.x * 4.8 + position.y * 1.6) *
+      0.018 * (1.0 + uScroll * 0.22);
+    stitched.x += sin(uTime * 0.055 + position.y) * 0.0025;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(stitched, 1.0);
+  }
+`;
+
+const petalFragment = /* glsl */ `
+  varying float vAlpha;
+  varying float vIntensity;
+  void main() {
+    vec3 mutedGold = vec3(0.35, 0.19, 0.075);
+    vec3 zariEdge = vec3(0.69, 0.46, 0.2);
+    vec3 color = mix(mutedGold, zariEdge, vIntensity);
+    float alpha = vAlpha * (0.18 + vIntensity * 0.26);
     if (alpha < 0.008) discard;
     gl_FragColor = vec4(color, alpha);
   }
@@ -379,7 +435,7 @@ const pointVertex = /* glsl */ `
     float atmosphere = smoothstep(0.48, 0.82, uProgress);
     float bead = smoothstep(0.7 + aStrength * 0.13, 0.9, uProgress);
     float visibility = mix(atmosphere, bead, aKind);
-    vAlpha = visibility * (0.09 + pulse * 0.91) * (1.0 - uExit * 0.95);
+    vAlpha = visibility * (0.28 + pulse * 0.72) * (1.0 - uExit * 0.45);
     vRare = step(0.965, aStrength);
     vec3 point = position;
     if (aKind < 0.5) {
@@ -405,7 +461,7 @@ const pointFragment = /* glsl */ `
     vec3 dust = vec3(0.72, 0.48, 0.23);
     vec3 pearl = vec3(0.86, 0.75, 0.59);
     vec3 color = mix(dust, pearl, vKind);
-    float alpha = (pin + flare * 0.42) * vAlpha * mix(0.56, 0.78, vKind);
+    float alpha = (pin + flare * 0.42) * vAlpha * mix(0.68, 0.82, vKind);
     if (alpha < 0.012) discard;
     gl_FragColor = vec4(color, alpha);
   }
@@ -420,11 +476,13 @@ class ProceduralCoutureRenderer implements HeroRenderer {
   #garment?: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>;
   #ribbons?: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>;
   #lines?: THREE.LineSegments<THREE.BufferGeometry, THREE.ShaderMaterial>;
+  #petals?: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>;
   #points?: THREE.Points<THREE.BufferGeometry, THREE.ShaderMaterial>;
+  #petalSpecs: PetalSpec[] = [];
   #events = new AbortController();
   #resizeObserver?: ResizeObserver;
   #frame = 0;
-  #lastRender = 0;
+  #lastFrame = 0;
   #startTime = 0;
   #scrollTarget = 0;
   #scrollCurrent = 0;
@@ -434,6 +492,7 @@ class ProceduralCoutureRenderer implements HeroRenderer {
   #paused = false;
   #disposed = false;
   #ready = false;
+  #stableFrames = 0;
 
   constructor(options: ProceduralCoutureOptions) {
     this.#options = options;
@@ -476,8 +535,10 @@ class ProceduralCoutureRenderer implements HeroRenderer {
       this.#bindEvents();
       this.#measure();
       this.#renderer.compile(this.#scene, this.#camera);
-      this.#startTime = performance.now();
+      this.#startTime = performance.now() - 2100;
       this.#onScroll();
+      this.#scrollCurrent = this.#scrollTarget;
+      this.#primeStateMachine();
       this.resume();
     } catch {
       this.#options.onFailure();
@@ -503,7 +564,13 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     this.#events.abort();
     this.#resizeObserver?.disconnect();
     this.#options.onPointerOwnershipChange?.(false);
-    for (const object of [this.#garment, this.#ribbons, this.#lines, this.#points]) {
+    for (const object of [
+      this.#garment,
+      this.#ribbons,
+      this.#lines,
+      this.#petals,
+      this.#points,
+    ]) {
       object?.geometry.dispose();
       object?.material.dispose();
     }
@@ -566,6 +633,20 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     );
     this.#lines.renderOrder = 3;
 
+    this.#petals = new THREE.Mesh(
+      this.#buildPetalGeometry(),
+      new THREE.ShaderMaterial({
+        vertexShader: petalVertex,
+        fragmentShader: petalFragment,
+        uniforms: shared,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+      }),
+    );
+    this.#petals.renderOrder = 3;
+
     this.#points = new THREE.Points(
       this.#buildPointGeometry(),
       new THREE.ShaderMaterial({
@@ -578,7 +659,13 @@ class ProceduralCoutureRenderer implements HeroRenderer {
       }),
     );
     this.#points.renderOrder = 4;
-    this.#scene.add(this.#ribbons, this.#garment, this.#lines, this.#points);
+    this.#scene.add(
+      this.#ribbons,
+      this.#garment,
+      this.#lines,
+      this.#petals,
+      this.#points,
+    );
   }
 
   #buildGarmentGeometry() {
@@ -819,20 +906,23 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     ) => {
       for (let petal = 0; petal < petalCount; petal += 1) {
         const angle = rotation + (petal / petalCount) * Math.PI * 2;
-        const axis = new THREE.Vector2(Math.cos(angle), Math.sin(angle));
-        const normal = new THREE.Vector2(-axis.y, axis.x);
-        const petalPath = Array.from({ length: 15 }, (_, index) => {
-          const theta = (index / 14) * Math.PI * 2;
-          const along = radius * (0.5 - 0.5 * Math.cos(theta));
-          const across =
-            radius * 0.34 * Math.sin(theta) * Math.sin(theta * 0.5);
-          return clothPoint(
-            center.x + axis.x * along + normal.x * across,
-            center.y + axis.y * along + normal.y * across,
-            0.008,
-          );
+        this.#petalSpecs.push({
+          center: center.clone(),
+          angle:
+            angle +
+            (this.#seed(petal * 47 + Math.round(center.y * 31)) - 0.5) * 0.12,
+          length:
+            radius *
+            (0.88 + this.#seed(petal * 53 + Math.round(center.x * 37)) * 0.24),
+          width:
+            radius *
+            (0.26 + this.#seed(petal * 59 + Math.round(center.y * 41)) * 0.12),
+          order: order + petal * 0.008,
+          intensity:
+            0.34 +
+            this.#seed(petal * 61 + Math.round((center.x + center.y) * 43)) *
+              0.52,
         });
-        addPath(petalPath, 1, order + petal * 0.006);
       }
     };
 
@@ -910,6 +1000,63 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute("aKind", new THREE.Float32BufferAttribute(kinds, 1));
     geometry.setAttribute("aOrder", new THREE.Float32BufferAttribute(orders, 1));
+    geometry.computeBoundingSphere();
+    return geometry;
+  }
+
+  #buildPetalGeometry() {
+    const positions: number[] = [];
+    const orders: number[] = [];
+    const intensities: number[] = [];
+    const indices: number[] = [];
+    const boundarySegments = 16;
+
+    for (const spec of this.#petalSpecs) {
+      const offset = positions.length / 3;
+      const axis = new THREE.Vector2(
+        Math.cos(spec.angle),
+        Math.sin(spec.angle),
+      );
+      const normal = new THREE.Vector2(-axis.y, axis.x);
+      const centerX = spec.center.x + axis.x * spec.length * 0.43;
+      const centerY = spec.center.y + axis.y * spec.length * 0.43;
+      positions.push(centerX, centerY, spec.center.z + 0.011);
+      orders.push(spec.order);
+      intensities.push(spec.intensity);
+
+      for (let segment = 0; segment <= boundarySegments; segment += 1) {
+        const theta = (segment / boundarySegments) * Math.PI * 2;
+        const along = spec.length * (0.5 - 0.5 * Math.cos(theta));
+        const taper = Math.pow(Math.max(0, Math.sin(theta * 0.5)), 0.72);
+        const across = spec.width * Math.sin(theta) * taper;
+        positions.push(
+          spec.center.x + axis.x * along + normal.x * across,
+          spec.center.y + axis.y * along + normal.y * across,
+          spec.center.z + 0.012,
+        );
+        orders.push(spec.order);
+        intensities.push(spec.intensity);
+      }
+
+      for (let segment = 0; segment < boundarySegments; segment += 1) {
+        indices.push(offset, offset + segment + 1, offset + segment + 2);
+      }
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(positions, 3),
+    );
+    geometry.setAttribute(
+      "aOrder",
+      new THREE.Float32BufferAttribute(orders, 1),
+    );
+    geometry.setAttribute(
+      "aIntensity",
+      new THREE.Float32BufferAttribute(intensities, 1),
+    );
+    geometry.setIndex(indices);
     geometry.computeBoundingSphere();
     return geometry;
   }
@@ -1032,6 +1179,18 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     }
   };
 
+  #primeStateMachine() {
+    this.#options.onStateChange("THREADS_ENTER");
+    this.#state = "THREADS_ENTER";
+    const initialProgress = this.#options.portrait
+      ? this.#scrollCurrent
+      : 0.18 + this.#scrollCurrent * 0.82;
+    if (initialProgress >= 0.12) {
+      this.#options.onStateChange("WEAVE_FORM");
+      this.#state = "WEAVE_FORM";
+    }
+  }
+
   #onScroll = () => {
     const rect = this.#options.root.getBoundingClientRect();
     const travel = Math.max(1, this.#options.root.offsetHeight - innerHeight);
@@ -1068,6 +1227,7 @@ class ProceduralCoutureRenderer implements HeroRenderer {
       !this.#garment ||
       !this.#ribbons ||
       !this.#lines ||
+      !this.#petals ||
       !this.#points
     ) {
       return;
@@ -1075,32 +1235,37 @@ class ProceduralCoutureRenderer implements HeroRenderer {
 
     const elapsed = (now - this.#startTime) / 1000;
     const intro = THREE.MathUtils.clamp(elapsed / 2.1, 0, 1);
-    this.#scrollCurrent += (this.#scrollTarget - this.#scrollCurrent) * 0.26;
+    const deltaSeconds =
+      this.#lastFrame === 0
+        ? 1 / 60
+        : Math.min(0.05, Math.max(0.001, (now - this.#lastFrame) / 1000));
+    this.#lastFrame = now;
+    const scrollResponse = 1 - Math.exp(-deltaSeconds * 22);
+    this.#scrollCurrent +=
+      (this.#scrollTarget - this.#scrollCurrent) * scrollResponse;
     this.#pointerCurrent.lerp(this.#pointerTarget, 0.045);
     const progress = this.#options.portrait
       ? this.#scrollCurrent
-      : THREE.MathUtils.clamp(intro * 0.66 + this.#scrollCurrent * 0.34, 0, 1);
-    const exit = this.#smoothRange(0.82, 0.99, this.#scrollCurrent);
+      : THREE.MathUtils.clamp(intro * 0.18 + this.#scrollCurrent * 0.82, 0, 1);
+    const exit = this.#smoothRange(0.94, 0.995, this.#scrollCurrent);
     const coverage = this.#smoothRange(
       this.#options.portrait ? 0.035 : 0.08,
       this.#options.portrait ? 0.58 : 0.54,
       progress,
     );
 
-    for (const object of [this.#garment, this.#ribbons, this.#lines, this.#points]) {
-      const uniforms = object.material.uniforms;
-      if (uniforms.uTime) uniforms.uTime.value = elapsed;
-      if (uniforms.uProgress) uniforms.uProgress.value = progress;
-      if (uniforms.uCoverage) uniforms.uCoverage.value = coverage;
-      if (uniforms.uReveal) uniforms.uReveal.value = progress;
-      if (uniforms.uExit) uniforms.uExit.value = exit;
-      if (uniforms.uScroll) uniforms.uScroll.value = this.#scrollCurrent;
-    }
+    const uniforms = this.#garment.material.uniforms;
+    uniforms.uTime!.value = elapsed;
+    uniforms.uProgress!.value = progress;
+    uniforms.uCoverage!.value = coverage;
+    uniforms.uReveal!.value = progress;
+    uniforms.uExit!.value = exit;
+    uniforms.uScroll!.value = this.#scrollCurrent;
 
-    if (now - this.#lastRender >= 32 || !this.#ready) {
-      this.#renderer.render(this.#scene, this.#camera);
-      this.#lastRender = now;
-      if (!this.#ready) {
+    this.#renderer.render(this.#scene, this.#camera);
+    if (!this.#ready) {
+      this.#stableFrames += 1;
+      if (this.#stableFrames >= 2) {
         this.#ready = true;
         this.#options.onReady();
       }
@@ -1110,7 +1275,7 @@ class ProceduralCoutureRenderer implements HeroRenderer {
     const smoothing =
       Math.abs(this.#scrollTarget - this.#scrollCurrent) > 0.001 ||
       this.#pointerCurrent.distanceToSquared(this.#pointerTarget) > 0.00001;
-    if (intro < 1 || smoothing || (progress > 0.48 && exit < 0.995)) {
+    if (!this.#ready || intro < 1 || smoothing || (progress > 0.48 && exit < 1)) {
       this.#schedule();
     }
   };
