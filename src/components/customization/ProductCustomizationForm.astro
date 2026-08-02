@@ -40,6 +40,7 @@ const occasions = [
   class="customization-form"
   data-customization-form
   data-endpoint={endpoint}
+  data-product-slug={product.slug}
   novalidate
 >
   <input type="hidden" name="productId" value={product.id} /><input
@@ -49,7 +50,7 @@ const occasions = [
   /><input type="hidden" name="productName" value={product.name} />
   <section class="form-section" aria-labelledby="colour-heading">
     <h2 id="colour-heading">Product direction</h2><ProductPalette
-      palette={product.palette}
+      palette={product.palette} slug={product.slug} mode={product.colourMode}
     /><label class="field"
       ><span>Requested custom colour</span><input
         name="requestedColour"
@@ -271,6 +272,21 @@ const occasions = [
         );
       let submitting = false,
         lastFocus: HTMLElement | null = null;
+      const paletteParams = new URLSearchParams(location.search);
+      const requestedPalette = paletteParams.get("palette");
+      const requestedCustomColour = paletteParams.get("customColour");
+      const selectedPalette = requestedPalette
+        ? form.querySelector<HTMLInputElement>(`[name=paletteId][value="${CSS.escape(requestedPalette)}"]`)
+        : null;
+      if (selectedPalette) {
+        selectedPalette.checked = true;
+        if (summary) summary.textContent = selectedPalette.dataset.paletteName ?? selectedPalette.value;
+      }
+      if (/^#[0-9a-f]{6}$/i.test(requestedCustomColour ?? "")) {
+        const requestedColour = form.querySelector<HTMLInputElement>("[name=requestedColour]");
+        if (requestedColour) requestedColour.value = requestedCustomColour!;
+        if (summary) summary.textContent = `Custom ${requestedCustomColour!.toUpperCase()}`;
+      }
       const closeDialog = () => {
         if (!dialog) return;
         dialog.hidden = true;
@@ -304,6 +320,12 @@ const occasions = [
               summary.textContent = input.dataset.paletteName ?? input.value;
           }),
         );
+      form.addEventListener("rangbastra:custom-colour-restored", (event) => {
+        const selection = (event as CustomEvent<{ paletteId: string; customColour: string }>).detail;
+        const input = form.querySelector<HTMLInputElement>("[name=requestedColour]");
+        if (selection.customColour && input) input.value = selection.customColour;
+        if (summary) summary.textContent = selection.customColour ? `Custom ${selection.customColour}` : form.querySelector<HTMLInputElement>(`[name=paletteId][value="${CSS.escape(selection.paletteId)}"]`)?.dataset.paletteName ?? selection.paletteId;
+      });
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         status!.textContent = "";

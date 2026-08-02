@@ -48,6 +48,8 @@ export interface CouturePaletteOption {
   availability: "As photographed" | "Subject to fabric availability";
 }
 
+export type CoutureColourMode = "single" | "palette" | "custom";
+
 export interface CouturePiece {
   id: number;
   slug: string;
@@ -76,6 +78,8 @@ export interface CouturePiece {
   shortDescription: string;
   story: string;
   craftTags: string[];
+  publicKeywords: string[];
+  colourMode: CoutureColourMode;
   featuredImage: string;
   gallery: string[];
   images?: CoutureImage[];
@@ -1291,19 +1295,32 @@ const conciseAttribute = (value: string | null) => cleanValue(value)
   .replace(/^\d+\s+Border\s+Embroidery$/i, "Border Embroidery")
   .replace(/^Printed\s+/i, "");
 
+const publicCraftTerm = (value: string | null, fallback = "Hand-finished detail") => {
+  const normalized = conciseAttribute(value);
+  if (!normalized) return fallback;
+  if (/same as|inspired by|inaayat/i.test(normalized)) return "Resham Work";
+  return normalized;
+};
+
 const buildCraftTags = (record: CoutureSourceRecord) => {
   const handwork = cleanValue(record.handwork);
-  const firstDetail = conciseAttribute(handwork?.split(",")[0] ?? null);
+  const firstDetail = publicCraftTerm(handwork?.split(",")[0] ?? null);
   const details = handwork?.toLowerCase().includes("mirror")
     ? [firstDetail, "Mirror Work"]
     : [firstDetail];
   return [...new Set([
-    conciseAttribute(cleanValue(record.fabric)?.split(",")[0] ?? null),
-    conciseAttribute(record.style),
+    publicCraftTerm(cleanValue(record.fabric)?.split(",")[0] ?? null, ""),
+    publicCraftTerm(record.style, ""),
     ...details,
-    conciseAttribute(record.motif),
+    publicCraftTerm(record.motif, ""),
   ].filter((value): value is string => Boolean(value)))].slice(0, 4);
 };
+
+const buildPublicKeywords = (record: CoutureSourceRecord) => [
+  ...buildCraftTags(record),
+  publicCraftTerm(record.occasion, ""),
+  publicCraftTerm(record.type, ""),
+].filter((value, index, values) => Boolean(value) && values.indexOf(value) === index).slice(0, 5);
 
 const buildShortDescription = (record: CoutureSourceRecord) => {
   const featuredCopy: Record<string, string> = {
@@ -1328,8 +1345,8 @@ const describeHandwork = (value: string | null, fallback: string) => {
     return fallback;
   }
 
-  if (/inspired by/i.test(handwork)) {
-    return "an Inaayat-inspired embroidery language";
+  if (/same as|inspired by|inaayat/i.test(handwork)) {
+    return "a resham embroidery language";
   }
 
   return handwork.split(",")[0].toLowerCase();
@@ -1796,6 +1813,15 @@ const buildPalette = (
   ];
 };
 
+const getColourMode = (
+  record: CoutureSourceRecord,
+  paletteOptions: CouturePaletteOption[],
+): CoutureColourMode => {
+  const source = `${record.shade ?? ""} ${record.fabric ?? ""}`;
+  if (/unlimited|custom colour/i.test(source)) return "custom";
+  return paletteOptions.length > 1 ? "palette" : "single";
+};
+
 /**
  * INTERNAL DISPLAY FALLBACKS.
  * These remain a defensive fallback for any future incomplete source record.
@@ -1843,6 +1869,7 @@ export const couturePieces: CouturePiece[] = coutureSourceRecords.map(
       record.tagline || buildShortDescription(record);
     const slug = slugify(record.name);
     const paletteOptions = buildPalette(record, displayShade, shadeHex);
+    const colourMode = getColourMode(record, paletteOptions);
     const images = buildProductImages(record.name, slug, legacyFallback);
     const coverImage = images.find((image) => image.id === "hero") ?? images[0];
     const featuredImage = coverImage.src;
@@ -1865,7 +1892,7 @@ export const couturePieces: CouturePiece[] = coutureSourceRecords.map(
       shade,
       shadeHex,
       fabric,
-      handwork: cleanValue(record.handwork),
+      handwork: publicCraftTerm(record.handwork),
       style: cleanValue(record.style),
       motif: cleanValue(record.motif),
       type: cleanValue(record.type),
@@ -1875,6 +1902,8 @@ export const couturePieces: CouturePiece[] = coutureSourceRecords.map(
       shortDescription,
       story: buildStory(record),
       craftTags: buildCraftTags(record),
+      publicKeywords: buildPublicKeywords(record),
+      colourMode,
       featuredImage,
       gallery: images.map((image) => image.src),
       // Replace these placeholder URLs per product when dedicated photography is ready.

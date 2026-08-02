@@ -6,6 +6,7 @@ import WishlistButton from "../wishlist/WishlistButton.astro";
 import type { CouturePiece } from "../../data/couture";
 import { getWhatsAppHref } from "../../data/contact";
 import CoutureProductGallery from "./CoutureProductGallery.astro";
+import CoutureCardColour from "./CoutureCardColour.astro";
 
 interface Props {
   product: CouturePiece;
@@ -73,14 +74,44 @@ const hasRating =
       </div>
     </dl>
 
+    <CoutureCardColour name={product.name} slug={product.slug} mode={product.colourMode} options={product.paletteOptions} variant="detail" />
+
     <div class="hero-actions" aria-label={`${product.name} actions`}>
-      <Button href={inquiryHref} variant="brand-mesh">Start This Story</Button>
+      <Button href={inquiryHref} class="product-customization-link" variant="brand-mesh">Start This Story</Button>
       <WishlistButton slug={product.slug} name={product.name} variant="inline" />
       <Button href={whatsappHref} target="_blank" variant="whatsapp">Ask On WhatsApp</Button>
       <a href="/collections" class="secondary-link">Return to Collections</a>
     </div>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-product-summary]").forEach((summary) => {
+    if (summary.dataset.paletteLinkReady) return;
+    summary.dataset.paletteLinkReady = "true";
+    const initialLink = summary.querySelector<HTMLAnchorElement>(".product-customization-link");
+    if (initialLink) {
+      const selection = new URLSearchParams(location.search);
+      const palette = selection.get("palette");
+      const customColour = selection.get("customColour");
+      if (palette) {
+        const url = new URL(initialLink.href, location.origin);
+        url.searchParams.set("palette", palette);
+        if (customColour) url.searchParams.set("customColour", customColour);
+        initialLink.href = `${url.pathname}${url.search}`;
+      }
+    }
+    summary.addEventListener("rangbastra:palette-selected", (event) => {
+      const selection = (event as CustomEvent<{ id: string; custom: string }>).detail;
+      const link = summary.querySelector<HTMLAnchorElement>(".product-customization-link");
+      if (!link) return;
+      const url = new URL(link.href, location.origin);
+      url.searchParams.set("palette", selection.id);
+      if (selection.custom) url.searchParams.set("customColour", selection.custom); else url.searchParams.delete("customColour");
+      link.href = `${url.pathname}${url.search}`;
+    });
+  });
+</script>
 
 <style>
   .product-detail-hero {
@@ -211,6 +242,7 @@ const hasRating =
     gap: var(--space-4);
     align-items: center;
   }
+  .hero-summary :global(.palette-control--detail){max-width:42rem;padding-block:var(--space-2);border-block:1px solid var(--border-subtle)}
   .hero-actions .secondary-link{flex-basis:100%;width:fit-content;}
 
   .hero-actions :global(.button),

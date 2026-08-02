@@ -1,0 +1,76 @@
+---
+import type { CoutureColourMode, CouturePaletteOption } from "../../data/couture";
+interface Props { name: string; slug: string; mode: CoutureColourMode; options: CouturePaletteOption[]; variant?: "card" | "detail"; }
+const { name, slug, mode, options, variant = "card" } = Astro.props;
+const controlId = `colour-${slug}`;
+---
+
+<section class:list={["palette-control", `palette-control--${variant}`]} data-palette-control data-product-slug={slug} data-colour-mode={mode} aria-labelledby={`${controlId}-title`}>
+  <span class="palette-control__label" id={`${controlId}-title`}>{mode === "single" ? "Colour" : "Preferred colour"}</span>
+  <div class="palette-control__choices" role="group" aria-label={`Select a preferred colour for ${name}`}>
+    {options.map((option, index) => <button type="button" class="palette-control__choice" data-palette-choice data-palette-id={option.id} data-palette-name={option.name} aria-pressed={index === 0 ? "true" : "false"} aria-label={`${option.name}${index === 0 ? ", selected" : ""}`} title={option.name}><i style={`--swatch:${option.value};--swatch-secondary:${option.secondaryValue ?? option.value}`} aria-hidden="true"></i><span class="visually-hidden">{option.name}</span></button>)}
+    {mode === "custom" && <button type="button" class="palette-control__custom" data-custom-colour aria-label={`Choose a custom colour for ${name}`}><i aria-hidden="true"></i><span>Custom colour</span></button>}
+  </div>
+  <output class="palette-control__name" data-palette-name-output>{options[0]?.name}</output>
+  {variant === "detail" && mode !== "single" && <p class="palette-control__note">Colour choices are customization preferences. Final availability is confirmed by the atelier.</p>}
+  <span class="visually-hidden" data-palette-status aria-live="polite"></span>
+  <dialog class="custom-colour-dialog" data-custom-colour-dialog aria-labelledby={`${controlId}-dialog-title`} aria-describedby={`${controlId}-dialog-note`}>
+    <form method="dialog" class="custom-colour-dialog__panel">
+      <h2 id={`${controlId}-dialog-title`}>Choose a preferred colour</h2><p id={`${controlId}-dialog-note`}>Choose a preferred shade. The atelier will confirm fabric and dye availability before production.</p>
+      <label class="custom-colour-dialog__picker"><input type="color" value="#6A4E42" data-custom-colour-input aria-label="Choose preferred colour" /><span class="custom-colour-dialog__preview" data-custom-colour-preview aria-hidden="true"></span><span>Choose preferred colour</span></label><output data-custom-colour-value>#6A4E42</output>
+      <p class="custom-colour-dialog__variation">Final colour may vary slightly depending on fabric, dye, lighting and handcraft.</p>
+      <div><button type="button" data-custom-colour-cancel>Cancel</button><button type="button" data-custom-colour-confirm>Request this shade</button></div>
+    </form>
+  </dialog>
+</section>
+
+<script>
+  const paletteKey = (slug: string) => `rangbastra:palette:${slug}`;
+  const initialState = (root: HTMLElement) => {
+    const slug = root.dataset.productSlug ?? "";
+    const query = new URLSearchParams(location.search);
+    const requested = query.get("palette") || sessionStorage.getItem(paletteKey(slug)) || "";
+    const choices = [...root.querySelectorAll<HTMLButtonElement>("[data-palette-choice]")];
+    const mode = root.dataset.colourMode;
+    const custom = query.get("customColour") || sessionStorage.getItem(`${paletteKey(slug)}:custom`) || "";
+    if (requested === "custom" && mode === "custom" && /^#[0-9a-f]{6}$/i.test(custom)) return { id: "custom", name: `Custom ${custom.toUpperCase()}`, custom };
+    const choice = choices.find((item) => item.dataset.paletteId === requested) ?? choices[0];
+    return { id: choice?.dataset.paletteId ?? "", name: choice?.dataset.paletteName ?? "", custom: "" };
+  };
+  const initialisePalettes = () => document.querySelectorAll<HTMLElement>("[data-palette-control]").forEach((root) => {
+    if (root.dataset.ready) return;
+    root.dataset.ready = "true";
+    const slug = root.dataset.productSlug ?? "";
+    const name = root.querySelector<HTMLOutputElement>("[data-palette-name-output]");
+    const status = root.querySelector<HTMLElement>("[data-palette-status]");
+    const dialog = root.querySelector<HTMLDialogElement>("[data-custom-colour-dialog]");
+    const input = root.querySelector<HTMLInputElement>("[data-custom-colour-input]");
+    const value = root.querySelector<HTMLOutputElement>("[data-custom-colour-value]");
+    const preview = root.querySelector<HTMLElement>("[data-custom-colour-preview]");
+    let opener: HTMLElement | null = null;
+    let confirmed = initialState(root);
+    const showValue = (hex: string) => { if (value) value.value = hex.toUpperCase(); if (preview) preview.style.background = hex; };
+    const apply = (selection: { id: string; name: string; custom: string }, announce = false) => {
+      root.querySelectorAll<HTMLButtonElement>("[data-palette-choice]").forEach((choice) => choice.setAttribute("aria-pressed", String(choice.dataset.paletteId === selection.id)));
+      if (name) name.value = selection.name;
+      sessionStorage.setItem(paletteKey(slug), selection.id);
+      if (selection.custom) sessionStorage.setItem(`${paletteKey(slug)}:custom`, selection.custom); else sessionStorage.removeItem(`${paletteKey(slug)}:custom`);
+      root.dispatchEvent(new CustomEvent("rangbastra:palette-selected", { bubbles: true, detail: { slug, ...selection } }));
+      confirmed = selection;
+      if (announce && status) status.textContent = `${selection.name} saved as your preference. Product imagery remains unchanged.`;
+    };
+    apply(confirmed); showValue(confirmed.custom || input?.value || "#6A4E42");
+    root.querySelectorAll<HTMLButtonElement>("[data-palette-choice]").forEach((choice) => choice.addEventListener("click", () => apply({ id: choice.dataset.paletteId ?? "", name: choice.dataset.paletteName ?? "", custom: "" }, true)));
+    root.querySelector<HTMLButtonElement>("[data-custom-colour]")?.addEventListener("click", (event) => { opener = event.currentTarget as HTMLElement; const hex = confirmed.custom || input?.value || "#6A4E42"; if (input) input.value = hex; showValue(hex); dialog?.showModal(); });
+    input?.addEventListener("input", () => showValue(input.value));
+    const close = () => { dialog?.close(); opener?.focus(); };
+    root.querySelector<HTMLButtonElement>("[data-custom-colour-cancel]")?.addEventListener("click", close);
+    root.querySelector<HTMLButtonElement>("[data-custom-colour-confirm]")?.addEventListener("click", () => { const hex = input?.value.toUpperCase() ?? "#6A4E42"; apply({ id: "custom", name: `Custom ${hex}`, custom: hex }, true); close(); });
+    dialog?.addEventListener("cancel", () => { opener?.focus(); });
+  });
+  initialisePalettes(); document.addEventListener("astro:page-load", initialisePalettes);
+</script>
+
+<style>
+  .palette-control{display:grid;gap:var(--space-2);min-width:0}.palette-control--card{min-height:5rem}.palette-control__label{color:var(--text-muted);font-size:var(--caption);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-label);text-transform:uppercase}.palette-control__choices{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);min-height:2.75rem}.palette-control__choice,.palette-control__custom{display:grid;min-width:2.75rem;min-height:2.75rem;place-items:center;border:1px solid var(--cocoa-border-soft);border-radius:50%;background:rgba(5,5,5,.78);color:var(--text-secondary);cursor:pointer}.palette-control__choice i{display:block;width:1.4rem;height:1.4rem;border:1px solid rgba(255,255,255,.18);border-radius:50%;background:linear-gradient(135deg,var(--swatch) 0 50%,var(--swatch-secondary,var(--swatch)) 50% 100%)}.palette-control__choice[aria-pressed="true"]{border-color:rgb(var(--cocoa-rgb));box-shadow:0 0 0 1px rgb(var(--cocoa-rgb))}.palette-control__choice:focus-visible,.palette-control__custom:focus-visible{outline:2px solid var(--focus-ring);outline-offset:3px}.palette-control__custom{width:auto;border-radius:var(--radius-md);grid-auto-flow:column;gap:var(--space-2);padding-inline:var(--space-3);font-size:var(--caption)}.palette-control__custom i{width:1.4rem;height:1.4rem;border-radius:50%;background:conic-gradient(#a12645,#c6a972,#315b45,#4a214f,#a12645)}.palette-control__name,.palette-control__note{color:var(--text-secondary);font-size:var(--caption);line-height:var(--leading-caption)}.palette-control__note{margin:0}.custom-colour-dialog{box-sizing:border-box;inline-size:min(calc(100vw - 2rem),28rem);max-inline-size:calc(100vw - 2rem);max-block-size:calc(100dvh - 2rem);margin:auto;overflow:auto;border:1px solid var(--cocoa-border-strong);border-radius:var(--radius-lg);padding:0;background:#090807;color:var(--text-primary);box-shadow:var(--shadow-premium)}.custom-colour-dialog::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(6px)}.custom-colour-dialog__panel{display:grid;gap:var(--space-5);padding:clamp(var(--space-5),5vw,var(--space-7))}.custom-colour-dialog h2{margin:0;font-family:var(--font-display);font-size:clamp(2rem,7vw,3rem);font-weight:var(--weight-light);line-height:1}.custom-colour-dialog p{margin:0;color:var(--text-secondary);line-height:var(--leading-body)}.custom-colour-dialog__picker{display:flex;align-items:center;gap:var(--space-3);width:fit-content;min-height:3.5rem;color:var(--text-primary);cursor:pointer}.custom-colour-dialog__picker input{position:absolute;inline-size:1px;block-size:1px;opacity:0}.custom-colour-dialog__preview{display:block;inline-size:3.25rem;block-size:3.25rem;border:2px solid var(--cocoa-border-strong);border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24)}.custom-colour-dialog__picker:focus-within{outline:2px solid var(--focus-ring);outline-offset:4px}.custom-colour-dialog output{color:var(--ivory-100);font-family:var(--font-body);font-variant-numeric:tabular-nums}.custom-colour-dialog__variation{font-size:var(--caption)}.custom-colour-dialog__panel>div{display:flex;flex-wrap:wrap;gap:var(--space-3)}.custom-colour-dialog button{min-height:44px;padding-inline:var(--space-4);border:1px solid var(--cocoa-border);border-radius:var(--radius-md);background:rgba(255,255,255,.03);color:var(--text-primary)}.custom-colour-dialog [data-custom-colour-confirm]{background:rgba(var(--cocoa-rgb),.2)}@media(max-width:380px){.custom-colour-dialog{inline-size:calc(100vw - 1.25rem);max-inline-size:calc(100vw - 1.25rem);max-block-size:calc(100dvh - 1.25rem)}.custom-colour-dialog__panel{gap:var(--space-4);padding:var(--space-4)}}@media(prefers-reduced-motion:reduce){.custom-colour-dialog,.custom-colour-dialog::backdrop{transition:none}}
+</style>
