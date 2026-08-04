@@ -1,3 +1,5 @@
+import { getEditorialAssetUrl } from "./editorialAssets.js";
+
 export interface SignaturePrinciple {
   id: number;
   title: string;
@@ -37,6 +39,6 @@ export const signaturePrinciples: SignaturePrinciple[] = [
 ];
 
 export const signatureCustomizationImage = {
-  src: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782458746/RB_Hero_v7dyxg.png",
+  src: getEditorialAssetUrl("rb-hero"),
   alt: "Rangbastra couture detail created through a personal design philosophy",
 };

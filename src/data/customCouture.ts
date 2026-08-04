@@ -1,14 +1,14 @@
 export const customCoutureImages = {
   hero:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648330/Bridal_Edit_wajwba.webp",
+    getEditorialAssetUrl("bridal-edit"),
   atelier:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Consult_Our_Designer_pbxliz.webp",
+    getEditorialAssetUrl("consultation"),
   fabric:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/RB_Fabric_Swatches_ortjph.webp",
+    getEditorialAssetUrl("fabric-selection"),
   craft:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Crafted_with_Precision_yh1xgw.webp",
+    getEditorialAssetUrl("craft-details"),
   celebration:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Celebrate_Beautifully_pgr9c6.webp",
+    getEditorialAssetUrl("ready-to-be-remembered"),
 };
 
 export interface EditorialCard {
@@ -192,3 +192,4 @@ export const customCoutureFaq: FaqItem[] = [
       "Yes. Investment is discussed privately after the atelier understands craft, fabric, embroidery, complexity and timeline.",
   },
 ];
+import { getEditorialAssetUrl } from "./editorialAssets.js";

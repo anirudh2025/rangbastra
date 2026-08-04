@@ -1,4 +1,5 @@
 import { cloudinaryImageUrl } from "../lib/cloudinary";
+import { getEditorialAssetUrl } from "./editorialAssets.js";
 
 export interface LookbookPage {
   id: string;
@@ -19,7 +20,7 @@ export const lookbookPages: LookbookPage[] = [
     title: "Stories in silhouette",
     copy: "An original Rangbastra editorial sequence for bridal and occasion couture.",
     image:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648334/Couture_Edit_u7kmac.webp",
+      getEditorialAssetUrl("couture-edit"),
     imageAlt: "Rangbastra couture photographed for the editorial lookbook",
   },
   {
@@ -81,7 +82,7 @@ export const lookbookPages: LookbookPage[] = [
     title: "Before the first sketch",
     copy: "Every custom piece begins with context: the occasion, the wearer and the feeling she wants to carry.",
     image:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Consult_Our_Designer_pbxliz.webp",
+      getEditorialAssetUrl("consultation"),
     imageAlt: "A private Rangbastra designer consultation",
     annotation: "Private consultation · custom direction",
   },
@@ -92,7 +93,7 @@ export const lookbookPages: LookbookPage[] = [
     title: "Continue the story",
     copy: "Return to the collection or begin a private design conversation.",
     image:
-      "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/RB_Fabric_Swatches_ortjph.webp",
+      getEditorialAssetUrl("fabric-selection"),
     imageAlt: "Rangbastra fabric swatches arranged in the atelier",
   },
 ];

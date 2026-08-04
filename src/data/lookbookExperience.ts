@@ -1,3 +1,5 @@
+import { getEditorialAssetUrl } from "./editorialAssets.js";
+
 export type LookbookFrame = "portrait" | "landscape" | "square" | "feature" | "wide" | "tall";
 
 export interface EditorialShoot {
@@ -24,56 +26,56 @@ export interface LookbookProcessStep {
 
 export const lookbookExperienceImages = {
   hero:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648334/Couture_Edit_u7kmac.webp",
+    getEditorialAssetUrl("couture-edit"),
   editorsNote:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
+    getEditorialAssetUrl("signature-edit"),
   behindFrame:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Consult_Our_Designer_pbxliz.webp",
+    getEditorialAssetUrl("consultation"),
   quote:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Crafted_with_Precision_yh1xgw.webp",
+    getEditorialAssetUrl("craft-details"),
 };
 
 export const editorialShoots: EditorialShoot[] = [
   {
     title: "Bridal Edit",
     issue: "The ceremony chapter",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648330/Bridal_Edit_wajwba.webp",
+    image: getEditorialAssetUrl("bridal-edit"),
     caption: "A bridal story composed around stillness, ritual and memory.",
   },
   {
     title: "Reception Edit",
     issue: "After-dark elegance",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648334/Couture_Edit_u7kmac.webp",
+    image: getEditorialAssetUrl("couture-edit"),
     caption: "Evening silhouettes photographed with movement and restraint.",
   },
   {
     title: "Festive Edit",
     issue: "Colour in quiet motion",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648338/Festive_Edit_boj0wo.webp",
+    image: getEditorialAssetUrl("festive-edit"),
     caption: "Celebration pieces framed as intimate moments, not catalogue entries.",
   },
   {
     title: "Heritage Edit",
     issue: "The heirloom mood",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
+    image: getEditorialAssetUrl("signature-edit"),
     caption: "Textile memory, craft and proportion held in a quieter frame.",
   },
   {
     title: "Minimal Edit",
     issue: "Less, held beautifully",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/RB_Fabric_Swatches_ortjph.webp",
+    image: getEditorialAssetUrl("fabric-selection"),
     caption: "A study in surface, fabric and the luxury of restraint.",
   },
   {
     title: "Modern Bride",
     issue: "Personal presence",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Celebrate_Beautifully_pgr9c6.webp",
+    image: getEditorialAssetUrl("ready-to-be-remembered"),
     caption: "A bride photographed as herself before she is photographed as fashion.",
   },
   {
     title: "Signature Edit",
     issue: "The Rangbastra frame",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Crafted_with_Precision_yh1xgw.webp",
+    image: getEditorialAssetUrl("craft-details"),
     caption: "An editorial world where craft and emotion share the same light.",
   },
 ];
@@ -84,7 +86,7 @@ export const lookbookMasonry: LookbookImage[] = [
     title: "The Bridal Quiet",
     collection: "Bridal Edit",
     caption: "A silhouette made for the pause before the celebration begins.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648330/Bridal_Edit_wajwba.webp",
+    image: getEditorialAssetUrl("bridal-edit"),
     frame: "feature",
   },
   {
@@ -92,7 +94,7 @@ export const lookbookMasonry: LookbookImage[] = [
     title: "Modern Heirloom",
     collection: "Heritage Edit",
     caption: "Couture detail with the restraint of a piece meant to be kept.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
+    image: getEditorialAssetUrl("signature-edit"),
     frame: "portrait",
   },
   {
@@ -100,7 +102,7 @@ export const lookbookMasonry: LookbookImage[] = [
     title: "Evening Movement",
     collection: "Reception Edit",
     caption: "Fabric, light and proportion meeting in a single gesture.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648334/Couture_Edit_u7kmac.webp",
+    image: getEditorialAssetUrl("couture-edit"),
     frame: "landscape",
   },
   {
@@ -108,7 +110,7 @@ export const lookbookMasonry: LookbookImage[] = [
     title: "Festive Stillness",
     collection: "Festive Edit",
     caption: "A composed moment for colour, memory and celebration.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648338/Festive_Edit_boj0wo.webp",
+    image: getEditorialAssetUrl("festive-edit"),
     frame: "tall",
   },
   {
@@ -116,7 +118,7 @@ export const lookbookMasonry: LookbookImage[] = [
     title: "Fabric Language",
     collection: "Minimal Edit",
     caption: "Texture photographed close enough to feel like a page you can touch.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/RB_Fabric_Swatches_ortjph.webp",
+    image: getEditorialAssetUrl("fabric-selection"),
     frame: "wide",
   },
   {
@@ -124,7 +126,7 @@ export const lookbookMasonry: LookbookImage[] = [
     title: "The First Conversation",
     collection: "Modern Bride",
     caption: "A design moment before the garment enters the frame.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Consult_Our_Designer_pbxliz.webp",
+    image: getEditorialAssetUrl("consultation"),
     frame: "square",
   },
   {
@@ -132,7 +134,7 @@ export const lookbookMasonry: LookbookImage[] = [
     title: "Handwork Close",
     collection: "Signature Edit",
     caption: "Embroidery photographed as a quiet act of patience.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Crafted_with_Precision_yh1xgw.webp",
+    image: getEditorialAssetUrl("craft-details"),
     frame: "portrait",
   },
   {
@@ -140,7 +142,7 @@ export const lookbookMasonry: LookbookImage[] = [
     title: "Final Story",
     collection: "Modern Bride",
     caption: "The final frame belongs to emotion before it belongs to fashion.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Celebrate_Beautifully_pgr9c6.webp",
+    image: getEditorialAssetUrl("ready-to-be-remembered"),
     frame: "landscape",
   },
 ];
@@ -179,7 +181,7 @@ export const signatureDetails: LookbookImage[] = [
     title: "Embroidery",
     collection: "Signature Detail",
     caption: "Handwork placed with patience and proportion.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Crafted_with_Precision_yh1xgw.webp",
+    image: getEditorialAssetUrl("craft-details"),
     frame: "portrait",
   },
   {
@@ -187,7 +189,7 @@ export const signatureDetails: LookbookImage[] = [
     title: "Fabric",
     collection: "Signature Detail",
     caption: "A surface story told through weave, fall and light.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/RB_Fabric_Swatches_ortjph.webp",
+    image: getEditorialAssetUrl("fabric-selection"),
     frame: "landscape",
   },
   {
@@ -195,7 +197,7 @@ export const signatureDetails: LookbookImage[] = [
     title: "Mirror Work",
     collection: "Signature Detail",
     caption: "Small reflections held inside a larger couture mood.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
+    image: getEditorialAssetUrl("signature-edit"),
     frame: "portrait",
   },
   {
@@ -203,7 +205,7 @@ export const signatureDetails: LookbookImage[] = [
     title: "Handwork",
     collection: "Signature Detail",
     caption: "The hand remains visible in the rhythm of the finish.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648330/Bridal_Edit_wajwba.webp",
+    image: getEditorialAssetUrl("bridal-edit"),
     frame: "portrait",
   },
   {
@@ -211,7 +213,7 @@ export const signatureDetails: LookbookImage[] = [
     title: "Texture",
     collection: "Signature Detail",
     caption: "Close enough to notice restraint before ornament.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648338/Festive_Edit_boj0wo.webp",
+    image: getEditorialAssetUrl("festive-edit"),
     frame: "landscape",
   },
   {
@@ -219,7 +221,7 @@ export const signatureDetails: LookbookImage[] = [
     title: "Jewellery Pairing",
     collection: "Signature Detail",
     caption: "A final note that completes the frame without overtaking it.",
-    image: "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Celebrate_Beautifully_pgr9c6.webp",
+    image: getEditorialAssetUrl("ready-to-be-remembered"),
     frame: "portrait",
   },
 ];

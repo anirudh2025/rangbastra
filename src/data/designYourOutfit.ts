@@ -1,10 +1,11 @@
 import { getWhatsAppHref, whatsappMessages } from "./contact";
+import { getEditorialAssetUrl } from "./editorialAssets.js";
 
 export const designYourOutfitImages = {
   hero:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
+    getEditorialAssetUrl("signature-edit"),
   invitation:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Consult_Our_Designer_pbxliz.webp",
+    getEditorialAssetUrl("consultation"),
 };
 
 export const designYourOutfitWhatsappMessage = [

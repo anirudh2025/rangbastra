@@ -1,3 +1,5 @@
+import { getEditorialAssetUrl } from "./editorialAssets.js";
+
 export interface JourneyStep{
 
     id:number;
@@ -14,16 +16,16 @@ export interface JourneyStep{
 
 const journeyImages = {
     vision:
-        "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/RB_Fabric_Swatches_ortjph.webp",
+        getEditorialAssetUrl("fabric-selection"),
 
     consultation:
-        "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Consult_Our_Designer_pbxliz.webp",
+        getEditorialAssetUrl("consultation"),
 
     craft:
-        "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Crafted_with_Precision_yh1xgw.webp",
+        getEditorialAssetUrl("craft-details"),
 
     celebration:
-        "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Celebrate_Beautifully_pgr9c6.webp"
+        getEditorialAssetUrl("ready-to-be-remembered")
 };
 
 export const journey:JourneyStep[]=[
@@ -94,7 +96,7 @@ description:"Balance, length and finishing are reviewed with care before the pie
 
 icon:"delivery",
 
-image:journeyImages.consultation
+image:getEditorialAssetUrl("final-fitting")
 
 },
 

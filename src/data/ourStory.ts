@@ -1,14 +1,11 @@
+import { getEditorialAssetUrl } from "./editorialAssets.js";
+
 export const ourStoryImages = {
-  hero:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Consult_Our_Designer_pbxliz.webp",
-  beginning:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782648342/Signature_Edit_k9aiop.webp",
-  founder:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Crafted_with_Precision_yh1xgw.webp",
-  philosophy:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/RB_Fabric_Swatches_ortjph.webp",
-  future:
-    "https://res.cloudinary.com/dfxlm7z58/image/upload/v1782996268/Celebrate_Beautifully_pgr9c6.webp",
+  hero: getEditorialAssetUrl("consultation"),
+  beginning: getEditorialAssetUrl("signature-edit"),
+  founder: getEditorialAssetUrl("about-rangbastra"),
+  philosophy: getEditorialAssetUrl("fabric-selection"),
+  future: getEditorialAssetUrl("ready-to-be-remembered"),
 };
 
 export const storyPrinciples = [
