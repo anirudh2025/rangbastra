@@ -24,9 +24,9 @@
     "three": "0.185.1"
   },
   "overrides": {
-    "fast-uri": "4.1.1",
+    "fast-uri": "4.1.2",
     "js-yaml": "4.3.0",
-    "postcss": "8.5.18",
+    "postcss": "8.5.23",
     "svgo": "4.0.2"
   },
   "devDependencies": {
