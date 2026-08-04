@@ -2,133 +2,21 @@
 import Container from "../../components/primitives/Container.astro";
 import Eyebrow from "../../components/primitives/Eyebrow.astro";
 import Section from "../../components/primitives/Section.astro";
+import { ourStoryImages } from "../../data/ourStory";
 ---
 
 <Section class="purpose-section" aria-labelledby="rangbastra-purpose-heading">
   <Container class="purpose-container">
-    <div class="purpose-introduction">
+    <figure class="purpose-image"><img src={ourStoryImages.founder} alt="Rangbastra atelier craftsmanship in progress" width="1200" height="1350" loading="lazy" decoding="async" /></figure>
+    <div class="purpose-content">
       <Eyebrow>About Rangbastra</Eyebrow>
-      <h2 id="rangbastra-purpose-heading">Your Private Couture Space</h2>
-    </div>
-    <div class="purpose-copy">
-      <p class="purpose-summary">
-        Rangbastra is an online luxury bridal and occasion-wear couture platform
-        based in Anand, Gujarat.
-      </p>
-      <p>
-        Explore curated collections, understand each design in detail, and begin
-        a couture journey crafted around you. Creating a Rangbastra account lets
-        you save inspirations, manage your profile, submit couture requests, and
-        keep track of your appointments in one private space.
-      </p>
-      <div class="purpose-google">
-        <h3>Why we request Google account information</h3>
-        <p>
-          Google Sign-In is available as a secure and convenient way to create
-          or access your Rangbastra account. When you choose Continue with
-          Google, Rangbastra receives basic profile information from Google to
-          create and authenticate your account. This lets us identify your
-          account and provide its private couture features.
-        </p>
-        <p>
-          Depending on the information available from your Google profile, this
-          may include your name, email address and profile image.
-        </p>
-        <p>
-          Rangbastra uses this information only for account creation,
-          authentication, account features and customer support. We do not sell
-          Google user information or use it for third-party advertising.
-        </p>
-        <p>
-          Rangbastra does not request access to Gmail messages, Google Drive
-          files, Google Contacts or other private Google services.
-        </p>
-      </div>
-      <nav class="purpose-links" aria-label="Rangbastra account and policies">
-        <a href="/privacy-policy">Privacy Policy</a>
-        <a href="/terms-and-conditions">Terms &amp; Conditions</a>
-        <a href="/account">Create Account / Sign In</a>
-        <a href="/contact">Customer Support</a>
-      </nav>
+      <h2 id="rangbastra-purpose-heading">Couture, crafted around you.</h2>
+      <p>Rangbastra creates made-to-order couture shaped by the woman, her occasion and her way of expressing it—through considered craft, personal detail and pieces intended to remain meaningful.</p>
+      <a href="/our-story" class="purpose-link">Enter the Rangbastra story</a>
     </div>
   </Container>
 </Section>
 
 <style>
-  :global(.purpose-section) {
-    --section-padding-block: clamp(var(--space-8), 8vw, var(--space-11));
-    position: relative;
-    padding-block-start: calc(
-      var(--homepage-section-spacing, var(--space-10)) + var(--space-5)
-    ) !important;
-    scroll-margin-top: calc(var(--navbar-height) + var(--space-4));
-    border-block: 1px solid var(--cocoa-border-soft);
-    background: radial-gradient(circle at 16% 28%, rgba(var(--cocoa-rgb), .12), transparent 34%), var(--surface-canvas);
-  }
-  :global(.purpose-container) {
-    display: grid;
-    grid-template-columns: minmax(16rem, .8fr) minmax(18rem, 1.2fr);
-    gap: clamp(var(--space-6), 8vw, var(--space-11));
-    align-items: start;
-  }
-  .purpose-introduction { display: grid; gap: var(--space-4); }
-  h2 {
-    max-width: 11ch;
-    color: var(--text-primary);
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 5vw, 5.4rem);
-    font-weight: var(--weight-light);
-    letter-spacing: var(--tracking-heading);
-    line-height: 1;
-  }
-  .purpose-copy { display: grid; gap: var(--space-5); max-width: 52rem; }
-  .purpose-copy p {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: var(--body-lg);
-    line-height: var(--leading-body);
-  }
-  .purpose-summary {
-    color: var(--text-primary) !important;
-  }
-  .purpose-google {
-    display: grid;
-    gap: var(--space-4);
-    padding-top: var(--space-5);
-    border-top: 1px solid var(--cocoa-border-soft);
-  }
-  .purpose-google h3 {
-    margin: 0;
-    color: var(--sand-200);
-    font-family: var(--font-sans);
-    font-size: var(--label-md);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    line-height: var(--leading-caption);
-    text-transform: uppercase;
-  }
-  .purpose-google p {
-    color: var(--text-secondary);
-    font-size: var(--body-md);
-  }
-  .purpose-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4) var(--space-6);
-    padding-top: var(--space-2);
-  }
-  .purpose-links a {
-    display: inline-flex;
-    min-height: 44px;
-    align-items: center;
-    color: var(--ivory-100);
-    font-size: var(--body-sm);
-    text-decoration-color: rgb(var(--cocoa-rgb));
-    text-underline-offset: .35em;
-  }
-  .purpose-links a:hover,
-  .purpose-links a:focus-visible { color: var(--sand-200); }
-  @media (max-width: 760px) {
-    :global(.purpose-container) { grid-template-columns: 1fr; gap: var(--space-7); }
-  }
+  :global(.purpose-section){--section-padding-block:clamp(var(--space-8),7vw,var(--space-10));background:var(--surface-canvas)}:global(.purpose-container){display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1fr);gap:clamp(var(--space-7),7vw,var(--space-11));align-items:center;max-width:var(--container-wide)}.purpose-image{position:relative;margin:0;overflow:hidden;aspect-ratio:4/4.5;border:1px solid var(--cocoa-border-soft);border-radius:var(--radius-lg);background:var(--surface-raised);box-shadow:inset 0 0 0 1px rgba(255,255,255,.035),var(--shadow-premium)}.purpose-image::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(145deg,rgba(255,255,255,.08),transparent 30%,rgba(0,0,0,.28))}.purpose-image img{width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.82) contrast(1.03)}.purpose-content{display:grid;gap:var(--space-5);align-content:center;min-width:0}.purpose-content h2{max-width:11ch;margin:0;color:var(--text-primary);font-family:var(--font-display);font-size:clamp(2.5rem,4.8vw,5rem);font-weight:var(--weight-light);letter-spacing:var(--tracking-heading);line-height:.98;text-wrap:balance}.purpose-content p{max-width:37rem;margin:0;color:var(--text-secondary);font-size:var(--body-lg);line-height:var(--leading-body);text-wrap:pretty}.purpose-link{display:inline-flex;width:fit-content;min-height:44px;align-items:center;color:var(--ivory-100);font-size:var(--body-sm);text-decoration-color:rgb(var(--cocoa-rgb));text-underline-offset:.35em}.purpose-link:hover,.purpose-link:focus-visible{color:var(--sand-200)}.purpose-link:focus-visible{outline:2px solid var(--focus-ring);outline-offset:4px;border-radius:var(--radius-sm)}@media(max-width:760px){:global(.purpose-container){grid-template-columns:1fr;gap:var(--space-6)}.purpose-image{aspect-ratio:4/4.35}.purpose-content{gap:var(--space-4)}.purpose-content p{max-width:none}}@media(max-width:350px){.purpose-content h2{font-size:clamp(2.3rem,13vw,3.15rem)}}
 </style>

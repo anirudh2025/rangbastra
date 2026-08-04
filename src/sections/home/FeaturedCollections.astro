@@ -1,120 +1,49 @@
 ---
 import Section from "../../components/primitives/Section.astro";
 import Container from "../../components/primitives/Container.astro";
-
 import CollectionHeader from "../../components/collections/CollectionHeader.astro";
 import CoutureCard from "../../components/couture/CoutureCard.astro";
 import { getPublishedCouturePieces } from "../../lib/couture";
+
 const products = getPublishedCouturePieces();
-const featured = ["Bridal", "Reception", "Engagement", "Festive"].flatMap(
-  (category) => products.find((product) => product.category === category) ?? [],
-);
+const categories = ["Bridal", "Reception", "Engagement", "Festive"];
+const featured = Array.from({ length: 10 }, (_, index) =>
+  products.filter((product) => product.category === categories[index % categories.length])[Math.floor(index / categories.length)],
+).filter((product): product is NonNullable<typeof product> => Boolean(product));
 ---
 
-<Section id="featured-collections" class="featured-collections-section">
+<Section id="featured-collections" class="featured-collections-section" aria-label="Featured couture collection">
   <Container class="featured-collections-container">
     <CollectionHeader />
-
-    <div class="featured-product-rail" aria-label="Featured couture directions">
-      <div class="featured-product-track">
-        {
-          featured.map((product, index) => (
-            <CoutureCard product={product} index={index} animateEntrance />
-          ))
-        }
+    <div class="featured-product-rail" data-featured-rail tabindex="0" aria-label="Featured couture pieces. Hover, focus, or touch to pause the moving collection.">
+      <div class="featured-product-track" data-featured-track>
+        <div class="featured-product-set">
+          {featured.map((product, index) => <CoutureCard product={product} index={index} />)}
+        </div>
+        <div class="featured-product-set" aria-hidden="true" data-featured-clone>
+          {featured.map((product, index) => <CoutureCard product={product} index={index + featured.length} />)}
+        </div>
       </div>
     </div>
   </Container>
 </Section>
 
 <script>
-  const initFeaturedStages = () =>
-    document
-      .querySelectorAll<HTMLElement>(".featured-collections-section")
-      .forEach((section) => {
-        if (section.dataset.stagesReady) return;
-        section.dataset.stagesReady = "true";
-        const cards = [
-          ...section.querySelectorAll<HTMLElement>("[data-featured-stage]"),
-        ];
-        if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          cards.forEach((card) => card.classList.add("is-settled"));
-          return;
-        }
-        const observer = new IntersectionObserver(
-          (entries) =>
-            entries.forEach((entry) => {
-              if (!entry.isIntersecting) return;
-              const card = entry.target as HTMLElement;
-              card.classList.add("is-settled");
-              observer.unobserve(card);
-              const stage = Number(card.dataset.featuredStage);
-              setTimeout(
-                () => window.RangbastraAudio?.stageTick(stage === cards.length),
-                Math.min(stage - 1, 3) * 150 + 700,
-              );
-            }),
-          { threshold: 0.3, rootMargin: "0px 0px -8%" },
-        );
-        cards.forEach((card) => observer.observe(card));
-      });
-  initFeaturedStages();
-  document.addEventListener("astro:page-load", initFeaturedStages);
+  const initialiseFeaturedRail = () => document.querySelectorAll<HTMLElement>("[data-featured-rail]").forEach((rail) => {
+    if (rail.dataset.ready) return;
+    rail.dataset.ready = "true";
+    let timer = 0;
+    const pause = () => { window.clearTimeout(timer); rail.dataset.paused = ""; };
+    const resumeLater = () => { window.clearTimeout(timer); timer = window.setTimeout(() => { delete rail.dataset.paused; }, 900); };
+    rail.querySelectorAll<HTMLElement>("[data-featured-clone] a, [data-featured-clone] button, [data-featured-clone] input, [data-featured-clone] select, [data-featured-clone] textarea").forEach((control) => control.tabIndex = -1);
+    rail.addEventListener("pointerdown", pause, { passive: true });
+    rail.addEventListener("pointerup", resumeLater, { passive: true });
+    rail.addEventListener("pointercancel", resumeLater, { passive: true });
+    document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); else resumeLater(); });
+  });
+  initialiseFeaturedRail(); document.addEventListener("astro:page-load", initialiseFeaturedRail);
 </script>
 
 <style>
-  :global(.featured-collections-section) {
-    --section-padding-block: clamp(var(--space-8), 8vw, var(--space-11));
-
-    overflow: hidden;
-  }
-
-  :global(.featured-collections-container) {
-    --container-default: var(--container-wide);
-    --container-padding-inline: clamp(var(--space-5), 5vw, var(--space-10));
-  }
-  :global(.featured-collections-container) {
-    opacity: var(--featured-content-opacity, 1);
-    transform: translateY(var(--featured-content-translate, 0));
-    will-change: opacity, transform;
-  }
-  .featured-product-rail {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    overscroll-behavior-inline: contain;
-    padding: var(--space-2) 0 var(--space-7);
-  }
-  .featured-product-rail::-webkit-scrollbar {
-    display: none;
-  }
-  .featured-product-track {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: clamp(var(--space-4), 2vw, var(--space-6));
-  }
-  .featured-product-track > :global(*) {
-    scroll-snap-align: start;
-  }
-
-  @media (max-width: 767px) {
-    :global(.featured-collections-section) {
-      --section-padding-block: clamp(var(--space-8), 15vw, var(--space-11));
-    }
-
-    :global(.featured-collections-container) {
-      --container-padding-inline: 0;
-      --mobile-collection-gutter: var(--space-4);
-    }
-    .featured-product-rail {
-      padding-inline: var(--space-4);
-      scroll-padding-inline: var(--space-4);
-    }
-    .featured-product-track {
-      grid-template-columns: none;
-      grid-auto-flow: column;
-      grid-auto-columns: min(82vw, 21rem);
-      gap: var(--space-4);
-    }
-  }
+  :global(.featured-collections-section){--section-padding-block:clamp(var(--space-8),8vw,var(--space-11));overflow:hidden}:global(.featured-collections-container){--container-default:var(--container-wide);--container-padding-inline:clamp(var(--space-5),5vw,var(--space-10))}.featured-product-rail{width:100vw;margin-inline:calc(50% - 50vw);overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none;padding:var(--space-2) 0 var(--space-7);outline:none}.featured-product-rail::-webkit-scrollbar{display:none}.featured-product-track{display:flex;width:max-content;animation:featured-rail-ltr 92s linear infinite;will-change:transform}.featured-product-set{display:flex;gap:clamp(var(--space-4),2vw,var(--space-6));padding-right:clamp(var(--space-4),2vw,var(--space-6))}.featured-product-set>:global(.product-card){flex:0 0 min(20.5rem,23vw);width:min(20.5rem,23vw)}.featured-product-rail:hover .featured-product-track,.featured-product-rail:focus-within .featured-product-track,.featured-product-rail[data-paused] .featured-product-track{animation-play-state:paused}@keyframes featured-rail-ltr{from{transform:translateX(-50%)}to{transform:translateX(0)}}@media(max-width:767px){:global(.featured-collections-container){--container-padding-inline:0}.featured-product-rail{padding-inline:0;scroll-padding-inline:var(--space-4)}.featured-product-set{gap:var(--space-4);padding-right:var(--space-4)}.featured-product-set>:global(.product-card){flex-basis:min(82vw,21rem);width:min(82vw,21rem)}}@media(prefers-reduced-motion:reduce){.featured-product-track{width:max-content;animation:none}.featured-product-set[aria-hidden="true"]{display:none}}
 </style>

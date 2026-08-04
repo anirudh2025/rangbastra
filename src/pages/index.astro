@@ -17,6 +17,10 @@ const socialImage = new URL(
   brandLogo.src,
   "https://www.rangbastra.luxury",
 ).toString();
+const SHOW_BRAND_STORY = true;
+const SHOW_EXPERIENCE = true;
+const SHOW_DIFFERENCE = true;
+const SHOW_CRAFT_DETAILS = true;
 ---
 
 <PageLayout
@@ -31,15 +35,15 @@ const socialImage = new URL(
 
     <Hero />
 
-    <RangbastraPurpose />
+    {SHOW_BRAND_STORY && <RangbastraPurpose />}
 
     <FeaturedCollections />
 
-    <CoutureFinder />
+    {SHOW_EXPERIENCE && <CoutureFinder />}
 
-    <RangbastraDifference />
+    {SHOW_DIFFERENCE && <RangbastraDifference />}
 
-    <CraftDetails />
+    {SHOW_CRAFT_DETAILS && <CraftDetails />}
 
     <Journey />
 

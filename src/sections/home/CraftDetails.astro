@@ -303,6 +303,13 @@ const details = [
     display: grid;
     gap: var(--space-3);
   }
+  .detail-panels article :global(.eyebrow) {
+    width: fit-content;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--cocoa-border-soft);
+    border-radius: var(--radius-circle);
+    background: rgba(var(--cocoa-rgb), 0.08);
+  }
   .detail-panels article[hidden] {
     display: none;
   }
