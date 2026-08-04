@@ -165,3 +165,31 @@ export const loadCanvaAccessToken = async ({
     now,
   });
 };
+
+/**
+ * Read-only credential readiness check for operational preflight screens.
+ * It deliberately never exchanges or refreshes a Canva token.
+ */
+export const inspectCanvaCredentialReadiness = async ({
+  supabase = getSupabaseAdminClient(),
+  now = Date.now(),
+} = {}) => {
+  const credentials = await loadStoredCredentials(supabase);
+  const accessTokenUsable = hasUsableAccessToken(credentials, now);
+  const refreshConfigured = Boolean(
+    process.env.CANVA_CLIENT_ID &&
+      process.env.CANVA_CLIENT_SECRET &&
+      process.env.CANVA_TOKEN_ENCRYPTION_KEY &&
+      typeof credentials.refresh_token_encrypted === "string" &&
+      credentials.refresh_token_encrypted,
+  );
+
+  return {
+    storage: "available",
+    accessToken: accessTokenUsable ? "usable" : "refresh_required",
+    refresh: refreshConfigured ? "configured" : "missing_configuration",
+    accessTokenValue: accessTokenUsable
+      ? decryptCanvaToken(credentials.access_token_encrypted)
+      : null,
+  };
+};
