@@ -4,6 +4,7 @@ import { CanvaCredentialError, loadCanvaAccessToken } from "./_credentials.js";
 import { downloadCanvaPng, isPngBuffer, CloudinaryUploadError } from "./_cloudinary.js";
 import { createCanvaPngExport } from "./_export.js";
 import { resolveEditorialBinding } from "./_editorial-bindings.js";
+import { discoverEditorialAssets, loadEditorialCanvaPages } from "./_editorial-discovery.js";
 import { getEditorialCloudinaryAsset, sha256, uploadEditorialPng } from "./_editorial-cloudinary.js";
 
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -14,25 +15,6 @@ const authorized = (value, secret) => {
   const supplied = Buffer.from(value.slice(7));
   const expected = Buffer.from(secret);
   return supplied.length === expected.length && timingSafeEqual(supplied, expected);
-};
-
-const getCanvaPage = async ({ accessToken, designId, pageId, expectedDimensions }) => {
-  const result = await fetch(`https://api.canva.com/rest/v1/designs/${encodeURIComponent(designId)}/pages?limit=200`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-  if (!result.ok) throw new Error("Canva could not retrieve the editorial design.");
-  const pages = (await result.json())?.items;
-  const page = Array.isArray(pages) ? pages.find((item) => item?.id === pageId) : null;
-  if (!page || !Number.isSafeInteger(page.page_number) || page.page_number < 1) {
-    throw new Error("The configured Canva page could not be found.");
-  }
-  if (
-    page.dimensions?.width !== expectedDimensions.width ||
-    page.dimensions?.height !== expectedDimensions.height
-  ) {
-    throw new Error("Canva page dimensions do not match the approved editorial asset.");
-  }
-  return page;
 };
 
 const preparePng = async (source, expectedDimensions) => {
@@ -63,8 +45,13 @@ export default async function handler(request, response) {
     if (typeof key !== "string") return response.status(400).json({ error: "An editorial asset is required." });
     const binding = resolveEditorialBinding({ key });
     const accessToken = await loadCanvaAccessToken();
-    const page = await getCanvaPage({ accessToken, designId: binding.designId, pageId: binding.asset.canvaPageId, expectedDimensions: binding.asset.expectedDimensions });
-    const exported = await createCanvaPngExport({ accessToken, designId: binding.designId, page: page.page_number, quality: "pro" });
+    const pages = await loadEditorialCanvaPages({ accessToken, designId: binding.designId });
+    const discovery = discoverEditorialAssets({ pages });
+    const asset = discovery.assets.find((item) => item.key === binding.asset.key);
+    if (!asset || asset.status !== "valid" || !asset.page) {
+      throw new Error(asset?.reason || "The selected editorial asset is not valid for synchronization.");
+    }
+    const exported = await createCanvaPngExport({ accessToken, designId: binding.designId, page: asset.page.pageNumber, quality: "pro" });
     if (exported.status !== "success") return response.status(502).json({ error: "Canva could not export the editorial asset." });
     const png = await preparePng(await downloadCanvaPng(exported.downloadUrl), binding.asset.expectedDimensions);
     const hash = sha256(png);

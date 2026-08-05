@@ -4,30 +4,7 @@ import {
 } from "./_credentials.js";
 import { getEditorialBindingStatus } from "./_editorial-bindings.js";
 import { getEditorialCloudinaryAsset } from "./_editorial-cloudinary.js";
-
-const canvaDesignIsReachable = async ({ accessToken, designId, bindings }) => {
-  const response = await fetch(
-    `https://api.canva.com/rest/v1/designs/${encodeURIComponent(designId)}/pages?limit=200`,
-    { headers: { Authorization: `Bearer ${accessToken}` } },
-  );
-  if (!response.ok) return { status: "unavailable" };
-  const pages = (await response.json())?.items;
-  if (!Array.isArray(pages)) return { status: "unavailable" };
-
-  return {
-    status: "available",
-    pages: bindings.map((asset) => {
-      const page = pages.find((item) => item?.id === asset.canvaPageId);
-      const dimensionsMatch =
-        page?.dimensions?.width === asset.expectedDimensions.width &&
-        page?.dimensions?.height === asset.expectedDimensions.height;
-      return {
-        key: asset.key,
-        pageBinding: page && dimensionsMatch ? "valid" : "invalid",
-      };
-    }),
-  };
-};
+import { discoverEditorialAssets, loadEditorialCanvaPages } from "./_editorial-discovery.js";
 
 export default async function handler(request, response) {
   response.setHeader("Cache-Control", "no-store");
@@ -38,52 +15,41 @@ export default async function handler(request, response) {
   }
 
   const bindings = getEditorialBindingStatus();
-  const bindingStatus = bindings.assets.map((asset) => ({
-    key: asset.key,
-    configured: Boolean(asset.canvaPageId),
-    expectedDimensions: asset.expectedDimensions,
-    publicId: asset.publicId,
-  }));
   const syncSecret = Boolean(process.env.CANVA_SYNC_SECRET);
   const runtime = {
-    supabase: process.env.PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
-      ? "configured"
-      : "missing",
-    canva_client: process.env.CANVA_CLIENT_ID && process.env.CANVA_CLIENT_SECRET
-      ? "configured"
-      : "missing",
-    token_encryption: process.env.CANVA_TOKEN_ENCRYPTION_KEY
-      ? "configured"
-      : "missing",
-    cloudinary: process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET
-      ? "configured"
-      : "missing",
+    supabase: process.env.PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY ? "configured" : "missing",
+    canva_client: process.env.CANVA_CLIENT_ID && process.env.CANVA_CLIENT_SECRET ? "configured" : "missing",
+    token_encryption: process.env.CANVA_TOKEN_ENCRYPTION_KEY ? "configured" : "missing",
+    cloudinary: process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET ? "configured" : "missing",
   };
 
   try {
     const canva = await inspectCanvaCredentialReadiness();
-    const design = canva.accessTokenValue
-      ? await canvaDesignIsReachable({
-          accessToken: canva.accessTokenValue,
-          designId: bindings.designId,
-          bindings: bindings.assets,
-        })
-      : { status: "not_checked" };
-    const cloudinary = await Promise.all(
-      bindings.assets.map(async (asset) => ({
-        key: asset.key,
-        status: (await getEditorialCloudinaryAsset(asset.publicId)).status,
-      })),
-    );
+    const pages = canva.accessTokenValue && bindings.designId
+      ? await loadEditorialCanvaPages({ accessToken: canva.accessTokenValue, designId: bindings.designId })
+      : [];
+    const discovery = discoverEditorialAssets({ pages, assets: bindings.assets });
+    const cloudinary = await Promise.all(discovery.assets.map(async (asset) => ({
+      key: asset.key,
+      status: (await getEditorialCloudinaryAsset(asset.publicId)).status,
+    })));
+    const missingWebsiteAssets = cloudinary.filter((asset) => asset.status === "missing").length;
 
     return response.status(200).json({
       bindings: bindings.designId ? "configured" : "missing_design",
-      assets: bindingStatus,
+      assets: discovery.assets.map((asset) => ({
+        key: asset.key,
+        pageBinding: asset.status,
+        expectedDimensions: asset.expectedDimensions,
+        actualDimensions: asset.actualDimensions,
+        publicId: asset.publicId,
+      })),
+      discovery: { ...discovery.counts, missingWebsiteAssets },
       canva: {
         storage: canva.storage,
         access_token: canva.accessToken,
         refresh: canva.refresh,
-        design,
+        design: { status: bindings.designId ? "available" : "not_checked" },
       },
       cloudinary,
       sync_authorization: syncSecret ? "configured" : "missing",
@@ -93,8 +59,9 @@ export default async function handler(request, response) {
     const credentialUnavailable = error instanceof CanvaCredentialError;
     return response.status(200).json({
       bindings: bindings.designId ? "configured" : "missing_design",
-      assets: bindingStatus,
-      canva: { storage: credentialUnavailable ? "unavailable" : "not_checked" },
+      assets: bindings.assets.map((asset) => ({ key: asset.key, pageBinding: "not_checked", expectedDimensions: asset.expectedDimensions, publicId: asset.publicId })),
+      discovery: { discoveredPages: 0, validMappedAssets: 0, unmappedPages: 0, invalidPages: 0, missingWebsiteAssets: 0 },
+      canva: { storage: credentialUnavailable ? "unavailable" : "not_checked", design: { status: "not_checked" } },
       cloudinary: "not_checked",
       sync_authorization: syncSecret ? "configured" : "missing",
       runtime,

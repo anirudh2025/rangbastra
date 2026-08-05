@@ -1,16 +1,7 @@
 import { CanvaCredentialError, loadCanvaAccessToken } from "./_credentials.js";
 import { getEditorialBindingStatus } from "./_editorial-bindings.js";
 import { getEditorialCloudinaryAsset } from "./_editorial-cloudinary.js";
-
-const loadCanvaPages = async ({ accessToken, designId }) => {
-  const response = await fetch(
-    `https://api.canva.com/rest/v1/designs/${encodeURIComponent(designId)}/pages?limit=200`,
-    { headers: { Authorization: `Bearer ${accessToken}` } },
-  );
-  if (!response.ok) throw new Error("Canva pages are unavailable.");
-  const pages = (await response.json())?.items;
-  return Array.isArray(pages) ? pages : [];
-};
+import { discoverEditorialAssets, loadEditorialCanvaPages } from "./_editorial-discovery.js";
 
 export default async function handler(request, response) {
   response.setHeader("Cache-Control", "no-store");
@@ -24,33 +15,31 @@ export default async function handler(request, response) {
     const bindings = getEditorialBindingStatus();
     const accessToken = bindings.designId ? await loadCanvaAccessToken() : null;
     const pages = accessToken
-      ? await loadCanvaPages({ accessToken, designId: bindings.designId })
+      ? await loadEditorialCanvaPages({ accessToken, designId: bindings.designId })
       : [];
-
-    const assets = await Promise.all(
-      bindings.assets.map(async (asset) => {
-        const page = pages.find((item) => item?.id === asset.canvaPageId);
-        const dimensionsMatch =
-          page?.dimensions?.width === asset.expectedDimensions.width &&
-          page?.dimensions?.height === asset.expectedDimensions.height;
-        return {
-          key: asset.key,
-          label: asset.label,
-          canvaPageLabel: asset.canvaPageLabel,
-          previewUrl: asset.url,
-          publicId: asset.publicId,
-          canvaPageId: asset.canvaPageId,
-          expectedDimensions: asset.expectedDimensions,
-          actualDimensions: page?.dimensions ?? null,
-          canvaPageConfigured: Boolean(asset.canvaPageId && page && dimensionsMatch),
-          cloudinary: await getEditorialCloudinaryAsset(asset.publicId),
-        };
-      }),
-    );
+    const discovery = discoverEditorialAssets({ pages, assets: bindings.assets });
+    const assets = await Promise.all(discovery.assets.map(async (asset) => ({
+      key: asset.key,
+      label: asset.label,
+      previewUrl: asset.url,
+      publicId: asset.publicId,
+      canvaPageId: asset.page?.id ?? asset.canvaPageId,
+      canvaPageTitle: asset.page?.title ?? null,
+      expectedDimensions: asset.expectedDimensions,
+      actualDimensions: asset.actualDimensions,
+      mappingStatus: asset.status,
+      mappingReason: asset.reason,
+      cloudinary: await getEditorialCloudinaryAsset(asset.publicId),
+    })));
 
     return response.status(200).json({
       canva: bindings.designId ? "configured" : "missing_design",
       cloudinary: bindings.cloudinaryConfigured ? "configured" : "configuration_mismatch",
+      discovery: {
+        ...discovery.counts,
+        duplicateKeys: discovery.duplicateKeys,
+        unmappedPages: discovery.unmappedPages,
+      },
       assets,
     });
   } catch (error) {

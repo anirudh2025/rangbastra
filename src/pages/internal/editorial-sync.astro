@@ -22,12 +22,13 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
         <label for="sync-secret">Sync Secret</label>
         <input id="sync-secret" type="password" autocomplete="off" required />
         <div class="actions">
-          <button type="button" data-sync-all>Sync All</button>
-          <button type="button" data-refresh>Refresh Status</button>
+          <button type="button" data-sync-all>Sync All Valid Assets</button>
+          <button type="button" data-refresh>Refresh Canva Pages</button>
         </div>
       </form>
 
       <p class="configuration" data-configuration aria-live="polite">Loading editorial asset status…</p>
+      <p class="discovery" data-discovery aria-live="polite"></p>
       <section class="asset-grid" aria-label="Editorial assets">
         {EDITORIAL_SYNC_ASSETS.map((asset) => (
           <article data-asset={asset.key}>
@@ -35,10 +36,13 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
             <div class="content">
               <h2>{asset.label}</h2>
               <dl>
+                <div><dt>Semantic key</dt><dd data-key>{asset.key}</dd></div>
                 <div><dt>Current status</dt><dd data-status>Checking…</dd></div>
                 <div><dt>Last sync</dt><dd data-last-sync>Not recorded</dd></div>
-                <div><dt>Canva page</dt><dd data-canva-page>Checking…</dd></div>
-                <div><dt>Native dimensions</dt><dd data-dimensions>Checking…</dd></div>
+                <div><dt>Canva page title</dt><dd data-canva-title>Checking…</dd></div>
+                <div><dt>Stable Canva page ID</dt><dd data-canva-page>Checking…</dd></div>
+                <div><dt>Native dimensions</dt><dd data-actual-dimensions>Checking…</dd></div>
+                <div><dt>Expected dimensions</dt><dd data-expected-dimensions>Checking…</dd></div>
                 <div><dt>Cloudinary target</dt><dd data-public-id>Checking…</dd></div>
               </dl>
               <button type="button" data-sync-asset={asset.key}>Sync {asset.label}</button>
@@ -55,6 +59,7 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
       const secretInput = document.querySelector("#sync-secret");
       const result = document.querySelector("[data-result]");
       const configuration = document.querySelector("[data-configuration]");
+      const discoveryOutput = document.querySelector("[data-discovery]");
       const refresh = document.querySelector("[data-refresh]");
       const syncAll = document.querySelector("[data-sync-all]");
       const assetButtons = [...document.querySelectorAll("[data-sync-asset]")];
@@ -66,7 +71,7 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
       };
       const formatDate = (value) => value ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "Not recorded";
       const readableStatus = (asset) => {
-        if (!asset.canvaPageConfigured) return "Missing Canva page";
+        if (asset.mappingStatus !== "valid") return asset.mappingReason || asset.mappingStatus;
         if (asset.cloudinary.status === "missing") return "Missing Cloudinary asset";
         if (asset.cloudinary.status === "available") return "Ready";
         return "Cloudinary status unavailable";
@@ -76,21 +81,36 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(payload.error || "Editorial status could not be loaded.");
         configuration.textContent = payload.canva === "configured" && payload.cloudinary === "configured"
-          ? "Canva and Cloudinary are configured."
-          : "Configuration required: set the editorial Canva design/page bindings and matching Cloudinary cloud before syncing.";
+          ? "Canva and Cloudinary are configured. This system requires one editorial Canva design ID plus shared runtime credentials."
+          : "Configuration required: set CANVA_EDITORIAL_DESIGN_ID and the matching Cloudinary delivery cloud before syncing.";
+        if (discoveryOutput && payload.discovery) {
+          const { discoveredPages, validMappedAssets, unmappedPages, invalidPages, duplicateKeys } = payload.discovery;
+          const alerts = [
+            unmappedPages ? `${unmappedPages} unmapped Canva page${unmappedPages === 1 ? "" : "s"}` : null,
+            invalidPages ? `${invalidPages} invalid asset mapping${invalidPages === 1 ? "" : "s"}` : null,
+            duplicateKeys?.length ? `duplicate keys: ${duplicateKeys.join(", ")}` : null,
+          ].filter(Boolean);
+          discoveryOutput.textContent = `${discoveredPages} pages discovered; ${validMappedAssets} valid mapped assets.${alerts.length ? ` Attention: ${alerts.join("; ")}.` : ""}`;
+        }
         payload.assets.forEach((asset) => {
           const card = document.querySelector(`[data-asset="${asset.key}"]`);
           if (!card) return;
           const status = card.querySelector("[data-status]");
           const lastSync = card.querySelector("[data-last-sync]");
+          const canvaTitle = card.querySelector("[data-canva-title]");
           const canvaPage = card.querySelector("[data-canva-page]");
-          const dimensions = card.querySelector("[data-dimensions]");
+          const actualDimensions = card.querySelector("[data-actual-dimensions]");
+          const expectedDimensions = card.querySelector("[data-expected-dimensions]");
           const publicId = card.querySelector("[data-public-id]");
+          const button = card.querySelector("[data-sync-asset]");
           if (status) status.textContent = readableStatus(asset);
           if (lastSync) lastSync.textContent = formatDate(asset.cloudinary.updatedAt);
+          if (canvaTitle) canvaTitle.textContent = asset.canvaPageTitle || "Not exposed by Canva API (stable manifest mapping)";
           if (canvaPage) canvaPage.textContent = asset.canvaPageId || "Missing Canva page";
-          if (dimensions) dimensions.textContent = `${asset.expectedDimensions.width} × ${asset.expectedDimensions.height}${asset.actualDimensions ? ` (detected ${asset.actualDimensions.width} × ${asset.actualDimensions.height})` : ""}`;
+          if (actualDimensions) actualDimensions.textContent = asset.actualDimensions ? `${asset.actualDimensions.width} × ${asset.actualDimensions.height}` : "Not detected";
+          if (expectedDimensions) expectedDimensions.textContent = `${asset.expectedDimensions.width} × ${asset.expectedDimensions.height}`;
           if (publicId) publicId.textContent = asset.publicId;
+          if (button instanceof HTMLButtonElement) button.disabled = asset.mappingStatus !== "valid";
         });
       };
       const syncAsset = async (key, secret) => {
@@ -125,7 +145,7 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
         }
       };
       assetButtons.forEach((button) => button.addEventListener("click", () => run([button.dataset.syncAsset || ""])));
-      syncAll?.addEventListener("click", () => run(assetButtons.map((button) => button.dataset.syncAsset || "").filter(Boolean)));
+      syncAll?.addEventListener("click", () => run(assetButtons.filter((button) => !button.disabled).map((button) => button.dataset.syncAsset || "").filter(Boolean)));
       refresh?.addEventListener("click", () => loadStatus().catch((error) => { result.textContent = error instanceof Error ? error.message : "Editorial status could not be loaded."; }));
       form?.addEventListener("submit", (event) => event.preventDefault());
       loadStatus().catch((error) => { result.textContent = error instanceof Error ? error.message : "Editorial status could not be loaded."; });
@@ -141,7 +161,7 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
   header p, dt { margin: 0; color: #bba477; font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; }
   h1, h2 { margin: 0; font-family: Georgia, serif; font-weight: 400; }
   h1 { font-size: clamp(2.7rem, 7vw, 5rem); }
-  header span, dd, .configuration { color: #cfc6b8; line-height: 1.5; }
+  header span, dd, .configuration, .discovery { color: #cfc6b8; line-height: 1.5; }
   form { display: grid; gap: .75rem; max-width: 34rem; margin: 2.5rem 0 1rem; }
   label { font-size: .9rem; }
   input, button { min-height: 2.75rem; border: 1px solid #8f7652; border-radius: .25rem; font: inherit; }
@@ -150,6 +170,7 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
   button:disabled { cursor: wait; opacity: .65; }
   .actions { display: flex; flex-wrap: wrap; gap: .75rem; }
   .asset-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
+  .discovery { margin: .5rem 0 0; }
   article { display: grid; grid-template-columns: 9rem minmax(0, 1fr); overflow: hidden; border: 1px solid #40382d; background: #181818; }
   .preview { background: #252019; aspect-ratio: 4 / 5; }
   .preview img { width: 100%; height: 100%; object-fit: cover; }

@@ -5,7 +5,9 @@ const createAsset = ({
   label,
   publicId,
   canvaBinding = false,
-  canvaPageLabel,
+  canvaPageId,
+  canvaTitleAliases = [],
+  enabled = true,
   expectedDimensions,
 }) =>
   Object.freeze({
@@ -13,7 +15,9 @@ const createAsset = ({
     label,
     publicId,
     canvaBinding,
-    canvaPageLabel,
+    enabled,
+    canvaPageId,
+    canvaTitleAliases: Object.freeze(canvaTitleAliases),
     expectedDimensions,
     url: `https://res.cloudinary.com/${EDITORIAL_CLOUD_NAME}/image/upload/f_auto,q_auto/${publicId}`,
   });
@@ -29,7 +33,8 @@ export const EDITORIAL_ASSETS = Object.freeze({
     label: "About Rangbastra",
     publicId: "Rangbastra/Editorial/About_Rangbastra",
     canvaBinding: true,
-    canvaPageLabel: "About Rangbastra",
+    canvaPageId: "PBwlJG1zhWzWW3TW",
+    canvaTitleAliases: ["About RB", "About Rangbastra"],
     expectedDimensions: Object.freeze({ width: 2160, height: 2700 }),
   }),
   consultation: createAsset({
@@ -37,7 +42,8 @@ export const EDITORIAL_ASSETS = Object.freeze({
     label: "Consultation",
     publicId: "Rangbastra/Editorial/Consultation",
     canvaBinding: true,
-    canvaPageLabel: "Private Consultation",
+    canvaPageId: "PBbQYB05VCgL1GkP",
+    canvaTitleAliases: ["Private Consultation"],
     expectedDimensions: Object.freeze({ width: 2400, height: 1500 }),
   }),
   fabricSelection: createAsset({
@@ -45,7 +51,8 @@ export const EDITORIAL_ASSETS = Object.freeze({
     label: "Fabric Selection",
     publicId: "Rangbastra/Editorial/Fabric_Selection",
     canvaBinding: true,
-    canvaPageLabel: "Choosing the Fabric",
+    canvaPageId: "PBRBGXGZz2DxbhXy",
+    canvaTitleAliases: ["Choosing the Fabric"],
     expectedDimensions: Object.freeze({ width: 2400, height: 1500 }),
   }),
   craftDetails: createAsset({
@@ -53,7 +60,8 @@ export const EDITORIAL_ASSETS = Object.freeze({
     label: "Craft Details",
     publicId: "Rangbastra/Editorial/Craft_Details",
     canvaBinding: true,
-    canvaPageLabel: "Every Stitch Matters",
+    canvaPageId: "PB9t5hFCWsltp6SR",
+    canvaTitleAliases: ["Every Stitch Matters"],
     expectedDimensions: Object.freeze({ width: 2400, height: 1500 }),
   }),
   finalFitting: createAsset({
@@ -61,7 +69,8 @@ export const EDITORIAL_ASSETS = Object.freeze({
     label: "Final Fitting",
     publicId: "Rangbastra/Editorial/Final_Fitting",
     canvaBinding: true,
-    canvaPageLabel: "The Final Fitting",
+    canvaPageId: "PB3XDS4drXfrs2LB",
+    canvaTitleAliases: ["The Final Fitting"],
     expectedDimensions: Object.freeze({ width: 2400, height: 1500 }),
   }),
   readyToBeRemembered: createAsset({
@@ -69,7 +78,8 @@ export const EDITORIAL_ASSETS = Object.freeze({
     label: "Ready To Be Remembered",
     publicId: "Rangbastra/Editorial/Ready_To_Be_Remembered",
     canvaBinding: true,
-    canvaPageLabel: "Ready to Be Remembered",
+    canvaPageId: "PBlck3WY37rJKvmH",
+    canvaTitleAliases: ["Ready to be Remembered", "Ready to Be Remembered"],
     expectedDimensions: Object.freeze({ width: 2400, height: 1500 }),
   }),
   bridalEdit: createAsset({
@@ -102,6 +112,43 @@ export const EDITORIAL_ASSETS = Object.freeze({
 export const EDITORIAL_SYNC_ASSETS = Object.freeze(
   Object.values(EDITORIAL_ASSETS).filter((asset) => asset.canvaBinding),
 );
+
+export const normalizeCanvaPageTitle = (value) =>
+  typeof value === "string"
+    ? value
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9|]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+    : "";
+
+/**
+ * Supports the future Canva naming convention: `canonical-key | Friendly title`.
+ * A title is accepted only when its key is registered or it exactly matches an
+ * approved alias after conservative normalisation.
+ */
+export const getEditorialAssetForCanvaTitle = (title) => {
+  const normalized = normalizeCanvaPageTitle(title);
+  if (!normalized) return null;
+  const rawCandidateKey = typeof title === "string" ? title.split("|", 1)[0] : "";
+  const candidateKey = rawCandidateKey
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+  const prefixed = assetsByKey.get(candidateKey);
+  if (prefixed?.canvaBinding) return prefixed;
+
+  return (
+    EDITORIAL_SYNC_ASSETS.find((asset) =>
+      asset.canvaTitleAliases.some(
+        (alias) => normalizeCanvaPageTitle(alias) === normalized,
+      ),
+    ) ?? null
+  );
+};
 
 const assetsByKey = new Map(
   Object.values(EDITORIAL_ASSETS).map((asset) => [asset.key, asset]),

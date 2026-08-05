@@ -11,6 +11,11 @@ const firstQueryValue = (value) =>
 
 export const toSafeCanvaPage = (page) => ({
   page_id: typeof page.id === "string" ? page.id : null,
+  page_title: typeof page.title === "string"
+    ? page.title
+    : typeof page.name === "string"
+      ? page.name
+      : null,
   page_number: page.page_number,
   design_type: page.design_type,
   dimensions: page.dimensions
