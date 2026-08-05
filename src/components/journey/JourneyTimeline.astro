@@ -34,6 +34,25 @@ import JourneyCard from "./JourneyCard.astro";
       .forEach((timeline) => {
         if (timeline.dataset.accordionReady) return;
         timeline.dataset.accordionReady = "true";
+        const cards = [...timeline.querySelectorAll<HTMLElement>(".journey-card")];
+        const revealCard = (card: HTMLElement) => card.classList.add("is-revealed");
+        if (matchMedia("(min-width: 1024px)").matches) {
+          if ("IntersectionObserver" in window) {
+            const observer = new IntersectionObserver(
+              (entries, activeObserver) => {
+                entries.forEach((entry) => {
+                  if (!entry.isIntersecting) return;
+                  revealCard(entry.target as HTMLElement);
+                  activeObserver.unobserve(entry.target);
+                });
+              },
+              { threshold: 0.2 },
+            );
+            cards.forEach((card) => observer.observe(card));
+          } else {
+            cards.forEach(revealCard);
+          }
+        }
         timeline
           .querySelectorAll<HTMLButtonElement>(".card-surface")
           .forEach((trigger) => {
@@ -62,9 +81,12 @@ import JourneyCard from "./JourneyCard.astro";
                 });
               card.classList.toggle("is-expanded", willOpen);
               trigger.setAttribute("aria-expanded", String(willOpen));
-              card
-                .querySelector<HTMLElement>(".image-panel")
-                ?.setAttribute("aria-hidden", String(!willOpen));
+              const imagePanel = card.querySelector<HTMLElement>(".image-panel");
+              imagePanel?.setAttribute("aria-hidden", String(!willOpen));
+              if (willOpen) {
+                const image = imagePanel?.querySelector<HTMLImageElement>("img");
+                if (image) image.loading = "eager";
+              }
               trigger.setAttribute(
                 "aria-label",
                 trigger.getAttribute("aria-label")?.replace(
