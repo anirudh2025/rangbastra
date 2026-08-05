@@ -62,7 +62,20 @@ export default async function handler(request, response) {
     const uploaded = await uploadEditorialPng({ png, asset: binding.asset, hash });
     return response.status(200).json({ status: "synced", asset: binding.asset.key, public_id: uploaded.publicId, version: uploaded.version, bytes: uploaded.bytes });
   } catch (error) {
-    if (error instanceof CloudinaryUploadError) return response.status(502).json({ error: "Editorial Cloudinary upload failed." });
+    if (error instanceof CloudinaryUploadError) {
+      return response.status(502).json({
+        error: error.providerMessage || error.message,
+        status: error.status,
+        response_body: error.responseBody,
+        cloudinary_error_message: error.providerMessage ?? null,
+        cloudinary_error_code: error.providerCode ?? null,
+        request_url: error.requestUrl,
+        upload_target: error.uploadTarget,
+        public_id: error.publicId,
+        folder: error.folder,
+        upload_preset: error.uploadPreset,
+      });
+    }
     if (error instanceof CanvaCredentialError) return response.status(503).json({ error: "Canva connection is unavailable." });
     return response.status(409).json({ error: error instanceof Error ? error.message : "Editorial synchronization failed." });
   }

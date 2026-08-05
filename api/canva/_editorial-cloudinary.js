@@ -14,6 +14,16 @@ const cloudinaryCredentials = () => {
 const authorization = ({ apiKey, apiSecret }) =>
   `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
 
+const readCloudinaryResponseBody = async (response) => {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+};
+
 export const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 
 export const getEditorialCloudinaryAsset = async (publicId) => {
@@ -49,8 +59,9 @@ export const uploadEditorialPng = async ({ png, asset, hash }) => {
   form.append("invalidate", "true");
   form.append("context", `canva_sha256=${hash}|editorial_asset_key=${asset.key}`);
 
+  const requestUrl = `https://api.cloudinary.com/v1_1/${credentials.cloudName}/image/upload`;
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${credentials.cloudName}/image/upload`,
+    requestUrl,
     {
       method: "POST",
       headers: { Authorization: authorization(credentials) },
@@ -58,7 +69,24 @@ export const uploadEditorialPng = async ({ png, asset, hash }) => {
     },
   );
   if (!response.ok) {
-    throw new CloudinaryUploadError({ status: response.status });
+    const responseBody = await readCloudinaryResponseBody(response);
+    const providerError = responseBody && typeof responseBody === "object" && !Array.isArray(responseBody)
+      ? responseBody.error
+      : null;
+    const uploadError = new CloudinaryUploadError({
+      status: response.status,
+      providerMessage: providerError?.message ?? null,
+      providerCode: providerError?.code ?? providerError?.type ?? null,
+    });
+    Object.assign(uploadError, {
+      responseBody,
+      requestUrl,
+      uploadTarget: "image/upload",
+      publicId: asset.publicId,
+      folder: null,
+      uploadPreset: null,
+    });
+    throw uploadError;
   }
 
   const uploaded = await response.json();
