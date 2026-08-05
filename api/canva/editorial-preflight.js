@@ -6,6 +6,11 @@ import { getEditorialBindingStatus } from "./_editorial-bindings.js";
 import { getEditorialCloudinaryAsset } from "./_editorial-cloudinary.js";
 import { discoverEditorialAssets, loadEditorialCanvaPages } from "./_editorial-discovery.js";
 
+const unverifiedDiscovery = (assets) => ({
+  assets: assets.map((asset) => ({ ...asset, page: null, actualDimensions: null, status: "not_checked", reason: "Editorial Canva design is not configured." })),
+  counts: { discoveredPages: 0, validMappedAssets: 0, unmappedPages: 0, invalidPages: 0 },
+});
+
 export default async function handler(request, response) {
   response.setHeader("Cache-Control", "no-store");
   response.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -28,7 +33,9 @@ export default async function handler(request, response) {
     const pages = canva.accessTokenValue && bindings.designId
       ? await loadEditorialCanvaPages({ accessToken: canva.accessTokenValue, designId: bindings.designId })
       : [];
-    const discovery = discoverEditorialAssets({ pages, assets: bindings.assets });
+    const discovery = bindings.designId
+      ? discoverEditorialAssets({ pages, assets: bindings.assets })
+      : unverifiedDiscovery(bindings.assets);
     const cloudinary = await Promise.all(discovery.assets.map(async (asset) => ({
       key: asset.key,
       status: (await getEditorialCloudinaryAsset(asset.publicId)).status,
