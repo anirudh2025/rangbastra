@@ -1,4 +1,4 @@
-const EDITORIAL_CLOUD_NAME = "dfxlm7z58";
+const EDITORIAL_CLOUD_NAME = "cloutoraworld";
 
 const createAsset = ({
   key,
