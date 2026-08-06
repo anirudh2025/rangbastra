@@ -76,6 +76,21 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
         if (asset.cloudinary.status === "available") return "Ready";
         return "Cloudinary status unavailable";
       };
+      const readableUnmappedPage = (page) => {
+        const dimensions = page?.dimensions?.width && page?.dimensions?.height
+          ? `${page.dimensions.width} × ${page.dimensions.height}`
+          : "Dimensions unavailable";
+        const order = Number.isInteger(page?.pageNumber)
+          ? `Page ${page.pageNumber}`
+          : "Page order unavailable";
+        const title = typeof page?.title === "string" && page.title.trim()
+          ? page.title.trim()
+          : "Title unavailable";
+        const id = typeof page?.id === "string" && page.id
+          ? page.id
+          : "Page ID unavailable";
+        return `${order} · ${dimensions} · ${title} · ${id}`;
+      };
       const loadStatus = async () => {
         const response = await fetch("/api/canva/editorial-status", { cache: "no-store" });
         const payload = await response.json().catch(() => ({}));
@@ -85,8 +100,11 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
           : "Configuration required: set CANVA_EDITORIAL_DESIGN_ID and the matching Cloudinary delivery cloud before syncing.";
         if (discoveryOutput && payload.discovery) {
           const { discoveredPages, validMappedAssets, unmappedPages, invalidPages, duplicateKeys } = payload.discovery;
+          const unmappedPageList = Array.isArray(unmappedPages) ? unmappedPages : [];
           const alerts = [
-            unmappedPages ? `${unmappedPages} unmapped Canva page${unmappedPages === 1 ? "" : "s"}` : null,
+            unmappedPageList.length
+              ? `unmapped Canva page${unmappedPageList.length === 1 ? "" : "s"}: ${unmappedPageList.map(readableUnmappedPage).join("; ")}`
+              : null,
             invalidPages ? `${invalidPages} invalid asset mapping${invalidPages === 1 ? "" : "s"}` : null,
             duplicateKeys?.length ? `duplicate keys: ${duplicateKeys.join(", ")}` : null,
           ].filter(Boolean);
@@ -146,7 +164,14 @@ import { EDITORIAL_SYNC_ASSETS } from "../../data/editorialAssets.js";
       };
       assetButtons.forEach((button) => button.addEventListener("click", () => run([button.dataset.syncAsset || ""])));
       syncAll?.addEventListener("click", () => run(assetButtons.filter((button) => !button.disabled).map((button) => button.dataset.syncAsset || "").filter(Boolean)));
-      refresh?.addEventListener("click", () => loadStatus().catch((error) => { result.textContent = error instanceof Error ? error.message : "Editorial status could not be loaded."; }));
+      refresh?.addEventListener("click", async () => {
+        try {
+          await loadStatus();
+          result.textContent = "Canva pages refreshed successfully.";
+        } catch (error) {
+          result.textContent = error instanceof Error ? error.message : "Editorial status could not be loaded.";
+        }
+      });
       form?.addEventListener("submit", (event) => event.preventDefault());
       loadStatus().catch((error) => { result.textContent = error instanceof Error ? error.message : "Editorial status could not be loaded."; });
     </script>

@@ -37,6 +37,15 @@ export const EDITORIAL_ASSETS = Object.freeze({
     canvaTitleAliases: ["About RB", "About Rangbastra"],
     expectedDimensions: Object.freeze({ width: 1920, height: 2400 }),
   }),
+  shareYourVision: createAsset({
+    key: "share-your-vision",
+    label: "Share Your Vision",
+    publicId: "Rangbastra/Editorial/Share_Your_Vision",
+    canvaBinding: true,
+    canvaPageId: "PBHDj0t9zQGW1pzY",
+    canvaTitleAliases: ["Share Your Vision"],
+    expectedDimensions: Object.freeze({ width: 1920, height: 1200 }),
+  }),
   consultation: createAsset({
     key: "consultation",
     label: "Consultation",

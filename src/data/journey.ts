@@ -15,6 +15,9 @@ export interface JourneyStep{
 }
 
 const journeyImages = {
+    shareYourVision:
+        getEditorialAssetUrl("share-your-vision"),
+
     vision:
         getEditorialAssetUrl("fabric-selection"),
 
@@ -40,7 +43,7 @@ description:"Tell us about your occasion, inspiration and dream outfit.",
 
 icon:"mirrorWork",
 
-image:journeyImages.vision
+image:journeyImages.shareYourVision
 
 },
 
