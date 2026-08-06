@@ -5,6 +5,7 @@ type TimelineState = {
   height: number;
   milestoneProgress: number[];
   observer: ResizeObserver;
+  replay: boolean;
 };
 
 let states: TimelineState[] = [];
@@ -18,6 +19,7 @@ const render = () => {
   frame = 0;
   const activationY = scrollY + innerHeight * .55;
   states.forEach((state) => {
+    if (state.replay) return;
     const progress = clamp((activationY - state.top) / state.height);
     state.element.style.setProperty("--timeline-progress", progress.toFixed(4));
     let current = -1;
@@ -62,7 +64,8 @@ export function initTimelineProgress() {
     if (element.dataset.timelineReady) return;
     element.dataset.timelineReady = "true";
     const milestones = [...element.querySelectorAll<HTMLElement>("[data-timeline-milestone]")];
-    if (reduced) {
+    const replay = element.hasAttribute("data-replay-timeline");
+    if (reduced && !replay) {
       element.style.setProperty("--timeline-progress", "1");
       milestones.forEach((milestone) => milestone.classList.add("is-complete"));
       milestones.at(-1)?.classList.add("is-current");
@@ -85,7 +88,7 @@ export function initTimelineProgress() {
     const observer = new ResizeObserver(scheduleMeasure);
     observer.observe(element);
     element.querySelectorAll("img").forEach((image) => { if (!image.complete) image.addEventListener("load", scheduleMeasure, { once: true }); });
-    states.push({ element, milestones, top: 0, height: 1, milestoneProgress: [], observer });
+    states.push({ element, milestones, top: 0, height: 1, milestoneProgress: [], observer, replay });
   });
   if (!listening && states.length) {
     listening = true;

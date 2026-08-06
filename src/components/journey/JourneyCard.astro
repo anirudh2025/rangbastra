@@ -94,31 +94,36 @@ const panelId = `journey-image-${step}`;
     z-index: 5;
     width: var(--journey-dot-size);
     height: var(--journey-dot-size);
-    border: 1px solid var(--cocoa-border-soft);
+    border: 1px solid var(--timeline-accent, rgb(var(--cocoa-rgb)));
     border-radius: var(--radius-circle);
     background: var(--obsidian-1000);
-    box-shadow: none;
+    box-shadow: 0 0 0 rgba(var(--cocoa-rgb), 0);
     opacity: 0.9;
+    transform: scale(1);
+    transition:
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 700ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .milestone.is-complete {
-    border-color: var(--cocoa-border);
-    background: rgb(var(--cocoa-rgb));
-    box-shadow: 0 0 4px var(--cocoa-glow-soft);
+    border-color: var(--timeline-accent, rgb(var(--cocoa-rgb)));
+    background: var(--timeline-accent, rgb(var(--cocoa-rgb)));
+    box-shadow: 0 0 10px var(--cocoa-glow-soft);
+    transform: scale(1.16);
   }
   .milestone.is-current {
-    border-color: var(--cocoa-border-strong);
-    background: rgb(var(--cocoa-rgb));
-    box-shadow: 0 0 5px var(--cocoa-glow-soft);
+    border-color: var(--timeline-accent, rgb(var(--cocoa-rgb)));
+    background: var(--timeline-accent, rgb(var(--cocoa-rgb)));
+    box-shadow: 0 0 14px var(--cocoa-glow);
   }
 
   :global(.timeline-item--left) .milestone {
     right: calc((var(--journey-line-gap) * -1) - (var(--journey-dot-size) / 2));
-    transform: none;
   }
 
   :global(.timeline-item--right) .milestone {
     left: calc((var(--journey-line-gap) * -1) - (var(--journey-dot-size) / 2));
-    transform: none;
   }
 
   .card-surface {
@@ -134,14 +139,14 @@ const panelId = `journey-image-${step}`;
     gap: var(--space-6);
     padding: var(--journey-card-padding);
     padding-bottom: clamp(var(--space-5), 2.4vw, var(--space-7));
-    border: 1px solid var(--cocoa-border-soft);
+    border: 1px solid var(--timeline-accent, rgb(var(--cocoa-rgb)));
     border-radius: var(--radius-2xl);
     background: var(--obsidian-1000);
     box-shadow: var(--shadow-none);
     transition:
-      transform var(--motion-medium) var(--ease-luxury),
-      border-color var(--motion-medium) var(--ease-luxury),
-      box-shadow var(--motion-medium) var(--ease-luxury);
+      transform 500ms var(--ease-luxury),
+      border-color 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 700ms cubic-bezier(0.16, 1, 0.3, 1);
     color: inherit;
     text-align: left;
     cursor: default;
@@ -231,8 +236,8 @@ const panelId = `journey-image-${step}`;
     -webkit-backface-visibility: hidden;
     contain: paint;
     transition:
-      opacity var(--motion-image) var(--ease-luxury),
-      transform var(--motion-image) var(--ease-luxury);
+      opacity 520ms cubic-bezier(0.16, 1, 0.3, 1) 100ms,
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 40ms;
   }
 
   .journey-card--reveal-right .image-panel {
@@ -269,7 +274,7 @@ const panelId = `journey-image-${step}`;
     object-fit: cover;
     object-position: center;
     transform: scale(1);
-    transition: transform var(--motion-image) var(--ease-luxury);
+    transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 120ms;
   }
 
   .journey-card:hover .image-panel img,
@@ -393,7 +398,6 @@ const panelId = `journey-image-${step}`;
           (var(--journey-dot-size) / 2)
       );
       right: auto;
-      transform: none;
     }
 
     .image-panel {
@@ -493,6 +497,9 @@ const panelId = `journey-image-${step}`;
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .milestone {
+      transition: none;
+    }
     .journey-card:hover .card-surface,
     .journey-card:focus-within .card-surface,
     .journey-card.is-revealed .card-surface,

@@ -3,7 +3,7 @@ import { journey } from "../../data/journey";
 import JourneyCard from "./JourneyCard.astro";
 ---
 
-<div class="timeline" data-scroll-timeline>
+<div class="timeline" data-scroll-timeline data-replay-timeline>
   {
     journey.map((item, index) => (
       <div
@@ -35,23 +35,66 @@ import JourneyCard from "./JourneyCard.astro";
         if (timeline.dataset.accordionReady) return;
         timeline.dataset.accordionReady = "true";
         const cards = [...timeline.querySelectorAll<HTMLElement>(".journey-card")];
-        const revealCard = (card: HTMLElement) => card.classList.add("is-revealed");
-        if (matchMedia("(min-width: 1024px)").matches) {
-          if ("IntersectionObserver" in window) {
-            const observer = new IntersectionObserver(
-              (entries, activeObserver) => {
-                entries.forEach((entry) => {
-                  if (!entry.isIntersecting) return;
-                  revealCard(entry.target as HTMLElement);
-                  activeObserver.unobserve(entry.target);
-                });
-              },
-              { threshold: 0.2 },
-            );
-            cards.forEach((card) => observer.observe(card));
-          } else {
-            cards.forEach(revealCard);
+        const milestones = [...timeline.querySelectorAll<HTMLElement>("[data-timeline-milestone]")];
+        const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let cardObserver: IntersectionObserver | undefined;
+        let milestoneTimers: number[] = [];
+        let replayActive = false;
+        const clearReplay = () => {
+          if (!replayActive) return;
+          replayActive = false;
+          cardObserver?.disconnect();
+          cardObserver = undefined;
+          milestoneTimers.forEach(clearTimeout);
+          milestoneTimers = [];
+          timeline.classList.remove("is-active");
+          timeline.style.setProperty("--timeline-progress", "0");
+          cards.forEach((card) => card.classList.remove("is-revealed"));
+          milestones.forEach((milestone) => milestone.classList.remove("is-complete", "is-current"));
+        };
+        const activateReplay = () => {
+          if (replayActive) return;
+          replayActive = true;
+          timeline.classList.add("is-active");
+          requestAnimationFrame(() => timeline.style.setProperty("--timeline-progress", "1"));
+          if (reducedMotion) {
+            cards.forEach((card) => card.classList.add("is-revealed"));
+            milestones.forEach((milestone) => milestone.classList.add("is-complete"));
+            milestones.at(-1)?.classList.add("is-current");
+            return;
           }
+          milestones.forEach((milestone, index) => {
+            milestoneTimers.push(window.setTimeout(() => {
+              milestone.classList.add("is-complete");
+              milestone.classList.toggle("is-current", index === milestones.length - 1);
+            }, 110 + index * 110));
+          });
+          if (!matchMedia("(min-width: 1024px)").matches) return;
+          if (!("IntersectionObserver" in window)) {
+            cards.forEach((card) => card.classList.add("is-revealed"));
+            return;
+          }
+          cardObserver = new IntersectionObserver((entries, activeObserver) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              (entry.target as HTMLElement).classList.add("is-revealed");
+              activeObserver.unobserve(entry.target);
+            });
+          }, { threshold: 0.2 });
+          cards.forEach((card) => cardObserver?.observe(card));
+        };
+        const replayTarget = timeline.closest<HTMLElement>(".journey-section") ?? timeline;
+        if ("IntersectionObserver" in window) {
+          const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) activateReplay();
+              else clearReplay();
+            });
+          }, { threshold: 0 });
+          sectionObserver.observe(replayTarget);
+          document.addEventListener("astro:before-swap", () => sectionObserver.disconnect(), { once: true });
+        } else {
+          activateReplay();
         }
         timeline
           .querySelectorAll<HTMLButtonElement>(".card-surface")
@@ -104,6 +147,7 @@ import JourneyCard from "./JourneyCard.astro";
 
 <style>
   .timeline {
+    --timeline-accent: rgb(var(--cocoa-rgb));
     --timeline-gutter: clamp(var(--space-7), 6vw, var(--space-12));
     --timeline-mobile-axis: var(--space-2);
     --timeline-mobile-content-offset: var(--space-6);
@@ -135,12 +179,13 @@ import JourneyCard from "./JourneyCard.astro";
     height: var(--timeline-line-length);
     left: 50%;
     width: 1.5px;
-    background: rgb(var(--cocoa-rgb));
-    box-shadow: none;
+    background: var(--timeline-accent);
+    box-shadow: 0 0 6px rgba(var(--cocoa-rgb), 0.32);
     transform: translate3d(-50%, 0, 0) scaleY(var(--timeline-progress, 0));
     transform-origin: top;
     pointer-events: none;
     will-change: transform;
+    transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .timeline-item {
@@ -185,6 +230,12 @@ import JourneyCard from "./JourneyCard.astro";
   @media (max-width: 767px) {
     .timeline {
       gap: var(--space-7);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .timeline::after {
+      transition: none;
     }
   }
 </style>
