@@ -173,13 +173,7 @@ const panelId = `journey-image-${step}`;
     z-index: 4;
     border: 1px solid transparent;
     border-radius: inherit;
-    background: linear-gradient(
-        135deg,
-        var(--cocoa-700),
-        var(--cocoa-400),
-        var(--cocoa-600)
-      )
-      border-box;
+    background: var(--timeline-accent) border-box;
     mask:
       linear-gradient(#000 0 0) padding-box,
       linear-gradient(#000 0 0);
@@ -197,7 +191,7 @@ const panelId = `journey-image-${step}`;
   .journey-card:focus-within .card-surface,
   .journey-card.is-revealed .card-surface {
     transform: translate3d(0, var(--motion-card-lift), 0);
-    border-color: var(--cocoa-border-strong);
+    border-color: var(--timeline-accent);
     box-shadow:
       inset 0 0 8px rgba(var(--cocoa-rgb), 0.06),
       inset 0 1px rgba(255, 255, 255, 0.04);
@@ -225,7 +219,7 @@ const panelId = `journey-image-${step}`;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--timeline-accent);
     border-radius: var(--radius-2xl);
     background: var(--surface-raised);
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
@@ -450,7 +444,7 @@ const panelId = `journey-image-${step}`;
       width: 2rem;
       height: 2rem;
       place-items: center;
-      border: 1px solid var(--cocoa-border-soft);
+      border: 1px solid var(--timeline-accent);
       border-radius: var(--radius-circle);
     }
 
