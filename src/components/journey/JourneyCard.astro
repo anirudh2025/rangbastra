@@ -380,8 +380,7 @@ const panelId = `journey-image-${step}`;
 
   @media (max-width: 1023px) {
     .journey-card {
-      --journey-card-min-height: clamp(18rem, 48vw, 24rem);
-      --journey-mobile-image-height: min(16rem, 56vw);
+      --journey-card-min-height: clamp(16rem, 44vw, 20rem);
     }
 
     .milestone,
@@ -401,16 +400,17 @@ const panelId = `journey-image-${step}`;
       bottom: auto;
       left: auto;
       width: 100%;
-      height: 0;
+      height: auto;
+      min-height: 0;
       max-height: 0;
       margin-top: 0;
       aspect-ratio: 16 / 10;
       opacity: 0;
+      visibility: hidden;
       overflow: hidden;
       transform: translate3d(0, 0, 0) scale(1);
       transition:
-        height 300ms var(--ease-luxury),
-        max-height 300ms var(--ease-luxury),
+        max-height 360ms var(--ease-luxury),
         margin-top 300ms var(--ease-luxury),
         opacity 180ms var(--ease-luxury);
     }
@@ -423,10 +423,25 @@ const panelId = `journey-image-${step}`;
     }
 
     .journey-card.is-expanded .image-panel {
-      height: var(--journey-mobile-image-height);
-      max-height: var(--journey-mobile-image-height);
+      position: relative;
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 100vw;
       margin-top: var(--space-3);
       opacity: 1;
+      visibility: visible;
+      overflow: hidden;
+      transform: none;
+    }
+
+    .image-panel img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      transform: none;
     }
 
     .card-surface {
@@ -465,13 +480,60 @@ const panelId = `journey-image-${step}`;
     .card-surface[aria-expanded="true"] .card-state::after {
       transform: rotate(0deg);
     }
+
+    /* Touch browsers can retain hover/focus after a tap. On compact layouts,
+       only the explicit accordion state is allowed to carry active emphasis. */
+    .journey-card:hover .card-surface,
+    .journey-card:focus-within .card-surface,
+    .journey-card.is-revealed .card-surface {
+      transform: none;
+      border-color: var(--timeline-accent);
+      box-shadow: var(--shadow-none);
+    }
+    .journey-card:hover .card-surface::before,
+    .journey-card:focus-within .card-surface::before,
+    .journey-card.is-revealed .card-surface::before { opacity: 0.24; }
+    .journey-card:hover .card-surface::after,
+    .journey-card:focus-within .card-surface::after,
+    .journey-card.is-revealed .card-surface::after { opacity: 0; }
+    .journey-card:hover .step,
+    .journey-card:focus-within .step,
+    .journey-card.is-revealed .step { color: var(--cocoa-400); text-shadow: none; }
+    .journey-card:hover .icon-wrapper,
+    .journey-card:focus-within .icon-wrapper,
+    .journey-card.is-revealed .icon-wrapper {
+      transform: none;
+      border-color: var(--cocoa-border-soft);
+      color: rgb(var(--cocoa-rgb));
+    }
+    .journey-card:hover h3,
+    .journey-card:focus-within h3,
+    .journey-card.is-revealed h3 { color: var(--text-primary); }
+    .journey-card:hover .divider,
+    .journey-card:focus-within .divider,
+    .journey-card.is-revealed .divider { transform: none; }
+    .journey-card:hover p,
+    .journey-card:focus-within p,
+    .journey-card.is-revealed p { color: var(--text-secondary); }
+
+    .journey-card.is-expanded .card-surface {
+      transform: translate3d(0, var(--motion-card-lift), 0);
+      border-color: var(--timeline-accent);
+      box-shadow: inset 0 0 8px rgba(var(--cocoa-rgb), 0.06), inset 0 1px rgba(255, 255, 255, 0.04);
+    }
+    .journey-card.is-expanded .card-surface::before { opacity: 0.58; }
+    .journey-card.is-expanded .card-surface::after { opacity: 1; }
+    .journey-card.is-expanded .step { color: var(--ivory-100); text-shadow: 0 0 7px var(--cocoa-glow); }
+    .journey-card.is-expanded .icon-wrapper { transform: scale(var(--motion-icon-scale)); border-color: var(--cocoa-border-strong); color: var(--ivory-100); }
+    .journey-card.is-expanded h3,
+    .journey-card.is-expanded p { color: var(--text-primary); }
+    .journey-card.is-expanded .divider { transform: scaleX(1.28); }
   }
 
   @media (max-width: 767px) {
     .journey-card {
       --journey-card-padding: var(--space-5);
-      --journey-card-min-height: 22rem;
-      --journey-mobile-image-height: min(13rem, 56vw);
+      --journey-card-min-height: clamp(15.5rem, 64vw, 18rem);
     }
 
     .card-surface {
