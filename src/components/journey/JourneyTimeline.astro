@@ -116,6 +116,9 @@ import JourneyCard from "./JourneyCard.astro";
                   openCard
                     .querySelector<HTMLElement>(".image-panel")
                     ?.setAttribute("aria-hidden", "true");
+                  openCard
+                    .querySelector<HTMLElement>(".mobile-image-panel")
+                    ?.setAttribute("aria-hidden", "true");
                   if (openTrigger)
                     openTrigger.setAttribute(
                       "aria-label",
@@ -124,10 +127,10 @@ import JourneyCard from "./JourneyCard.astro";
                 });
               card.classList.toggle("is-expanded", willOpen);
               trigger.setAttribute("aria-expanded", String(willOpen));
-              const imagePanel = card.querySelector<HTMLElement>(".image-panel");
-              imagePanel?.setAttribute("aria-hidden", String(!willOpen));
+              const mobileImagePanel = card.querySelector<HTMLElement>(".mobile-image-panel");
+              mobileImagePanel?.setAttribute("aria-hidden", String(!willOpen));
               if (willOpen) {
-                const image = imagePanel?.querySelector<HTMLImageElement>("img");
+                const image = mobileImagePanel?.querySelector<HTMLImageElement>("img");
                 if (image) image.loading = "eager";
               }
               trigger.setAttribute(

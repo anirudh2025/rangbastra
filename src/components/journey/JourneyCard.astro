@@ -31,6 +31,7 @@ const makeSrcset = (url?: string): string | null => {
 const srcset = makeSrcset(image);
 const sizesAttr = "(max-width: 767px) 90vw, (max-width: 1023px) 60vw, 42rem";
 const panelId = `journey-image-${step}`;
+const mobilePanelId = `${panelId}-mobile`;
 ---
 
 <article class:list={["journey-card", `journey-card--reveal-${revealSide}`]}>
@@ -71,6 +72,19 @@ const panelId = `journey-image-${step}`;
     </div>
     <span class="card-state" aria-hidden="true"></span>
   </button>
+
+  <div class="mobile-image-panel" id={mobilePanelId} aria-hidden="true">
+    <img
+      src={image}
+      alt=""
+      width="1600"
+      height="1000"
+      loading="lazy"
+      decoding="async"
+      srcset={srcset}
+      sizes={srcset ? sizesAttr : undefined}
+    />
+  </div>
 </article>
 
 <style>
@@ -271,6 +285,10 @@ const panelId = `journey-image-${step}`;
     transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 120ms;
   }
 
+  .mobile-image-panel {
+    display: none;
+  }
+
   .journey-card:hover .image-panel img,
   .journey-card:focus-within .image-panel img,
   .journey-card.is-revealed .image-panel img {
@@ -394,51 +412,29 @@ const panelId = `journey-image-${step}`;
     }
 
     .image-panel {
-      position: relative;
-      top: auto;
-      right: auto;
-      bottom: auto;
-      left: auto;
-      width: 100%;
-      height: auto;
-      min-height: 0;
-      max-height: 0;
-      margin-top: 0;
-      aspect-ratio: 16 / 10;
-      opacity: 0;
-      visibility: hidden;
-      overflow: hidden;
-      transform: translate3d(0, 0, 0) scale(1);
-      transition:
-        max-height 360ms var(--ease-luxury),
-        margin-top 300ms var(--ease-luxury),
-        opacity 180ms var(--ease-luxury);
+      display: none;
     }
 
-    .journey-card--reveal-left .image-panel,
-    .journey-card--reveal-right .image-panel,
-    .journey-card:hover .image-panel,
-    .journey-card:focus-within .image-panel {
-      transform: translate3d(0, 0, 0) scale(1);
-    }
-
-    .journey-card.is-expanded .image-panel {
+    .journey-card.is-expanded .mobile-image-panel {
       position: relative;
       display: block;
       width: 100%;
       height: auto;
-      max-height: 100vw;
       margin-top: var(--space-3);
       opacity: 1;
       visibility: visible;
       overflow: hidden;
       transform: none;
+      aspect-ratio: 16 / 10;
+      border: 1px solid var(--timeline-accent);
+      border-radius: var(--radius-2xl);
+      background: var(--surface-raised);
     }
 
-    .image-panel img {
+    .mobile-image-panel img {
       display: block;
       width: 100%;
-      height: auto;
+      height: 100%;
       aspect-ratio: 16 / 10;
       object-fit: cover;
       transform: none;
@@ -547,7 +543,7 @@ const panelId = `journey-image-${step}`;
       right: var(--space-5);
     }
 
-    .image-panel {
+    .mobile-image-panel {
       border-radius: var(--radius-xl);
     }
   }
@@ -559,12 +555,12 @@ const panelId = `journey-image-${step}`;
     .journey-card:hover .card-surface,
     .journey-card:focus-within .card-surface,
     .journey-card.is-revealed .card-surface,
-    .journey-card:hover .image-panel,
-    .journey-card:focus-within .image-panel,
-    .journey-card.is-revealed .image-panel,
-    .journey-card:hover .image-panel img,
-    .journey-card:focus-within .image-panel img,
-    .journey-card.is-revealed .image-panel img,
+    .journey-card:hover .mobile-image-panel,
+    .journey-card:focus-within .mobile-image-panel,
+    .journey-card.is-revealed .mobile-image-panel,
+    .journey-card:hover .mobile-image-panel img,
+    .journey-card:focus-within .mobile-image-panel img,
+    .journey-card.is-revealed .mobile-image-panel img,
     .journey-card:hover .icon-wrapper,
     .journey-card:focus-within .icon-wrapper,
     .journey-card.is-revealed .icon-wrapper,
@@ -575,7 +571,7 @@ const panelId = `journey-image-${step}`;
     }
 
     @media (max-width: 1023px) {
-      .image-panel {
+      .mobile-image-panel {
         transition: none;
       }
     }
