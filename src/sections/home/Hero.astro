@@ -2,131 +2,222 @@
 import LoomFallback from "../../components/hero/LoomFallback.astro";
 import Button from "../../components/primitives/Button.astro";
 import Label from "../../components/primitives/Label.astro";
+import {
+  getHomepageHeroMedia,
+  SHOW_LEGACY_GENERATED_HERO,
+} from "../../data/homepageHero";
+
+const heroMedia = getHomepageHeroMedia();
+const primaryMedia = heroMedia[0];
+const hasSlideshow = heroMedia.length > 1;
 ---
 
 <header
-  class="living-hero"
+  class:list={[
+    "editorial-hero",
+    SHOW_LEGACY_GENERATED_HERO && "editorial-hero--legacy",
+    hasSlideshow && "editorial-hero--slideshow",
+  ]}
   data-hero-root
-  data-hero-mode="pending"
-  data-hero-state="BOOT"
+  data-hero-media-count={heroMedia.length}
   aria-labelledby="hero-heading"
 >
-  <div class="living-hero__stage" data-hero-stage>
-    <LoomFallback />
+  {primaryMedia && (
+    <link
+      rel="preload"
+      as="image"
+      href={primaryMedia.src}
+      imagesrcset={primaryMedia.srcset}
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
+  )}
 
-    <div
-      class="living-hero__enhancement"
-      data-hero-enhancement
-      aria-hidden="true"
-    ></div>
+  <div class="editorial-hero__frame">
+    {SHOW_LEGACY_GENERATED_HERO ? (
+      <>
+        <LoomFallback />
+        <div
+          class="editorial-hero__legacy-enhancement"
+          data-hero-enhancement
+          aria-hidden="true"
+        ></div>
+      </>
+    ) : primaryMedia ? (
+      <div class="editorial-hero__media" aria-label="Rangbastra editorial campaign">
+        {heroMedia.map((media, index) => (
+          <img
+            class:list={["editorial-hero__image", index === 0 && "is-active"]}
+            data-hero-slide
+            src={media.src}
+            srcset={media.srcset}
+            sizes="100vw"
+            width={media.width}
+            height={media.height}
+            alt={media.alt}
+            loading={index === 0 ? "eager" : "lazy"}
+            decoding={index === 0 ? "sync" : "async"}
+            fetchpriority={index === 0 ? "high" : "auto"}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="editorial-hero__media editorial-hero__media--pending" aria-hidden="true"></div>
+    )}
 
-    <div class="living-hero__content" data-hero-content>
-      <p class="living-hero__eyebrow">Bespoke Indian Couture</p>
-      <h1 id="hero-heading">Not Designed for Everyone</h1>
-      <div class="living-hero__actions">
-        <Button href="/design-your-outfit" class="living-hero__primary">
+    <div class="editorial-hero__readability" aria-hidden="true"></div>
+
+    <div class="editorial-hero__content">
+      <p class="editorial-hero__eyebrow">Bespoke Indian Couture</p>
+      <h1 id="hero-heading">
+        <span>Not Designed</span>
+        <span>for Everyone</span>
+      </h1>
+      <div class="editorial-hero__actions">
+        <Button href="/design-your-outfit" class="editorial-hero__primary">
           <Label icon="sketch">Begin Yours</Label>
         </Button>
-        <a class="living-hero__secondary" href="/collections">
+        <a class="editorial-hero__secondary" href="/collections">
           <Label icon="journal">Explore the Collection</Label>
         </a>
       </div>
     </div>
-
-    <div class="living-hero__handoff" data-hero-handoff aria-hidden="true"></div>
   </div>
 </header>
 
-<script>
-  import {
-    disposeHeroController,
-    initHeroController,
-  } from "../../lib/hero/controller";
+{SHOW_LEGACY_GENERATED_HERO && (
+  <script>
+    import {
+      disposeHeroController,
+      initHeroController,
+    } from "../../lib/hero/controller";
 
-  document.addEventListener("astro:page-load", initHeroController);
-  document.addEventListener("astro:before-swap", disposeHeroController);
-  initHeroController();
-</script>
+    document.addEventListener("astro:page-load", initHeroController);
+    document.addEventListener("astro:before-swap", disposeHeroController);
+    initHeroController();
+  </script>
+)}
+
+{hasSlideshow && (
+  <script>
+    const initEditorialHero = () => {
+      const root = document.querySelector<HTMLElement>("[data-hero-root]");
+      const slides = Array.from(root?.querySelectorAll("[data-hero-slide]") ?? []);
+
+      if (
+        !root ||
+        root.dataset.editorialHeroReady === "true" ||
+        slides.length < 2 ||
+        matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        return;
+      }
+
+      root.dataset.editorialHeroReady = "true";
+      let activeIndex = 0;
+      const advance = () => {
+        slides[activeIndex]?.classList.remove("is-active");
+        activeIndex = (activeIndex + 1) % slides.length;
+        slides[activeIndex]?.classList.add("is-active");
+      };
+
+      const interval = window.setInterval(advance, 8000);
+      document.addEventListener(
+        "astro:before-swap",
+        () => window.clearInterval(interval),
+        { once: true },
+      );
+    };
+
+    document.addEventListener("astro:page-load", initEditorialHero);
+    initEditorialHero();
+  </script>
+)}
 
 <style>
-  .living-hero {
+  .editorial-hero {
     position: relative;
-    height: 175svh;
-    min-height: 38rem;
-    overflow: visible;
-    background: #000;
+    min-height: clamp(42rem, 92svh, 58rem);
+    padding: clamp(1rem, 1.7vw, 1.75rem);
+    overflow: clip;
+    background: var(--surface-canvas);
     color: var(--text-primary);
     isolation: isolate;
   }
 
-  .living-hero__stage {
-    position: sticky;
-    top: 0;
-    height: 100svh;
+  .editorial-hero__frame {
+    position: relative;
+    min-height: calc(clamp(42rem, 92svh, 58rem) - clamp(2rem, 3.4vw, 3.5rem));
     overflow: hidden;
+    border: 1px solid var(--cocoa-border);
+    border-radius: var(--radius-lg);
+    background: #080706;
+    box-shadow: var(--shadow-inset);
   }
 
-  .living-hero[data-hero-ready="true"][data-hero-mode="static"] {
-    height: 100svh;
-  }
-
-  .living-hero__enhancement {
+  .editorial-hero__media,
+  .editorial-hero__readability,
+  .editorial-hero__legacy-enhancement {
     position: absolute;
     inset: 0;
-    z-index: 1;
+  }
+
+  .editorial-hero__media {
+    overflow: hidden;
+    background: #080706;
+  }
+
+  .editorial-hero__media--pending {
+    background: #080706;
+  }
+
+  .editorial-hero__image {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    object-position: center 42%;
     opacity: 0;
+    transform: scale(1.015);
+    transition:
+      opacity 1200ms var(--ease-luxury),
+      transform 8s var(--ease-luxury);
+  }
+
+  .editorial-hero__image.is-active {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+
+  .editorial-hero__readability {
+    z-index: 1;
     pointer-events: none;
-    transition: opacity 760ms var(--ease-luxury);
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, .58) 0%, rgba(0, 0, 0, .22) 44%, transparent 74%),
+      linear-gradient(0deg, rgba(0, 0, 0, .42) 0%, transparent 36%, rgba(0, 0, 0, .18) 100%);
   }
 
-  :global([data-hero-fallback]) {
-    opacity: 1;
-    transition: opacity 920ms var(--ease-luxury);
-  }
-
-  .living-hero[data-hero-mode="pending"] :global([data-hero-fallback]),
-  .living-hero[data-hero-mode="living-loom"]:not(
-      [data-hero-enhanced-ready="true"]
-    ) :global([data-hero-fallback]),
-  .living-hero[data-hero-mode="silk-portal"]:not(
-      [data-hero-enhanced-ready="true"]
-    ) :global([data-hero-fallback]) {
-    opacity: .28;
-  }
-
-  .living-hero[data-hero-enhanced-ready="true"] .living-hero__enhancement {
-    opacity: 1;
-  }
-
-  .living-hero[data-hero-enhanced-ready="true"] :global(
-      [data-hero-fallback]
-    ) {
-    opacity: 0;
-  }
-
-  .living-hero__content {
+  .editorial-hero__content {
     position: relative;
-    z-index: 3;
+    z-index: 2;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
     width: min(76rem, calc(100% - 4rem));
-    height: 100%;
+    min-height: calc(clamp(42rem, 92svh, 58rem) - clamp(2rem, 3.4vw, 3.5rem));
     margin-inline: auto;
-    padding: clamp(7rem, 13vh, 10rem) 0 5rem;
-    text-align: center;
+    padding: clamp(7.5rem, 15vh, 11rem) 0 clamp(5rem, 10vh, 7rem);
+    text-align: left;
   }
 
-  .living-hero__eyebrow {
-    margin: 0 0 clamp(1.35rem, 3vh, 2.25rem);
+  .editorial-hero__eyebrow {
+    margin: 0 0 clamp(1.25rem, 2.2vh, 1.75rem);
     color: var(--sand-200);
     font-family: var(--font-ceremonial);
     font-size: var(--caption);
     font-weight: 400;
-    letter-spacing: .7em;
+    letter-spacing: .58em;
     text-transform: uppercase;
   }
 
@@ -135,30 +226,33 @@ import Label from "../../components/primitives/Label.astro";
     margin: 0;
     color: var(--ivory-100);
     font-family: var(--font-display);
-    font-size: clamp(3.35rem, 5.25vw, 5.125rem);
+    font-size: clamp(3.25rem, 5vw, 5rem);
     font-weight: 400;
     line-height: .98;
     letter-spacing: -.035em;
-    text-wrap: balance;
-    text-shadow: 0 6px 42px rgba(0, 0, 0, .88);
+    text-shadow: 0 6px 36px rgba(0, 0, 0, .62);
   }
 
-  .living-hero__actions {
+  h1 span {
+    display: block;
+  }
+
+  .editorial-hero__actions {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: var(--space-6);
-    margin-top: clamp(var(--space-7), 5vh, var(--space-9));
+    margin-top: clamp(var(--space-7), 4vh, var(--space-8));
   }
 
-  :global(.living-hero__primary) {
-    min-height: 56px;
+  :global(.editorial-hero__primary) {
+    min-height: 54px;
     border-color: var(--cocoa-border);
     border-radius: var(--radius-md);
-    background: var(--gradient-obsidian);
+    background: rgba(8, 7, 6, .84);
+    transition-duration: 220ms;
   }
 
-  .living-hero__secondary {
+  .editorial-hero__secondary {
     position: relative;
     display: inline-flex;
     min-height: 44px;
@@ -166,9 +260,10 @@ import Label from "../../components/primitives/Label.astro";
     padding: .75rem .1rem;
     color: var(--ivory-100);
     font-size: var(--label-md);
+    text-decoration: none;
   }
 
-  .living-hero__secondary::after {
+  .editorial-hero__secondary::after {
     content: "";
     position: absolute;
     right: 0;
@@ -178,88 +273,117 @@ import Label from "../../components/primitives/Label.astro";
     background: var(--gradient-gold);
     transform: scaleX(.22);
     transform-origin: left;
-    transition: transform var(--motion-medium) var(--ease-luxury);
+    transition: transform 220ms var(--ease-luxury);
   }
 
-  .living-hero__secondary:hover::after,
-  .living-hero__secondary:focus-visible::after {
+  .editorial-hero__secondary:hover::after,
+  .editorial-hero__secondary:focus-visible::after {
     transform: scaleX(1);
   }
 
-  .living-hero__secondary:focus-visible {
+  .editorial-hero__secondary:focus-visible {
     border-radius: var(--radius-sm);
     outline: 1px solid var(--cocoa-300);
     outline-offset: 5px;
   }
 
-  .living-hero__handoff {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 2;
-    height: clamp(5rem, 14vh, 9rem);
-    background: linear-gradient(to bottom, transparent, var(--surface-canvas));
-    pointer-events: none;
+  .editorial-hero--legacy {
+    min-height: 175svh;
+    padding: 0;
+    overflow: visible;
   }
 
-  :global(html[data-hero-pointer-owner="living-loom"] .global-cursor-glow) {
-    opacity: 0 !important;
+  .editorial-hero--legacy .editorial-hero__frame {
+    position: sticky;
+    top: 0;
+    min-height: 100svh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .editorial-hero--legacy .editorial-hero__readability {
+    display: none;
+  }
+
+  .editorial-hero--legacy .editorial-hero__legacy-enhancement {
+    z-index: 1;
+  }
+
+  .editorial-hero--legacy .editorial-hero__content {
+    align-items: center;
+    text-align: center;
   }
 
   @media (max-width: 700px), (orientation: portrait) {
-    .living-hero {
-      height: 180svh;
+    .editorial-hero {
+      min-height: clamp(35rem, 84svh, 46rem);
+      padding: .65rem;
     }
 
-    .living-hero__content {
+    .editorial-hero__frame,
+    .editorial-hero__content {
+      min-height: calc(clamp(35rem, 84svh, 46rem) - 1.3rem);
+    }
+
+    .editorial-hero__image {
+      object-position: center 32%;
+    }
+
+    .editorial-hero__readability {
+      background:
+        linear-gradient(0deg, rgba(0, 0, 0, .64) 2%, rgba(0, 0, 0, .14) 64%, rgba(0, 0, 0, .2) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, .24), transparent 76%);
+    }
+
+    .editorial-hero__content {
       justify-content: flex-end;
-      width: calc(100% - 2rem);
-      padding: calc(var(--navbar-height) + 4rem) 0 clamp(5.5rem, 13vh, 7.5rem);
+      width: calc(100% - 2.25rem);
+      padding: calc(var(--navbar-height) + 3.75rem) 0 clamp(2.5rem, 7svh, 4rem);
     }
 
-    .living-hero__eyebrow {
+    .editorial-hero__eyebrow {
       margin-bottom: 1rem;
       font-size: .61rem;
-      letter-spacing: .48em;
+      letter-spacing: .42em;
     }
 
     h1 {
-      max-width: 12ch;
-      font-size: clamp(2.25rem, 10vw, 3.4rem);
-      line-height: .98;
+      font-size: clamp(2.35rem, 10vw, 3.35rem);
     }
 
-    .living-hero__actions {
+    .editorial-hero__actions {
       flex-direction: column;
+      align-items: flex-start;
       gap: .35rem;
       margin-top: var(--space-6);
     }
 
-    :global(.living-hero__primary) {
+    :global(.editorial-hero__primary) {
       min-height: 48px;
       font-size: .76rem;
     }
 
-    .living-hero__secondary {
+    .editorial-hero__secondary {
       font-size: .76rem;
+    }
+
+    .editorial-hero--legacy {
+      min-height: 180svh;
+      padding: 0;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .living-hero,
-    .living-hero *,
-    .living-hero *::before,
-    .living-hero *::after {
+    .editorial-hero *,
+    .editorial-hero *::before,
+    .editorial-hero *::after {
       animation: none !important;
       scroll-behavior: auto !important;
       transition: none !important;
     }
+
+    .editorial-hero__image.is-active {
+      transform: none;
+    }
   }
 </style>
-
-<noscript>
-  <style>
-    .living-hero { height: 100svh !important; }
-  </style>
-</noscript>
